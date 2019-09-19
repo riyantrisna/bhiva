@@ -50,6 +50,14 @@
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
+                            <a href="<?php echo base_url();?>gallery" class="nav-link">
+                                <i class="fas fa-images nav-icon ml-4"></i>
+                                <p><?php echo MultiLang('gallery'); ?></p>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
                             <a href="<?php echo base_url();?>whoweare" class="nav-link">
                                 <i class="fas fa-users nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('who_we_are'); ?></p>
@@ -66,9 +74,9 @@
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url();?>gallery" class="nav-link">
-                                <i class="fas fa-images nav-icon ml-4"></i>
-                                <p><?php echo MultiLang('gallery'); ?></p>
+                            <a href="<?php echo base_url();?>privacypolicy" class="nav-link">
+                                <i class="fas fa-user-shield nav-icon ml-4"></i>
+                                <p><?php echo MultiLang('privacy_policy'); ?></p>
                             </a>
                         </li>
                     </ul>

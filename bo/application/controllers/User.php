@@ -152,21 +152,28 @@ class User extends CI_Controller {
                     </div>';
         $html.= '</div>';
         $html.= '<div class="form-group">
-                    <label for="file_photo">'.MultiLang('photo').'</label>
+                    <label for="file_image">'.MultiLang('image').' *</label>
                     <br>
-                    <center>
-                        <span id="selector_file" class="btn btn-success btn-files">
-                            '.MultiLang('choose_image').'<input type="file" id="file_photo" name="file_photo" accept="image/*" onchange="readURL(this,\'#file_photo_show\')">
-                        </span>
-                        <span id="remove_file" class="btn btn-success btn-files" onclick="removeImage()">
-                            '.MultiLang('delete').'
-                        </span>
-                        <br>
-                        <img id="file_photo_show" src="#" class="mt-2"/>
-                        <input type="hidden" id="file_photo_value" name="file_photo_value"/>
-                        <input type="hidden" id="file_photo_value_old" name="file_photo_value_old"/>
-                    </center>
-                </div>';
+                    <div class="row">
+                        <div class="col" style="text-align: center;">
+                            <label id="label_images" for="images" style="cursor: pointer;">
+                                <img style="width:150px; height:150px; border:1px dashed #C3C3C3;" src="assets/images/upload-image.png" />
+                            </label>
+                            
+                            <input type="file" name="images" id="images" style="display:none;" onchange="readURL(this)" accept="image/*"/>
+
+                            <img style="width:150px; height:150px; border:1px dashed #C3C3C3; margin-bottom: 5px; display:none;" id="show_images" />
+                            <br>
+                            <div style="height: 40px;">
+                                <span id="remove" class="btn btn-warning" onclick="removeImage()" style="cursor: pointer; margin-bottom: 5px; display:none;">
+                                    '.MultiLang('delete').'
+                                </span>
+                                <span class="msg_images" id="msg_images" style="color: red;"></span>
+                            </div>
+
+                            <input type="hidden" id="file_photo_value" name="file_photo_value"/>
+                        </div>
+                    </div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="desc">'.MultiLang('note').'</label>';
         $html.=     '<textarea id="desc" name="desc" class="form-control"></textarea>';
@@ -198,7 +205,6 @@ class User extends CI_Controller {
         $lang = $this->input->post('lang', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_photo_value = $this->input->post('file_photo_value');
-        $file_photo_value_old = $this->input->post('file_photo_value_old');
         $desc = $this->input->post('desc', TRUE);
         $password = $this->input->post('password', TRUE);
         $retype_password = $this->input->post('retype_password', TRUE);
@@ -407,22 +413,37 @@ class User extends CI_Controller {
                         </label>
                     </div>';
         $html.= '</div>';
+        if(!empty($detail->photo)){
+            $type = pathinfo($path_user.$detail->photo, PATHINFO_EXTENSION);
+            $base_64_images = base64_encode(file_get_contents($path_user.$detail->photo));
+            $base_64_images = 'data:image/' . $type . ';base64,' .$base_64_images;
+        }else{
+            $base_64_images = '';
+        }
         $html.= '<div class="form-group">
-                    <label for="file_photo">'.MultiLang('photo').'</label>
+                    <label for="file_image">'.MultiLang('image').' *</label>
                     <br>
-                    <center>
-                        <span id="selector_file" class="btn btn-success btn-files"  style="'.(!empty($detail->photo) ? 'display:none;' : '').'">
-                            '.MultiLang('choose_image').'<input type="file" id="file_photo" name="file_photo" accept="image/*" onchange="readURL(this,\'#file_photo_show\')">
-                        </span>
-                        <span id="remove_file" class="btn btn-success btn-files" onclick="removeImage()" style="'.(empty($detail->photo) ? 'display:none;' : '').'">
-                            '.MultiLang('delete').'
-                        </span>
-                        <br>
-                        <img id="file_photo_show" src="'.(empty($detail->photo) ? '' : $path_user.$detail->photo).'" class="mt-2"  style="'.(empty($detail->photo) ? 'display:none;' : 'max-width: 80px').'"/>
-                        <input type="hidden" id="file_photo_value" name="file_photo_value"/>
-                        <input type="hidden" id="file_photo_value_old" name="file_photo_value_old" value="'.$detail->photo.'"/>
-                    </center>
-                </div>';
+                    <div class="row">
+                        <div class="col" style="text-align: center;">
+                            <label id="label_images" for="images" style="cursor: pointer;'.(!empty($detail->photo) ? 'display:none;' : '').'">
+                                <img style="width:150px; height:150px; border:1px dashed #C3C3C3;" src="assets/images/upload-image.png" />
+                            </label>
+                            
+                            <input type="file" name="images" id="images" style="display:none;" onchange="readURL(this)" accept="image/*"/>
+
+                            <img style="width:150px; height:150px; border:1px dashed #C3C3C3; margin-bottom: 5px; '.(!empty($detail->photo) ? '' : 'display:none;').'" id="show_images" '.(!empty($detail->photo) ? 'src="'.$path_user.$detail->photo.'"' : '').' />
+                            <br>
+                            <div style="height: 40px;">
+                                <span id="remove" class="btn btn-warning" onclick="removeImage()" style="cursor: pointer; margin-bottom: 5px; '.(!empty($detail->photo) ? '' : 'display:none;').'">
+                                    '.MultiLang('delete').'
+                                </span>
+                                <span class="msg_images" id="msg_images" style="color: red;"></span>
+                            </div>
+
+                            <input type="hidden" id="file_photo_value" name="file_photo_value" value="'.$base_64_images.'"/>
+                            <input type="hidden" id="file_photo_value_old" name="file_photo_value_old" value="'.$detail->photo.'"/>
+                        </div>
+                    </div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="desc">'.MultiLang('note').'</label>';
         $html.=     '<textarea id="desc" name="desc" class="form-control">'.$detail->desc.'</textarea>';
@@ -560,6 +581,7 @@ class User extends CI_Controller {
                             'user_is_admin' => isset($is_admin) ? 1 : 0,
                             'user_lang' => $lang,
                             'user_status' => $status,
+                            'user_photo' => NULL,
                             'user_desc' => $desc,
                             'user_password' => MD5($password),
                             'update_user_id' => $user_id,
@@ -575,6 +597,7 @@ class User extends CI_Controller {
                             'user_is_admin' => isset($is_admin) ? 1 : 0,
                             'user_lang' => $lang,
                             'user_status' => $status,
+                            'user_photo' => NULL,
                             'user_desc' => $desc,
                             'update_user_id' => $user_id,
                             'update_datetime' => $date
@@ -587,6 +610,8 @@ class User extends CI_Controller {
                     $result["status"] = TRUE;
                     $result["message"] = MultiLang('msg_update_success');
                     if(!empty($file_photo_value) AND !empty($file_photo_value_old)){
+                        @unlink($path_user_upload.$file_photo_value_old);
+                    }elseif(empty($file_photo_value)){
                         @unlink($path_user_upload.$file_photo_value_old);
                     }
                 } else {

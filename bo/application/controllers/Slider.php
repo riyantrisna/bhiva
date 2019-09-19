@@ -140,19 +140,27 @@ class Slider extends CI_Controller {
         $html.= '<div class="form-group">
                     <label for="file_image">'.MultiLang('image').' *</label>
                     <br>
-                    <center>
-                        <span id="selector_file" class="btn btn-success btn-files">
-                            '.MultiLang('choose_image').'<input type="file" id="file_image" name="file_image" accept="image/*" onchange="readURL(this,\'#file_image_show\')">
-                        </span>
-                        <span id="remove_file" class="btn btn-success btn-files" onclick="removeImage()">
-                            '.MultiLang('delete').'
-                        </span>
-                        <br>
-                        <img id="file_image_show" src="#" class="mt-2"/>
-                        <input type="hidden" id="file_image_value" name="file_image_value"/>
-                        <input type="hidden" id="file_image_value_old" name="file_image_value_old"/>
-                    </center>
-                </div>';
+                    <div class="row">
+                        <div class="col" style="text-align: center; height: 245px;">
+                            <label id="label_images" for="images" style="cursor: pointer;">
+                                <img style="width:360px; height:200px; border:1px dashed #C3C3C3;" src="assets/images/upload-images.png" />
+                            </label>
+                            
+                            <input type="file" name="images" id="images" style="display:none;" onchange="readURL(this)" accept="image/*"/>
+
+                            <img style="width:360px; height:200px; border:1px dashed #C3C3C3; margin-bottom: 5px; display:none;" id="show_images" />
+                            <br>
+                            <div style="height: 40px;">
+                                <span id="remove" class="btn btn-warning" onclick="removeImage()" style="cursor: pointer; margin-bottom: 5px; display:none;">
+                                    '.MultiLang('delete').'
+                                </span>
+                                <span class="msg_images" id="msg_images" style="color: red;"></span>
+                            </div>
+
+                            <input type="hidden" id="file_image_value" name="file_image_value"/>
+                        </div>
+                    </div>';
+        $html.= '</div>';
 
         $data['html'] = $html;
         
@@ -173,7 +181,6 @@ class Slider extends CI_Controller {
         $order = $this->input->post('order', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');
-        $file_image_value_old = $this->input->post('file_image_value_old');
 
         $date = date('Y-m-d H:i:s');
         $user_id = $this->session->userdata('user_id');
@@ -343,22 +350,38 @@ class Slider extends CI_Controller {
                         </label>
                     </div>';
         $html.= '</div>';
+        if(!empty($detail->img)){
+            $type = pathinfo($path_slider.$detail->img, PATHINFO_EXTENSION);
+            $base_64_images = base64_encode(file_get_contents($path_slider.$detail->img));
+            $base_64_images = 'data:image/' . $type . ';base64,' .$base_64_images;
+        }else{
+            $base_64_images = '';
+        }
         $html.= '<div class="form-group">
                     <label for="file_image">'.MultiLang('image').' *</label>
                     <br>
-                    <center>
-                        <span id="selector_file" class="btn btn-success btn-files"  style="'.(!empty($detail->img) ? 'display:none;' : '').'">
-                            '.MultiLang('choose_image').'<input type="file" id="file_image" name="file_image" accept="image/*" onchange="readURL(this,\'#file_image_show\')">
-                        </span>
-                        <span id="remove_file" class="btn btn-success btn-files" onclick="removeImage()" style="'.(empty($detail->img) ? 'display:none;' : '').'">
-                            '.MultiLang('delete').'
-                        </span>
-                        <br>
-                        <img id="file_image_show" src="'.(empty($detail->img) ? '' : $path_slider.$detail->img).'" class="mt-2"  style="'.(empty($detail->img) ? 'display:none;' : 'max-width: 100%').'"/>
-                        <input type="hidden" id="file_image_value" name="file_image_value"/>
-                        <input type="hidden" id="file_image_value_old" name="file_image_value_old" value="'.$detail->img.'"/>
-                    </center>
-                </div>';
+                    <div class="row">
+                        <div class="col" style="text-align: center; height: 245px;">
+                            <label id="label_images" for="images" style="cursor: pointer;'.(!empty($detail->img) ? 'display:none;' : '').'">
+                                <img style="width:360px; height:200px; border:1px dashed #C3C3C3;" src="assets/images/upload-images.png" />
+                            </label>
+                            
+                            <input type="file" name="images" id="images" style="display:none;" onchange="readURL(this)" accept="image/*"/>
+
+                            <img style="width:360px; height:200px; border:1px dashed #C3C3C3; margin-bottom: 5px; '.(!empty($detail->img) ? '' : 'display:none;').'" id="show_images" '.(!empty($detail->img) ? 'src="'.$path_slider.$detail->img.'"' : '').' />
+                            <br>
+                            <div style="height: 40px;">
+                                <span id="remove" class="btn btn-warning" onclick="removeImage()" style="cursor: pointer; margin-bottom: 5px; '.(!empty($detail->img) ? '' : 'display:none;').'">
+                                    '.MultiLang('delete').'
+                                </span>
+                                <span class="msg_images" id="msg_images" style="color: red;"></span>
+                            </div>
+
+                            <input type="hidden" id="file_image_value" name="file_image_value" value="'.$base_64_images.'"/>
+                            <input type="hidden" id="file_image_value_old" name="file_image_value_old" value="'.$detail->img.'"/>
+                        </div>
+                    </div>';
+        $html.= '</div>';
 
         $data['html'] = $html;
         
@@ -407,7 +430,7 @@ class Slider extends CI_Controller {
             $validation_text.= '<li>'.MultiLang('status').' '.MultiLang('required').'</li>';
         }
 
-        if(empty($file_image_value) AND empty($file_image_value_old)){
+        if(empty($file_image_value)){
             $validation = $validation && false;
             $validation_text.= '<li>'.MultiLang('image').' '.MultiLang('required').'</li>';
         }
@@ -551,7 +574,7 @@ class Slider extends CI_Controller {
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="order">'.MultiLang('image').'</label>';
-        $html.=     '<center><img src="'.(empty($detail->img) ? $path_slider.'no-image-available.jpg' : $path_slider.$detail->img).'" style="max-width: 100%;" /></center>';
+        $html.=     '<center><img src="'.(empty($detail->img) ? $path_slider.'no-image-available.jpg' : $path_slider.$detail->img).'" style="width:360px; height:200px; border:1px dashed #C3C3C3;" /></center>';
         $html.= '</div>';
 
         $data['html'] = $html;

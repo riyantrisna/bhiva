@@ -64,19 +64,28 @@
 					<div class="form-group">
                         <label for="file_icon"><?php echo MultiLang('icon'); ?> *</label>
                         <br>
-                        <center>
-                            <span id="selector_file" class="btn btn-success btn-files">
-                                <?php echo MultiLang('choose_image'); ?><input type="file" id="file_icon" name="file_icon" accept="image/*" onchange="readURL(this,'#file_icon_show');">
-                            </span>
-                            <span id="remove_file" class="btn btn-success btn-files" onclick="removeImage()">
-                                <?php echo MultiLang('delete'); ?>
-                            </span>
-                            <br>
-                            <img id="file_icon_show" src="#" class="mt-2"/>
-                            <input type="hidden" id="file_icon_value" name="file_icon_value"/>
-                            <input type="hidden" id="file_icon_value_old" name="file_icon_value_old"/>
-                            <input type="hidden" id="code_old" name="code_old"/>
-                        </center>
+                        <div class="row">
+                            <div class="col" style="text-align: center; height: 125px;">
+                                <label id="label_images" for="images" style="cursor: pointer;">
+                                    <img style="width:80px; height:80px; border:1px dashed #C3C3C3;" src="assets/images/upload-image.png" />
+                                </label>
+                                
+                                <input type="file" name="images" id="images" style="display:none;" onchange="readURL(this)" accept="image/*"/>
+
+                                <img style="width:80px; height:80px; border:1px dashed #C3C3C3; margin-bottom: 5px; display:none;" id="show_images" />
+                                <br>
+                                <div style="height: 40px;">
+                                    <span id="remove" class="btn btn-warning" onclick="removeImage()" style="cursor: pointer; margin-bottom: 5px; display:none;">
+                                        <?php echo MultiLang('delete');?>
+                                    </span>
+                                    <span class="msg_images" id="msg_images" style="color: red;"></span>
+                                </div>
+
+                                <input type="hidden" id="file_icon_value" name="file_icon_value"/>
+                                <input type="hidden" id="file_icon_value_old" name="file_icon_value_old"/>
+                                <input type="hidden" id="code_old" name="code_old"/>
+                            </div>
+                        </div>
 					</div>
 				</form>
 			</div>
@@ -176,7 +185,7 @@ var table;
 var save_method;
 
 $(document).ready(function() {
-    $('#file_icon_show').hide();
+    $('#show_images').hide();
     $('#remove_file').hide();
     $('#selector_file').show();
 
@@ -205,31 +214,43 @@ function reload_table()
     table.ajax.reload(null,false); //reload datatable ajax 
 }
 
-function readURL(input, selector) {
+function readURL(input) {
+
+    var fileTypes = ['jpg', 'jpeg', 'png', 'gif', 'JPG', 'JPEG', 'PNG', 'GIF'];
+
+    $('.msg_images').html('');
     if (input.files && input.files[0]) {
         var reader = new FileReader();
+        
+        if(input.files[0].size <= 512000){
 
-        reader.onload = function (e) {
-            $(selector)
-                .attr('src', e.target.result)
-                .width(100);
-                //.height(150);
-            $('#file_icon_value').val(e.target.result);
-        };
+            var extension = input.files[0].name.split('.').pop().toLowerCase(),
+            isSuccess = fileTypes.indexOf(extension) > -1;
 
-        reader.readAsDataURL(input.files[0]);
-        $('#file_icon_show').fadeOut().fadeIn();
-        $('#remove_file').show();
-        $('#selector_file').hide();
+            if(isSuccess){
+                reader.onload = function (e) {
+                    $('#label_images').hide();
+                    $('#show_images').attr('src', e.target.result).css({"width":"80px", "height":"80px"}).fadeOut().fadeIn();
+                    $('#file_icon_value').val(e.target.result);
+                    $('#remove').show();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }else{
+                $('#msg_images').html('<?php echo MultiLang('allowed_file_is'); ?> jpg, JPG, jpeg, JPEG, png, PNG, gif, GIF');
+            }
+        }else{
+            $('#msg_images').html('<?php echo MultiLang('max_file_is'); ?> 512KB');
+        }
     }
 }
 
 function removeImage()
 {
-    $('#file_icon_show').fadeOut();
-    $('#remove_file').hide();
-    $('#selector_file').fadeOut().fadeIn();
-    $('#file_icon').val('');
+    $('#label_images').show();
+    $('#show_images').removeAttr('src').hide();
+    $('#file_icon_value').val('');
+    $('#remove').hide();
+    $('.msg_images').html('');
 }
 
 function add()
@@ -237,15 +258,18 @@ function add()
     save_method = 'add';
     $('#form_language')[0].reset(); // reset form on modals
     $('[name="code"]').attr('disabled', false);
-    $('#remove_file').hide();
-    $('#selector_file').show();
+    $('#title_form').text('<?php echo MultiLang('add'); ?> <?php echo MultiLang('language'); ?>'); // Set Title to Bootstrap modal title
     $('#modal_form').modal('show'); // show bootstrap modal
     $("#box_msg_language").html('').hide();
     $('#btnSave').text('<?php echo MultiLang('save'); ?>');
     $('#btnSave').attr('disabled',false);
-    $('#file_icon_show').hide();
-    $('#title_form').text('<?php echo MultiLang('add'); ?> <?php echo MultiLang('language'); ?>'); // Set Title to Bootstrap modal title
 
+    $('#label_images').show();
+    $('#show_images').removeAttr('src').hide();
+    $('#file_icon_value').val('');
+    $('#remove').hide();
+    $('.msg_images').html('');
+   
 }
 
 function edit(id)
@@ -255,10 +279,13 @@ function edit(id)
     $("#box_msg_language").html('').hide();
     $('#btnSave').text('<?php echo MultiLang('save'); ?>');
     $('#btnSave').attr('disabled',false);
-    $('#file_icon_show').hide();
     $('#title_form').text('<?php echo MultiLang('edit'); ?> <?php echo MultiLang('language'); ?>');
-    $('#remove_file').hide();
-    $('#selector_file').show();
+
+    $('#label_images').show();
+    $('#show_images').removeAttr('src').hide();
+    $('#file_icon_value').val('');
+    $('#remove').hide();
+    $('.msg_images').html('');
     
     $.ajax({
         url : "<?php echo site_url('language/detail/')?>/" + id,
@@ -272,10 +299,11 @@ function edit(id)
                 $('[name="language"]').val(data.language);
                 var icon = data.icon_file;
                 if(icon){
-                    $('#remove_file').show();
-                    $('#selector_file').hide();
+                    $('#remove').show();
+                    $('#label_images').hide();
+                    $('#file_icon_value').val(data.icon_file_b64);
                     $('#file_icon_value_old').val(data.icon_file);
-                    $('#file_icon_show').attr('src', data.icon).css( "maxWidth","80px").fadeOut().fadeIn();
+                    $('#show_images').attr('src', data.icon).css({"width":"80px", "height":"80px"}).fadeOut().fadeIn();
                 }
 
                 $('#modal_form').modal('show');
@@ -317,6 +345,7 @@ function save()
                 else
                 {
                     $('#box_msg_language').html(data.message).fadeOut().fadeIn();
+                    $('#modal_form').animate({ scrollTop: 0 }, 'slow');
                 }
             }else{
                 $('#modal_form').modal('toggle');

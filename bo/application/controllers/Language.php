@@ -77,7 +77,6 @@ class Language extends CI_Controller {
         $code = $this->input->post('code', TRUE);
         $language = $this->input->post('language', TRUE);
         $file_icon_value = $this->input->post('file_icon_value');
-        $file_icon_value_old = $this->input->post('file_icon_value_old');
         $date = date('Y-m-d H:i:s');
         $user_id = $this->session->userdata('user_id');
         
@@ -180,7 +179,7 @@ class Language extends CI_Controller {
             $validation_text.= '<li>'.MultiLang('language').' '.MultiLang('required').'</li>';
         }
 
-        if(empty($file_icon_value) AND empty($file_icon_value_old)){
+        if(empty($file_icon_value)){
             $validation = $validation && false;
             $validation_text.= '<li>'.MultiLang('icon').' '.MultiLang('required').'</li>';
         }
@@ -256,6 +255,15 @@ class Language extends CI_Controller {
     {
         $path_language = $this->config->item('path_language');
         $data = $this->data->getDetailLanguage($id);
+
+        if(!empty($data->icon)){
+            $type = pathinfo($path_language.$data->icon, PATHINFO_EXTENSION);
+            $base_64_images = base64_encode(file_get_contents($path_language.$data->icon));
+            $data->icon_file_b64 = 'data:image/' . $type . ';base64,' .$base_64_images;
+        }else{
+            $data->icon_file_b64 = '';
+        }
+
         $data->icon_file = $data->icon;
         $data->icon = $path_language.$data->icon;
         $data->inserted = (!empty($data->insert_user) ? $data->insert_user.',' : '').' '.($this->data->getDateIndo($data->insert_datetime));

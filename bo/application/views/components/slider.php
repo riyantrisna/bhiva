@@ -163,31 +163,43 @@ function reload_table()
     table.ajax.reload(null,false); //reload datatable ajax 
 }
 
-function readURL(input, selector) {
+function readURL(input) {
+
+    var fileTypes = ['jpg', 'jpeg', 'png', 'gif', 'JPG', 'JPEG', 'PNG', 'GIF'];
+
+    $('.msg_images').html('');
     if (input.files && input.files[0]) {
         var reader = new FileReader();
+        
+        if(input.files[0].size <= 1024000){
 
-        reader.onload = function (e) {
-            $(selector)
-                .attr('src', e.target.result)
-                .css({'maxWidth':'100%'});
-                //.height(150);
-            $('#file_image_value').val(e.target.result);
-        };
+            var extension = input.files[0].name.split('.').pop().toLowerCase(),
+            isSuccess = fileTypes.indexOf(extension) > -1;
 
-        reader.readAsDataURL(input.files[0]);
-        $('#file_image_show').fadeOut().fadeIn();
-        $('#remove_file').show();
-        $('#selector_file').hide();
+            if(isSuccess){
+                reader.onload = function (e) {
+                    $('#label_images').hide();
+                    $('#show_images').attr('src', e.target.result).fadeOut().fadeIn();
+                    $('#file_image_value').val(e.target.result);
+                    $('#remove').show();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }else{
+                $('#msg_images').html('<?php echo MultiLang('allowed_file_is'); ?> jpg, JPG, jpeg, JPEG, png, PNG, gif, GIF');
+            }
+        }else{
+            $('#msg_images').html('<?php echo MultiLang('max_file_is'); ?> 1024KB');
+        }
     }
 }
 
 function removeImage()
 {
-    $('#file_image_show').fadeOut();
-    $('#remove_file').hide();
-    $('#selector_file').fadeOut().fadeIn();
-    $('#file_image').val('');
+    $('#label_images').show();
+    $('#show_images').removeAttr('src').hide();
+    $('#file_image_value').val('');
+    $('#remove').hide();
+    $('.msg_images').html('');
 }
 
 function add()
