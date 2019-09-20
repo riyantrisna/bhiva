@@ -949,6 +949,24 @@ class Data extends CI_Model {
         return $result->row();
     }
 
+    public function checkServiceTypeExist($type, $id = ''){
+        $str = "";
+        if(!empty($id)){
+            $str.= "AND a.`service_id` NOT IN (".$id.")";
+        }
+        $query = "
+                SELECT
+                    a.`service_id` AS `id`
+                FROM
+                    `cms_service` a
+                WHERE 1 = 1
+                AND a.`service_type` = '".$type."'
+                ".$str."
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
     public function getDetailService($id){
 
         $query = "

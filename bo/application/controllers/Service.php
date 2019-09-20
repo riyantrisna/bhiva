@@ -250,6 +250,12 @@ class Service extends CI_Controller {
         if(isset($type) AND $type == ''){
             $validation = $validation && false;
             $validation_text.= '<li>'.MultiLang('type').' '.MultiLang('required').'</li>';
+        }else{
+            $check = $this->data->checkServiceTypeExist($type);
+            if(!empty($check->id)){
+                $validation = $validation && false;
+                $validation_text.= '<li>'.MultiLang('type').' '.MultiLang('existed').'</li>';
+            }
         }
 
         if(!isset($status) AND $status == ''){
@@ -535,6 +541,12 @@ class Service extends CI_Controller {
         if(isset($type) AND $type == ''){
             $validation = $validation && false;
             $validation_text.= '<li>'.MultiLang('type').' '.MultiLang('required').'</li>';
+        }else{
+            $check = $this->data->checkServiceTypeExist($type, $id);
+            if(!empty($check->id)){
+                $validation = $validation && false;
+                $validation_text.= '<li>'.MultiLang('type').' '.MultiLang('existed').'</li>';
+            }
         }
 
         if(!isset($status) AND $status == ''){
