@@ -58,7 +58,7 @@
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url();?>whoweare" class="nav-link">
+                            <a href="<?php echo base_url();?>whoweare" class="nav-link <?php echo ($active_menu == 'whoweare' ? 'active' : ''); ?>">
                                 <i class="fas fa-users nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('who_we_are'); ?></p>
                             </a>

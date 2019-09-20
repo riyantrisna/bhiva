@@ -254,7 +254,16 @@ class Service extends CI_Controller {
             $check = $this->data->checkServiceTypeExist($type);
             if(!empty($check->id)){
                 $validation = $validation && false;
-                $validation_text.= '<li>'.MultiLang('type').' '.MultiLang('existed').'</li>';
+                if($type == 0){
+                    $type_text = MultiLang('information');
+                }elseif($type == 1){
+                    $type_text = MultiLang('tour_packages');
+                }elseif($type == 2){
+                    $type_text = MultiLang('ticket');
+                }elseif($type == 3){
+                    $type_text = MultiLang('venue');
+                }
+                $validation_text.= '<li>'.MultiLang('type').' <b>'.$type_text.'</b> '.MultiLang('existed').'</li>';
             }
         }
 
@@ -545,7 +554,16 @@ class Service extends CI_Controller {
             $check = $this->data->checkServiceTypeExist($type, $id);
             if(!empty($check->id)){
                 $validation = $validation && false;
-                $validation_text.= '<li>'.MultiLang('type').' '.MultiLang('existed').'</li>';
+                if($type == 0){
+                    $type_text = MultiLang('information');
+                }elseif($type == 1){
+                    $type_text = MultiLang('tour_packages');
+                }elseif($type == 2){
+                    $type_text = MultiLang('ticket');
+                }elseif($type == 3){
+                    $type_text = MultiLang('venue');
+                }
+                $validation_text.= '<li>'.MultiLang('type').' <b>'.$type_text.'</b> '.MultiLang('existed').'</li>';
             }
         }
 

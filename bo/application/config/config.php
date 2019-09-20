@@ -534,3 +534,5 @@ $config['path_slider'] = $config['base_url'].'files/images/slider/';
 $config['path_slider_upload'] = 'files/images/slider/';
 $config['path_service'] = $config['base_url'].'files/images/service/';
 $config['path_service_upload'] = 'files/images/service/';
+$config['path_whoweare'] = $config['base_url'].'files/images/whoweare/';
+$config['path_whoweare_upload'] = 'files/images/whoweare/';

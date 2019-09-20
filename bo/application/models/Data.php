@@ -1130,4 +1130,71 @@ class Data extends CI_Model {
         }
     }
 
+    //whoweare
+    public function getDetailWhoweare($id){
+
+        $query = "
+                SELECT
+                    a.`whoweare_id` AS `id`,
+                    a.`whoweare_img` AS `img`,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `cms_whoweare` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND a.`whoweare_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailWhoweareText($id){
+
+        $query = "
+                SELECT
+                    a.`whowearetext_whoweare_id` AS `whoweare_id`,
+                    a.`whowearetext_lang` AS `lang`,
+                    a.`whowearetext_text` AS `text`
+                FROM
+                    `cms_whoweare_text` a
+                WHERE 1 = 1
+                AND a.`whowearetext_whoweare_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function updateWhoweare($data, $id, $content){
+        $this->default->trans_begin();
+
+        $this->default->where('whoweare_id', $id);
+        $this->default->update('cms_whoweare',$data);
+
+        $this->default->where('whowearetext_whoweare_id', $id);
+        $this->default->delete('cms_whoweare_text');
+
+        if(!empty($content)){
+            foreach ($content as $key => $value) {
+                $data = array(
+                    'whowearetext_whoweare_id' => $id,
+                    'whowearetext_lang' => $key,
+                    'whowearetext_text' => $value
+                );
+                $this->default->insert('cms_whoweare_text',$data);
+            }
+        }
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
 }
