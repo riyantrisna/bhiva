@@ -74,7 +74,7 @@
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url();?>privacypolicy" class="nav-link">
+                            <a href="<?php echo base_url();?>privacypolicy" class="nav-link <?php echo ($active_menu == 'privacypolicy' ? 'active' : ''); ?>">
                                 <i class="fas fa-user-shield nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('privacy_policy'); ?></p>
                             </a>
@@ -82,7 +82,7 @@
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url();?>termcondition" class="nav-link">
+                            <a href="<?php echo base_url();?>termcondition" class="nav-link <?php echo ($active_menu == 'termcondition' ? 'active' : ''); ?>">
                                 <i class="fas fa-file-signature nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('term_and_condition'); ?></p>
                             </a>
@@ -191,3 +191,14 @@ $.widget.bridge('uibutton', $.ui.button)
 <script src="assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <!-- Datepicker -->
 <script src="assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+<script>
+$(document).ready(function() {
+    setInterval(() => {
+        $.post("<?php echo site_url('login/get_session_login');?>", function(data) {
+            if(data == '0'){
+                window.location.href = "<?php echo base_url(); ?>";
+            }
+        });
+    }, (1000 * 60 * 10));
+});
+</script>

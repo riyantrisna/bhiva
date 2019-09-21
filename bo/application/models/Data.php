@@ -1243,4 +1243,136 @@ class Data extends CI_Model {
         }
     }
 
+    //privacypolicy
+    public function getDetailPrivacypolicy($id){
+
+        $query = "
+                SELECT
+                    a.`privacypolicy_id` AS `id`,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `cms_privacypolicy` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND a.`privacypolicy_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailPrivacypolicyText($id){
+
+        $query = "
+                SELECT
+                    a.`privacypolicytext_privacypolicy_id` AS `privacypolicy_id`,
+                    a.`privacypolicytext_lang` AS `lang`,
+                    a.`privacypolicytext_text` AS `text`
+                FROM
+                    `cms_privacypolicy_text` a
+                WHERE 1 = 1
+                AND a.`privacypolicytext_privacypolicy_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function updatePrivacypolicy($data, $id, $content){
+        $this->default->trans_begin();
+
+        $this->default->where('privacypolicy_id', $id);
+        $this->default->update('cms_privacypolicy',$data);
+
+        $this->default->where('privacypolicytext_privacypolicy_id', $id);
+        $this->default->delete('cms_privacypolicy_text');
+
+        if(!empty($content)){
+            foreach ($content as $key => $value) {
+                $data = array(
+                    'privacypolicytext_privacypolicy_id' => $id,
+                    'privacypolicytext_lang' => $key,
+                    'privacypolicytext_text' => $value
+                );
+                $this->default->insert('cms_privacypolicy_text',$data);
+            }
+        }
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    //termcondition
+    public function getDetailTermcondition($id){
+
+        $query = "
+                SELECT
+                    a.`termcondition_id` AS `id`,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `cms_termcondition` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND a.`termcondition_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTermconditionText($id){
+
+        $query = "
+                SELECT
+                    a.`termconditiontext_termcondition_id` AS `termcondition_id`,
+                    a.`termconditiontext_lang` AS `lang`,
+                    a.`termconditiontext_text` AS `text`
+                FROM
+                    `cms_termcondition_text` a
+                WHERE 1 = 1
+                AND a.`termconditiontext_termcondition_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function updateTermcondition($data, $id, $content){
+        $this->default->trans_begin();
+
+        $this->default->where('termcondition_id', $id);
+        $this->default->update('cms_termcondition',$data);
+
+        $this->default->where('termconditiontext_termcondition_id', $id);
+        $this->default->delete('cms_termcondition_text');
+
+        if(!empty($content)){
+            foreach ($content as $key => $value) {
+                $data = array(
+                    'termconditiontext_termcondition_id' => $id,
+                    'termconditiontext_lang' => $key,
+                    'termconditiontext_text' => $value
+                );
+                $this->default->insert('cms_termcondition_text',$data);
+            }
+        }
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
 }

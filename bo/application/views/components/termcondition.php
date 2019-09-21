@@ -5,7 +5,7 @@
             <div class="col-sm-12">
                 <ol class="breadcrumb float-sm-left">
                     <li class="breadcrumb-item"><?php echo MultiLang('cms'); ?></li>
-                    <li class="breadcrumb-item active"><?php echo MultiLang('contact'); ?></li>
+                    <li class="breadcrumb-item active"><?php echo MultiLang('term_and_condition'); ?></li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -23,8 +23,8 @@
                     <button type="button" class="btn btn-primary float-right" id="btnSave" onclick="save()"><?php echo MultiLang('save'); ?></button>
                 </div>
                 <div class="card-body">
-                    <div id="box_msg_contact"></div>
-                    <form id="form_contact" autocomplete="nope">
+                    <div id="box_msg_termcondition"></div>
+                    <form id="form_termcondition" autocomplete="nope">
                         <?php echo $html; ?>
                     </form>
                 </div>
@@ -40,19 +40,11 @@
 
 <script>
 
-function isNumber(evt) {
-    evt = (evt) ? evt : window.event;
-    var charCode = (evt.which) ? evt.which : evt.keyCode;
-    if ( (charCode > 31 && charCode < 48) || charCode > 57) {
-        return false;
-    }
-    return true;
-}
 
 var table;
 
 $(document).ready(function() {
-    $("#box_msg_contact").html('').hide();
+    $("#box_msg_termcondition").html('').hide();
     $('#btnSave').text('<?php echo MultiLang('save'); ?>');
     $('#btnSave').attr('disabled',false);
     $('#btnSave2').text('<?php echo MultiLang('save'); ?>');
@@ -74,72 +66,31 @@ $(document).ready(function() {
             
 });
 
-
-function readURL(input) {
-
-    var fileTypes = ['jpg', 'jpeg', 'png', 'gif', 'JPG', 'JPEG', 'PNG', 'GIF'];
-
-    $('.msg_images').html('');
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        
-        if(input.files[0].size <= 1024000){
-
-            var extension = input.files[0].name.split('.').pop().toLowerCase(),
-            isSuccess = fileTypes.indexOf(extension) > -1;
-
-            if(isSuccess){
-                reader.onload = function (e) {
-                    $('#label_images').hide();
-                    $('#show_images').attr('src', e.target.result).fadeOut().fadeIn();
-                    $('#file_image_value').val(e.target.result);
-                    $('#remove').show();
-                };
-                reader.readAsDataURL(input.files[0]);
-            }else{
-                $('#msg_images').html('<?php echo MultiLang('allowed_file_is'); ?> jpg, JPG, jpeg, JPEG, png, PNG, gif, GIF');
-            }
-        }else{
-            $('#msg_images').html('<?php echo MultiLang('max_file_is'); ?> 1024KB');
-        }
-    }
-}
-
-function removeImage()
-{
-    $('#label_images').show();
-    $('#show_images').removeAttr('src').hide();
-    $('#file_image_value').val('');
-    $('#remove').hide();
-    $('.msg_images').html('');
-}
-
 function save()
 {
     $('#btnSave').text('<?php echo MultiLang('process'); ?>...'); //change button text
     $('#btnSave').attr('disabled',true); //set button disable 
     $('#btnSave2').text('<?php echo MultiLang('process'); ?>...'); //change button text
     $('#btnSave2').attr('disabled',true); //set button disable 
-    var url = "<?php echo site_url('contact/edit')?>";
+    var url = "<?php echo site_url('termcondition/edit')?>";
     
     $.ajax({
         url : url,
         type: "POST",
-        data: $('#form_contact').serialize(),
+        data: $('#form_termcondition').serialize(),
         dataType: "json",
         success: async function(data, textStatus, xhr)
         {
             if(xhr.status == '200'){
                 if(data.status)
                 { 
-                    $("#box_msg_contact").html('').hide();
-                    $("#file_image_value_old").val(data.new_file);
+                    $("#box_msg_termcondition").html('').hide();
                     await toastr.success(data.message);
                     $('html').animate({ scrollTop: 0 }, 'slow');
                 }
                 else
                 {
-                    await $('#box_msg_contact').html(data.message).fadeOut().fadeIn();
+                    await $('#box_msg_termcondition').html(data.message).fadeOut().fadeIn();
                     $('html').animate({ scrollTop: 0 }, 'slow');
                 }
             }else{

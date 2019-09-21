@@ -266,8 +266,8 @@ class Language extends CI_Controller {
 
         $data->icon_file = $data->icon;
         $data->icon = $path_language.$data->icon;
-        $data->inserted = (!empty($data->insert_user) ? $data->insert_user.',' : '').' '.($this->data->getDateIndo($data->insert_datetime));
-        $data->updated = (!empty($data->update_user) ? $data->update_user.',' : '').' '.($this->data->getDateIndo($data->update_datetime));
+        $data->inserted = (!empty($data->insert_user) ? $data->insert_user.',' : '').' '.($this->data->getDatetimeIndo($data->insert_datetime));
+        $data->updated = (!empty($data->update_user) ? $data->update_user.',' : '').' '.($this->data->getDatetimeIndo($data->update_datetime));
         echo json_encode($data);
     }
 

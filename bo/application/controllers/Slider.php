@@ -578,11 +578,11 @@ class Slider extends CI_Controller {
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="inserted">'.MultiLang('inserted').'</label>';
-        $html.=     '<div>'.(!empty($detail->insert_user) ? $detail->insert_user.',' : '').' '.($this->data->getDateIndo($detail->insert_datetime)).'</div>';
+        $html.=     '<div>'.(!empty($detail->insert_user) ? $detail->insert_user.',' : '').' '.($this->data->getDatetimeIndo($detail->insert_datetime)).'</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="updated">'.MultiLang('updated').'</label>';
-        $html.=     '<div>'.(!empty($detail->update_user) ? $detail->update_user.',' : '').' '.($this->data->getDateIndo($detail->update_datetime)).'</div>';
+        $html.=     '<div>'.(!empty($detail->update_user) ? $detail->update_user.',' : '').' '.($this->data->getDatetimeIndo($detail->update_datetime)).'</div>';
         $html.= '</div>';
 
         $data['html'] = $html;
