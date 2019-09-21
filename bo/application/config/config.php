@@ -536,3 +536,5 @@ $config['path_service'] = $config['base_url'].'files/images/service/';
 $config['path_service_upload'] = 'files/images/service/';
 $config['path_whoweare'] = $config['base_url'].'files/images/whoweare/';
 $config['path_whoweare_upload'] = 'files/images/whoweare/';
+$config['path_contact'] = $config['base_url'].'files/images/contact/';
+$config['path_contact_upload'] = 'files/images/contact/';

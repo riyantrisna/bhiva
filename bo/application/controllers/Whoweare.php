@@ -63,7 +63,7 @@ class Whoweare extends CI_Controller {
             foreach ($lang as $key => $value) {
                 foreach ($detail_text as $k => $v) {
                     if($value->code == $v->lang){
-        $html.=     '<img src="'.$path_language.$value->icon.'" style="max-width:18px;" /> ('.$value->name.')&nbsp;';
+        $html.=     '<img src="'.$path_language.$value->icon.'" style="max-width:18px;" /> ('.$value->name.')&nbsp;*';
         $html.=     '<textarea id="content_<?php echo $value->code;?>" name="content['.$value->code.']" class="form-control textarea">'.$v->text.'</textarea>';
         $html.=     '<input type="hidden" id="content_name_<?php echo $value->code;?>" name="content_name['.$value->code.']" value="'.$value->name.'" >';
         $html.=     '<br>';
@@ -71,6 +71,14 @@ class Whoweare extends CI_Controller {
                 }
             }
         }
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="inserted">'.MultiLang('inserted').'</label>';
+        $html.=     '<div>'.(!empty($detail->insert_user) ? $detail->insert_user.',' : '').' '.($this->data->getDateIndo($detail->insert_datetime)).'</div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="updated">'.MultiLang('updated').'</label>';
+        $html.=     '<div>'.(!empty($detail->update_user) ? $detail->update_user.',' : '').' '.($this->data->getDateIndo($detail->update_datetime)).'</div>';
         $html.= '</div>';
         $data['html'] = $html;
 

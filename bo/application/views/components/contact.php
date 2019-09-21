@@ -23,8 +23,8 @@
                     <button type="button" class="btn btn-primary float-right" id="btnSave" onclick="save()"><?php echo MultiLang('save'); ?></button>
                 </div>
                 <div class="card-body">
-                    <div id="box_msg_whoweare"></div>
-                    <form id="form_whoweare" autocomplete="nope">
+                    <div id="box_msg_contact"></div>
+                    <form id="form_contact" autocomplete="nope">
                         <?php echo $html; ?>
                     </form>
                 </div>
@@ -40,11 +40,19 @@
 
 <script>
 
+function isNumber(evt) {
+    evt = (evt) ? evt : window.event;
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if ( (charCode > 31 && charCode < 48) || charCode > 57) {
+        return false;
+    }
+    return true;
+}
 
 var table;
 
 $(document).ready(function() {
-    $("#box_msg_whoweare").html('').hide();
+    $("#box_msg_contact").html('').hide();
     $('#btnSave').text('<?php echo MultiLang('save'); ?>');
     $('#btnSave').attr('disabled',false);
     $('#btnSave2').text('<?php echo MultiLang('save'); ?>');
@@ -112,26 +120,26 @@ function save()
     $('#btnSave').attr('disabled',true); //set button disable 
     $('#btnSave2').text('<?php echo MultiLang('process'); ?>...'); //change button text
     $('#btnSave2').attr('disabled',true); //set button disable 
-    var url = "<?php echo site_url('whoweare/edit')?>";
+    var url = "<?php echo site_url('contact/edit')?>";
     
     $.ajax({
         url : url,
         type: "POST",
-        data: $('#form_whoweare').serialize(),
+        data: $('#form_contact').serialize(),
         dataType: "json",
         success: async function(data, textStatus, xhr)
         {
             if(xhr.status == '200'){
                 if(data.status)
                 { 
-                    $("#box_msg_whoweare").html('').hide();
+                    $("#box_msg_contact").html('').hide();
                     $("#file_image_value_old").val(data.new_file);
                     await toastr.success(data.message);
                     $('html').animate({ scrollTop: 0 }, 'slow');
                 }
                 else
                 {
-                    await $('#box_msg_whoweare').html(data.message).fadeOut().fadeIn();
+                    await $('#box_msg_contact').html(data.message).fadeOut().fadeIn();
                     $('html').animate({ scrollTop: 0 }, 'slow');
                 }
             }else{

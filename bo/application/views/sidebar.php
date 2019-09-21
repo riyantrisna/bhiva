@@ -66,7 +66,7 @@
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url();?>contact" class="nav-link">
+                            <a href="<?php echo base_url();?>contact" class="nav-link <?php echo ($active_menu == 'contact' ? 'active' : ''); ?>">
                                 <i class="fas fa-id-card nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('contact'); ?></p>
                             </a>

@@ -1197,4 +1197,50 @@ class Data extends CI_Model {
         }
     }
 
+    //contact
+    public function getDetailContact($id){
+
+        $query = "
+                SELECT
+                    a.`contact_id` AS `id`,
+                    a.`contact_address` AS `address`,
+                    a.`contact_email` AS `email`,
+                    a.`contact_phone` AS `phone`,
+                    a.`contact_wa` AS `wa`,
+                    a.`contact_fb` AS `fb`,
+                    a.`contact_ig` AS `ig`,
+                    a.`contact_twitter` AS `twitter`,
+                    a.`contact_img_maps` AS `img_maps`,
+                    a.`contact_link_maps` AS `link_maps`,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `cms_contact` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND a.`contact_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function updateContact($data, $id){
+        $this->default->trans_begin();
+
+        $this->default->where('contact_id', $id);
+        $this->default->update('cms_contact',$data);
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
 }

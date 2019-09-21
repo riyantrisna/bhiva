@@ -576,6 +576,14 @@ class Slider extends CI_Controller {
         $html.=     '<label for="order">'.MultiLang('image').'</label>';
         $html.=     '<center><img src="'.(empty($detail->img) ? $path_slider.'no-image-available.jpg' : $path_slider.$detail->img).'" style="width:360px; height:200px; border:1px dashed #C3C3C3;" /></center>';
         $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="inserted">'.MultiLang('inserted').'</label>';
+        $html.=     '<div>'.(!empty($detail->insert_user) ? $detail->insert_user.',' : '').' '.($this->data->getDateIndo($detail->insert_datetime)).'</div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="updated">'.MultiLang('updated').'</label>';
+        $html.=     '<div>'.(!empty($detail->update_user) ? $detail->update_user.',' : '').' '.($this->data->getDateIndo($detail->update_datetime)).'</div>';
+        $html.= '</div>';
 
         $data['html'] = $html;
         
