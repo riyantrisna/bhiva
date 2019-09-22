@@ -55,9 +55,9 @@ class Slider extends CI_Controller {
                 $row[] = ($value->status == 1) ? MultiLang('active') : MultiLang('not_active');
     
                 //add html for action
-                $row[] = '<a class="btn btn-sm btn-info" href="javascript:void(0)" title="Detail" onclick="detail(\''.$value->id.'\')"><i class="fas fa-search"></i></a>
-                        <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Ubah" onclick="edit('."'".$value->id."'".')"><i class="fas fa-edit"></i></a>
-                        <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="deletes('."'".$value->id."','".$value->title."'".')"><i class="fas fa-trash-alt"></i></a>';
+                $row[] = '<a class="btn btn-sm btn-info" href="javascript:void(0)" title="'.MultiLang('detail').'" onclick="detail(\''.$value->id.'\')"><i class="fas fa-search"></i></a>
+                        <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="'.MultiLang('edit').'" onclick="edit('."'".$value->id."'".')"><i class="fas fa-edit"></i></a>
+                        <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="'.MultiLang('delete').'" onclick="deletes('."'".$value->id."','".$value->title."'".')"><i class="fas fa-trash-alt"></i></a>';
             
                 $data[] = $row;
             }
