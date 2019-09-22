@@ -50,7 +50,7 @@
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url();?>gallery" class="nav-link">
+                            <a href="<?php echo base_url();?>gallery" class="nav-link <?php echo ($active_menu == 'gallery' ? 'active' : ''); ?>">
                                 <i class="fas fa-images nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('gallery'); ?></p>
                             </a>

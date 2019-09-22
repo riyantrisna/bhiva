@@ -1375,4 +1375,374 @@ class Data extends CI_Model {
         }
     }
 
+
+    // gallery
+    public function getAllGallery($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(b.`gallerytext_title`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`gallery_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`gallery_status`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT
+                    a.`gallery_id` AS `id`,
+                    a.`gallery_img` AS `img`,
+                    a.`gallery_order` AS `order`,
+                    a.`gallery_status` AS `status`,
+                    b.`gallerytext_title` AS `title`
+                FROM
+                    `cms_gallery` a
+                    LEFT JOIN `cms_gallery_text` b ON b.`gallerytext_gallery_id` = a.`gallery_id` AND b.`gallerytext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+                AND  a.`gallery_type` = 1
+        ";
+        $query.= $str;
+        $query .= " ORDER BY $order $dir ";
+        if (isset($start) AND $start != '') {
+            $query .= " LIMIT $start, $length";
+        }
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllGallery($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(b.`gallerytext_title`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`gallery_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`gallery_status`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT 
+                    COUNT(DISTINCT a.`gallery_id`) AS total
+                FROM 
+                    `cms_gallery` a
+                    LEFT JOIN `cms_gallery_text` b ON b.`gallerytext_gallery_id` = a.`gallery_id` AND b.`gallerytext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+                AND  a.`gallery_type` = 1
+                ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailGallery($id){
+
+        $query = "
+                SELECT
+                    a.`gallery_id` AS `id`,
+                    a.`gallery_img` AS `img`,
+                    a.`gallery_order` AS `order`,
+                    a.`gallery_status` AS `status`,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `cms_gallery` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND  a.`gallery_type` = 1
+                AND a.`gallery_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailGalleryText($id){
+
+        $query = "
+                SELECT
+                    a.`gallerytext_gallery_id` AS `gallery_id`,
+                    a.`gallerytext_lang` AS `lang`,
+                    a.`gallerytext_title` AS `title`
+                FROM
+                    `cms_gallery_text` a
+                WHERE 1 = 1
+                AND a.`gallerytext_gallery_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function addGallery($data, $title){
+        $this->default->trans_begin();
+
+        $this->default->insert('cms_gallery',$data);
+        $gallery_id = $this->default->insert_id();
+
+        if(!empty($title)){
+            foreach ($title as $key => $value) {
+                $data = array(
+                    'gallerytext_gallery_id' => $gallery_id,
+                    'gallerytext_lang' => $key,
+                    'gallerytext_title' => $value
+                );
+                $this->default->insert('cms_gallery_text',$data);
+            }
+        }
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function updateGallery($data, $id, $title){
+        $this->default->trans_begin();
+
+        $this->default->where('gallery_id', $id);
+        $this->default->update('cms_gallery',$data);
+
+        $this->default->where('gallerytext_gallery_id', $id);
+        $this->default->delete('cms_gallery_text');
+
+        if(!empty($title)){
+            foreach ($title as $key => $value) {
+                $data = array(
+                    'gallerytext_gallery_id' => $id,
+                    'gallerytext_lang' => $key,
+                    'gallerytext_title' => $value
+                );
+                $this->default->insert('cms_gallery_text',$data);
+            }
+        }
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function deleteGallery($id){
+        $this->default->trans_begin();
+        $this->default->where('gallerytext_gallery_id', $id);
+        $this->default->delete('cms_gallery_text');
+        $this->default->where('gallery_id', $id);
+        $this->default->delete('cms_gallery');
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    // gallery images
+    public function getAllGalleryImages($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(b.`gallerytext_title`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`gallery_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`gallery_status`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT
+                    a.`gallery_id` AS `id`,
+                    a.`gallery_img` AS `img`,
+                    a.`gallery_order` AS `order`,
+                    a.`gallery_status` AS `status`,
+                    b.`gallerytext_title` AS `title`
+                FROM
+                    `cms_gallery` a
+                    LEFT JOIN `cms_gallery_text` b ON b.`gallerytext_gallery_id` = a.`gallery_id` AND b.`gallerytext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+                AND  a.`gallery_type` = 2
+                AND  a.`gallery_parent_id` = $id
+        ";
+        $query.= $str;
+        $query .= " ORDER BY $order $dir ";
+        if (isset($start) AND $start != '') {
+            $query .= " LIMIT $start, $length";
+        }
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllGalleryImages($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(b.`gallerytext_title`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`gallery_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`gallery_status`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT 
+                    COUNT(DISTINCT a.`gallery_id`) AS total
+                FROM 
+                    `cms_gallery` a
+                    LEFT JOIN `cms_gallery_text` b ON b.`gallerytext_gallery_id` = a.`gallery_id` AND b.`gallerytext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+                AND  a.`gallery_type` = 2
+                AND  a.`gallery_parent_id` = $id
+                ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailGalleryTitle($id){
+
+        $query = "
+                SELECT
+                    a.`gallery_id` AS `id`,
+                    a.`gallery_img` AS `img`,
+                    a.`gallery_order` AS `order`,
+                    a.`gallery_status` AS `status`,
+                    b.`gallerytext_title` AS `title`
+                FROM
+                    `cms_gallery` a
+                    LEFT JOIN `cms_gallery_text` b ON b.`gallerytext_gallery_id` = a.`gallery_id` AND b.`gallerytext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+                AND  a.`gallery_id` = $id
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailGalleryImages($id){
+
+        $query = "
+                SELECT
+                    a.`gallery_id` AS `id`,
+                    a.`gallery_img` AS `img`,
+                    a.`gallery_order` AS `order`,
+                    a.`gallery_status` AS `status`,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `cms_gallery` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND  a.`gallery_type` = 2
+                AND a.`gallery_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailGalleryImagesText($id){
+
+        $query = "
+                SELECT
+                    a.`gallerytext_gallery_id` AS `gallery_id`,
+                    a.`gallerytext_lang` AS `lang`,
+                    a.`gallerytext_title` AS `title`
+                FROM
+                    `cms_gallery_text` a
+                WHERE 1 = 1
+                AND a.`gallerytext_gallery_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function addGalleryImages($data, $title){
+        $this->default->trans_begin();
+
+        $this->default->insert('cms_gallery',$data);
+        $gallery_id = $this->default->insert_id();
+
+        if(!empty($title)){
+            foreach ($title as $key => $value) {
+                $data = array(
+                    'gallerytext_gallery_id' => $gallery_id,
+                    'gallerytext_lang' => $key,
+                    'gallerytext_title' => $value
+                );
+                $this->default->insert('cms_gallery_text',$data);
+            }
+        }
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function updateGalleryImages($data, $id, $title){
+        $this->default->trans_begin();
+
+        $this->default->where('gallery_id', $id);
+        $this->default->update('cms_gallery',$data);
+
+        $this->default->where('gallerytext_gallery_id', $id);
+        $this->default->delete('cms_gallery_text');
+
+        if(!empty($title)){
+            foreach ($title as $key => $value) {
+                $data = array(
+                    'gallerytext_gallery_id' => $id,
+                    'gallerytext_lang' => $key,
+                    'gallerytext_title' => $value
+                );
+                $this->default->insert('cms_gallery_text',$data);
+            }
+        }
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function deleteGalleryImages($id){
+        $this->default->trans_begin();
+        $this->default->where('gallerytext_gallery_id', $id);
+        $this->default->delete('cms_gallery_text');
+        $this->default->where('gallery_id', $id);
+        $this->default->delete('cms_gallery');
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
 }

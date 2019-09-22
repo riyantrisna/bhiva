@@ -538,3 +538,5 @@ $config['path_whoweare'] = $config['base_url'].'files/images/whoweare/';
 $config['path_whoweare_upload'] = 'files/images/whoweare/';
 $config['path_contact'] = $config['base_url'].'files/images/contact/';
 $config['path_contact_upload'] = 'files/images/contact/';
+$config['path_gallery'] = $config['base_url'].'files/images/gallery/';
+$config['path_gallery_upload'] = 'files/images/gallery/';
