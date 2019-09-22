@@ -540,3 +540,5 @@ $config['path_contact'] = $config['base_url'].'files/images/contact/';
 $config['path_contact_upload'] = 'files/images/contact/';
 $config['path_gallery'] = $config['base_url'].'files/images/gallery/';
 $config['path_gallery_upload'] = 'files/images/gallery/';
+$config['path_destination'] = $config['base_url'].'files/images/destination/';
+$config['path_destination_upload'] = 'files/images/destination/';

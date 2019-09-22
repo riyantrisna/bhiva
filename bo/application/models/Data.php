@@ -1745,4 +1745,224 @@ class Data extends CI_Model {
         }
     }
 
+    // destination
+    public function getAllDestination($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(b.`destinationtext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(b.`destinationtext_text`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`destination_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT
+                    a.`destination_id` AS `id`,
+                    a.`destination_status` AS `status`,
+                    b.`destinationtext_name` AS `name`,
+                    b.`destinationtext_text` AS `text`
+                FROM
+                    `mst_destination` a
+                    LEFT JOIN `mst_destination_text` b ON b.`destinationtext_destination_id` = a.`destination_id` AND b.`destinationtext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+        ";
+        $query.= $str;
+        $query .= " ORDER BY $order $dir ";
+        if (isset($start) AND $start != '') {
+            $query .= " LIMIT $start, $length";
+        }
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllDestination($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(b.`destinationtext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(b.`destinationtext_text`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`destination_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT 
+                    COUNT(DISTINCT a.`destination_id`) AS total
+                FROM 
+                `mst_destination` a
+                LEFT JOIN `mst_destination_text` b ON b.`destinationtext_destination_id` = a.`destination_id` AND b.`destinationtext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+                ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailDestination($id){
+
+        $query = "
+                SELECT
+                    a.`destination_id` AS `id`,
+                    a.`destination_status` AS `status`,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `mst_destination` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND a.`destination_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailDestinationText($id){
+
+        $query = "
+                SELECT
+                    a.`destinationtext_destination_id` AS `destination_id`,
+                    a.`destinationtext_lang` AS `lang`,
+                    a.`destinationtext_name` AS `name`,
+                    a.`destinationtext_text` AS `text`
+                FROM
+                    `mst_destination_text` a
+                WHERE 1 = 1
+                AND a.`destinationtext_destination_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getDetailDestinationImages($id){
+
+        $query = "
+                SELECT
+                    a.`destinationimg_destination_id` AS `destination_id`,
+                    a.`destinationimg_order` AS `order`,
+                    a.`destinationimg_img` AS `img`
+                FROM
+                    `mst_destination_img` a
+                WHERE 1 = 1
+                AND a.`destinationimg_destination_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function addDestination($data, $name, $content, $images){
+        $this->default->trans_begin();
+
+        $this->default->insert('mst_destination',$data);
+        $destination_id = $this->default->insert_id();
+
+        if(!empty($name)){
+            foreach ($name as $key => $value) {
+                $data = array(
+                    'destinationtext_destination_id' => $destination_id,
+                    'destinationtext_lang' => $key,
+                    'destinationtext_name' => $value,
+                    'destinationtext_text' => $content[$key]
+                );
+                $this->default->insert('mst_destination_text',$data);
+            }
+        }
+
+        if(!empty($images)){
+            foreach ($images as $key => $value) {
+                $data = array(
+                    'destinationimg_destination_id' => $destination_id,
+                    'destinationimg_order' => $key,
+                    'destinationimg_img' => $value
+                );
+                $this->default->insert('mst_destination_img',$data);
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function updateDestination($data, $id, $name, $content, $images){
+        $this->default->trans_begin();
+
+        $this->default->where('destination_id', $id);
+        $this->default->update('mst_destination',$data);
+
+        $this->default->where('destinationtext_destination_id', $id);
+        $this->default->delete('mst_destination_text');
+        
+        $this->default->where('destinationimg_destination_id', $id);
+        $this->default->delete('mst_destination_img');
+
+        if(!empty($name)){
+            foreach ($name as $key => $value) {
+                $data = array(
+                    'destinationtext_destination_id' => $id,
+                    'destinationtext_lang' => $key,
+                    'destinationtext_name' => $value,
+                    'destinationtext_text' => $content[$key]
+                );
+                $this->default->insert('mst_destination_text',$data);
+            }
+        }
+
+        if(!empty($images)){
+            foreach ($images as $key => $value) {
+                $data = array(
+                    'destinationimg_destination_id' => $id,
+                    'destinationimg_order' => $key,
+                    'destinationimg_img' => $value
+                );
+                $this->default->insert('mst_destination_img',$data);
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function deleteDestination($id){
+        $this->default->trans_begin();
+
+        $this->default->where('destinationtext_destination_id', $id);
+        $this->default->delete('mst_destination_text');
+        
+        $this->default->where('destinationimg_destination_id', $id);
+        $this->default->delete('mst_destination_img');
+
+        $this->default->where('destination_id', $id);
+        $this->default->delete('mst_destination');
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
 }

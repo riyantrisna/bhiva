@@ -90,8 +90,8 @@
                     </ul>
                 </li>
 
-                <li class="nav-item has-treeview">
-                    <a href="<?php echo base_url();?>" class="nav-link">
+                <li class="nav-item has-treeview <?php echo ($active_menu_parent == 'master_data' ? 'menu-open' : ''); ?>">
+                    <a href="<?php echo base_url();?>" class="nav-link <?php echo ($active_menu_parent == 'master_data' ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-hdd"></i>
                         <p>
                             <?php echo MultiLang('master_data'); ?>
@@ -100,7 +100,7 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url();?>destination" class="nav-link">
+                            <a href="<?php echo base_url();?>destination" class="nav-link <?php echo ($active_menu == 'destination' ? 'active' : ''); ?>">
                                 <i class="fas fa-map-marked-alt nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('destination'); ?></p>
                             </a>
