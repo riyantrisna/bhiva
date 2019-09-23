@@ -1965,4 +1965,225 @@ class Data extends CI_Model {
         }
     }
 
+
+    // venue
+    public function getAllVenue($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(b.`venuetext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(b.`venuetext_text`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`venue_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT
+                    a.`venue_id` AS `id`,
+                    a.`venue_status` AS `status`,
+                    b.`venuetext_name` AS `name`,
+                    b.`venuetext_text` AS `text`
+                FROM
+                    `mst_venue` a
+                    LEFT JOIN `mst_venue_text` b ON b.`venuetext_venue_id` = a.`venue_id` AND b.`venuetext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+        ";
+        $query.= $str;
+        $query .= " ORDER BY $order $dir ";
+        if (isset($start) AND $start != '') {
+            $query .= " LIMIT $start, $length";
+        }
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllVenue($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(b.`venuetext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(b.`venuetext_text`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`venue_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT 
+                    COUNT(DISTINCT a.`venue_id`) AS total
+                FROM 
+                `mst_venue` a
+                LEFT JOIN `mst_venue_text` b ON b.`venuetext_venue_id` = a.`venue_id` AND b.`venuetext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+                ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailVenue($id){
+
+        $query = "
+                SELECT
+                    a.`venue_id` AS `id`,
+                    a.`venue_status` AS `status`,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `mst_venue` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND a.`venue_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailVenueText($id){
+
+        $query = "
+                SELECT
+                    a.`venuetext_venue_id` AS `venue_id`,
+                    a.`venuetext_lang` AS `lang`,
+                    a.`venuetext_name` AS `name`,
+                    a.`venuetext_text` AS `text`
+                FROM
+                    `mst_venue_text` a
+                WHERE 1 = 1
+                AND a.`venuetext_venue_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getDetailVenueImages($id){
+
+        $query = "
+                SELECT
+                    a.`venueimg_venue_id` AS `venue_id`,
+                    a.`venueimg_order` AS `order`,
+                    a.`venueimg_img` AS `img`
+                FROM
+                    `mst_venue_img` a
+                WHERE 1 = 1
+                AND a.`venueimg_venue_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function addVenue($data, $name, $content, $images){
+        $this->default->trans_begin();
+
+        $this->default->insert('mst_venue',$data);
+        $venue_id = $this->default->insert_id();
+
+        if(!empty($name)){
+            foreach ($name as $key => $value) {
+                $data = array(
+                    'venuetext_venue_id' => $venue_id,
+                    'venuetext_lang' => $key,
+                    'venuetext_name' => $value,
+                    'venuetext_text' => $content[$key]
+                );
+                $this->default->insert('mst_venue_text',$data);
+            }
+        }
+
+        if(!empty($images)){
+            foreach ($images as $key => $value) {
+                $data = array(
+                    'venueimg_venue_id' => $venue_id,
+                    'venueimg_order' => $key,
+                    'venueimg_img' => $value
+                );
+                $this->default->insert('mst_venue_img',$data);
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function updateVenue($data, $id, $name, $content, $images){
+        $this->default->trans_begin();
+
+        $this->default->where('venue_id', $id);
+        $this->default->update('mst_venue',$data);
+
+        $this->default->where('venuetext_venue_id', $id);
+        $this->default->delete('mst_venue_text');
+        
+        $this->default->where('venueimg_venue_id', $id);
+        $this->default->delete('mst_venue_img');
+
+        if(!empty($name)){
+            foreach ($name as $key => $value) {
+                $data = array(
+                    'venuetext_venue_id' => $id,
+                    'venuetext_lang' => $key,
+                    'venuetext_name' => $value,
+                    'venuetext_text' => $content[$key]
+                );
+                $this->default->insert('mst_venue_text',$data);
+            }
+        }
+
+        if(!empty($images)){
+            foreach ($images as $key => $value) {
+                $data = array(
+                    'venueimg_venue_id' => $id,
+                    'venueimg_order' => $key,
+                    'venueimg_img' => $value
+                );
+                $this->default->insert('mst_venue_img',$data);
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function deleteVenue($id){
+        $this->default->trans_begin();
+
+        $this->default->where('venuetext_venue_id', $id);
+        $this->default->delete('mst_venue_text');
+        
+        $this->default->where('venueimg_venue_id', $id);
+        $this->default->delete('mst_venue_img');
+
+        $this->default->where('venue_id', $id);
+        $this->default->delete('mst_venue');
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
 }

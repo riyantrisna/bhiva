@@ -105,6 +105,24 @@
                                 <p><?php echo MultiLang('destination'); ?></p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url();?>tourpackages" class="nav-link <?php echo ($active_menu == 'tourpackages' ? 'active' : ''); ?>">
+                                <i class="fas fa-layer-group nav-icon ml-4"></i>
+                                <p><?php echo MultiLang('tourpackages'); ?></p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url();?>ticket" class="nav-link <?php echo ($active_menu == 'ticket' ? 'active' : ''); ?>">
+                                <i class="fas fa-ticket-alt nav-icon ml-4"></i>
+                                <p><?php echo MultiLang('ticket'); ?></p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url();?>venue" class="nav-link <?php echo ($active_menu == 'venue' ? 'active' : ''); ?>">
+                                <i class="fas fa-place-of-worship nav-icon ml-4"></i>
+                                <p><?php echo MultiLang('venue'); ?></p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

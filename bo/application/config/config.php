@@ -542,3 +542,5 @@ $config['path_gallery'] = $config['base_url'].'files/images/gallery/';
 $config['path_gallery_upload'] = 'files/images/gallery/';
 $config['path_destination'] = $config['base_url'].'files/images/destination/';
 $config['path_destination_upload'] = 'files/images/destination/';
+$config['path_venue'] = $config['base_url'].'files/images/venue/';
+$config['path_venue_upload'] = 'files/images/venue/';
