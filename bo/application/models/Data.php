@@ -2186,4 +2186,224 @@ class Data extends CI_Model {
         }
     }
 
+    // ticket
+    public function getAllTicket($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(b.`tickettext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`ticket_base_price_local`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`ticket_base_price_foreign`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT
+                    a.`ticket_id` AS `id`,
+                    a.`ticket_base_price_local` AS `base_price_local`,
+                    a.`ticket_base_price_foreign` AS `base_price_foreign`,
+                    a.`ticket_status` AS `status`,
+                    b.`tickettext_name` AS `name`
+                FROM
+                    `mst_ticket` a
+                    LEFT JOIN `mst_ticket_text` b ON b.`tickettext_ticket_id` = a.`ticket_id` AND b.`tickettext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+        ";
+        $query.= $str;
+        $query .= " ORDER BY $order $dir ";
+        if (isset($start) AND $start != '') {
+            $query .= " LIMIT $start, $length";
+        }
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllTicket($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(b.`tickettext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`ticket_base_price_local`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`ticket_base_price_foreign`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT 
+                    COUNT(DISTINCT a.`ticket_id`) AS total
+                FROM 
+                    `mst_ticket` a
+                    LEFT JOIN `mst_ticket_text` b ON b.`tickettext_ticket_id` = a.`ticket_id` AND b.`tickettext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+                ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTicket($id){
+
+        $query = "
+                SELECT
+                    a.`ticket_id` AS `id`,
+                    a.`ticket_base_price_local` AS `base_price_local`,
+                    a.`ticket_base_price_foreign` AS `base_price_foreign`,
+                    a.`ticket_status` AS `status`,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `mst_ticket` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND a.`ticket_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTicketText($id){
+
+        $query = "
+                SELECT
+                    a.`tickettext_ticket_id` AS `ticket_id`,
+                    a.`tickettext_lang` AS `lang`,
+                    a.`tickettext_name` AS `name`
+                FROM
+                    `mst_ticket_text` a
+                WHERE 1 = 1
+                AND a.`tickettext_ticket_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getDetailTicketPrice($id){
+
+        $query = "
+                SELECT
+                    a.`ticketprice_ticket_id` AS `ticket_id`,
+                    a.`ticketprice_start` AS `start`,
+                    a.`ticketprice_end` AS `end`,
+                    a.`ticketprice_price_local` AS `price_local`,
+                    a.`ticketprice_price_foreign` AS `price_foreign`
+                FROM
+                    `mst_ticket_price` a
+                WHERE 1 = 1
+                AND a.`ticketprice_ticket_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function addTicket($data, $name, $price){
+        $this->default->trans_begin();
+
+        $this->default->insert('mst_ticket',$data);
+        $ticket_id = $this->default->insert_id();
+
+        if(!empty($name)){
+            foreach ($name as $key => $value) {
+                $data = array(
+                    'tickettext_ticket_id' => $ticket_id,
+                    'tickettext_lang' => $key,
+                    'tickettext_name' => $value
+                );
+                $this->default->insert('mst_ticket_text',$data);
+            }
+        }
+
+        if(!empty($price)){
+            foreach ($price as $key => $value) {
+                $data = array(
+                    'ticketprice_ticket_id' => $ticket_id,
+                    'ticketprice_start' => $price[$key]['start'],
+                    'ticketprice_end' => $price[$key]['end'],
+                    'ticketprice_price_local' => $price[$key]['price_local'],
+                    'ticketprice_price_foreign' => $price[$key]['price_foreign']
+                );
+                $this->default->insert('mst_ticket_price',$data);
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function updateTicket($data, $id, $name, $price){
+        $this->default->trans_begin();
+
+        $this->default->where('ticket_id', $id);
+        $this->default->update('mst_ticket',$data);
+
+        $this->default->where('tickettext_ticket_id', $id);
+        $this->default->delete('mst_ticket_text');
+        
+        $this->default->where('ticketprice_ticket_id', $id);
+        $this->default->delete('mst_ticket_price');
+
+        if(!empty($name)){
+            foreach ($name as $key => $value) {
+                $data = array(
+                    'tickettext_ticket_id' => $id,
+                    'tickettext_lang' => $key,
+                    'tickettext_name' => $value
+                );
+                $this->default->insert('mst_ticket_text',$data);
+            }
+        }
+
+        if(!empty($price)){
+            foreach ($price as $key => $value) {
+                $data = array(
+                    'ticketprice_ticket_id' => $id,
+                    'ticketprice_start' => $price[$key]['start'],
+                    'ticketprice_end' => $price[$key]['end'],
+                    'ticketprice_price_local' => $price[$key]['price_local'],
+                    'ticketprice_price_foreign' => $price[$key]['price_foreign']
+                );
+                $this->default->insert('mst_ticket_price',$data);
+            }
+        }
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function deleteTicket($id){
+        $this->default->trans_begin();
+        $this->default->where('tickettext_ticket_id', $id);
+        $this->default->delete('mst_ticket_text');
+        $this->default->where('ticketprice_ticket_id', $id);
+        $this->default->delete('mst_ticket_price');
+        $this->default->where('ticket_id', $id);
+        $this->default->delete('mst_ticket');
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
 }

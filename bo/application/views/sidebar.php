@@ -209,6 +209,8 @@ $.widget.bridge('uibutton', $.ui.button)
 <script src="assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <!-- Datepicker -->
 <script src="assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+<!-- InputMask -->
+<script src="assets/dist/js/jquery.mask.min.js"></script>
 <script>
 $(document).ready(function() {
     setInterval(() => {

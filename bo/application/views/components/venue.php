@@ -4,7 +4,7 @@
         <div class="row mb-2">
             <div class="col-sm-12">
                 <ol class="breadcrumb float-sm-left">
-                    <li class="breadcrumb-item"><?php echo MultiLang('cms'); ?></li>
+                    <li class="breadcrumb-item"><?php echo MultiLang('master_data'); ?></li>
                     <li class="breadcrumb-item active"><?php echo MultiLang('venue'); ?></li>
                 </ol>
             </div><!-- /.col -->

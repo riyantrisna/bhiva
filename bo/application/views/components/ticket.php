@@ -5,7 +5,7 @@
             <div class="col-sm-12">
                 <ol class="breadcrumb float-sm-left">
                     <li class="breadcrumb-item"><?php echo MultiLang('master_data'); ?></li>
-                    <li class="breadcrumb-item active"><?php echo MultiLang('destination'); ?></li>
+                    <li class="breadcrumb-item active"><?php echo MultiLang('ticket'); ?></li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -50,8 +50,8 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<div id="box_msg_destination"></div>
-				<form id="form_destination" autocomplete="nope">
+				<div id="box_msg_ticket"></div>
+				<form id="form_ticket" autocomplete="nope">
 					
 				</form>
 			</div>
@@ -119,14 +119,14 @@ $(document).ready(function() {
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": "<?php echo base_url(); ?>destination/data",
+            "url": "<?php echo base_url(); ?>ticket/data",
             "type": "POST"
         },
         "order": [[ 1, 'asc' ]], //Initial no order.
 
         "columnDefs": [
             { 
-                "targets": [ 0, 3 ], //last column
+                "targets": [ 0,3 ], //last column
                 "orderable": false, //set not orderable
             },
             { "targets": 3, "width": '120px' }
@@ -139,148 +139,82 @@ function reload_table()
     table.ajax.reload(null,false); //reload datatable ajax 
 }
 
-function readURL(input, i) {
-
-    var fileTypes = ['jpg', 'jpeg', 'png', 'gif', 'JPG', 'JPEG', 'PNG', 'GIF'];
-
-    $('.msg_images').html('');
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        
-        if(input.files[0].size <= 1024000){
-
-            var extension = input.files[0].name.split('.').pop().toLowerCase(),
-            isSuccess = fileTypes.indexOf(extension) > -1;
-
-            if(isSuccess){
-                reader.onload = function (e) {
-                    $('#label_images_'+i).hide();
-                    $('#show_images_'+i).attr('src', e.target.result).fadeOut().fadeIn();
-                    $('#file_image_value_'+i).val(e.target.result);
-                    $('#remove_'+i).show();
-                };
-                reader.readAsDataURL(input.files[0]);
-            }else{
-                $('#msg_images_'+i).html('<?php echo MultiLang('allowed_file_is'); ?> jpg, JPG, jpeg, JPEG, png, PNG, gif, GIF');
-            }
-        }else{
-            $('#msg_images_'+i).html('<?php echo MultiLang('max_file_is'); ?> 1024KB');
-        }
-
-        
-    }
-}
-
-function removeImage(i)
-{
-    $('#label_images_'+i).show();
-    $('#show_images_'+i).removeAttr('src').hide();
-    $('#file_image_value_'+i).val('');
-    $('#remove_'+i).hide();
-    $('.msg_images').html('');
-}
-
-async function add()
+function add()
 {
     save_method = 'add';
-    $('#modal_form').modal('show'); // show bootstrap modal
-    await $('#form_destination').html('');
-    $('#form_destination')[0].reset(); // reset form on modals
-    $("#box_msg_destination").html('').hide();
+    $('#form_ticket')[0].reset(); // reset form on modals
+    $("#box_msg_ticket").html('').hide();
     $('#btnSave').text('<?php echo MultiLang('save'); ?>');
     $('#btnSave').attr('disabled',false);
-    $('#title_form').text('<?php echo MultiLang('add'); ?> <?php echo MultiLang('destination'); ?>'); // Set Title to Bootstrap modal title
+    $('#title_form').text('<?php echo MultiLang('add'); ?> <?php echo MultiLang('ticket'); ?>'); // Set Title to Bootstrap modal title
 
     $.ajax({
-        url : "<?php echo site_url('destination/add_view/')?>",
+        url : "<?php echo site_url('ticket/add_view/')?>",
         type: "GET",
         dataType: "JSON",
         success: async function(data, textStatus, xhr)
         {
             if(xhr.status == '200'){
-                
-                await $('#form_destination').html(data.html);
-                //image
-                await $('#remove_file').hide();
-                await $('#selector_file').show();
-                await $('#file_image_show').hide();
-                await $('.textarea').summernote({
-                    height: 150,
-                    toolbar: [
-                        [ 'style', [ 'style' ] ],
-                        [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'clear'] ],
-                        [ 'fontname', [ 'fontname' ] ],
-                        [ 'fontsize', [ 'fontsize' ] ],
-                        [ 'color', [ 'color' ] ],
-                        [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
-                        [ 'table', [ 'table' ] ],
-                        [ 'view', [ 'fullscreen', 'codeview' ] ]
-                    ]
+                await $('#form_ticket').html(data.html);
+                $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
+                await $(".calendar").datepicker({
+                    format: 'yyyy-mm-dd'
                 });
             }else{
                 toastr.error(xhr.statusText);
             }
-            
+            $('#modal_form').modal('show'); // show bootstrap modal
         }
     });
 }
 
-async function edit(id)
+function edit(id)
 {
     save_method = 'edit';
-    $('#modal_form').modal('show'); // show bootstrap modal
-    await $('#form_destination').html('');
-    $('#form_destination')[0].reset(); // reset form on modals
-    $("#box_msg_destination").html('').hide();
+    $('#form_ticket')[0].reset(); // reset form on modals
+    $("#box_msg_ticket").html('').hide();
     $('#btnSave').text('<?php echo MultiLang('save'); ?>');
     $('#btnSave').attr('disabled',false);
-    $('#title_form').text('<?php echo MultiLang('edit'); ?> <?php echo MultiLang('destination'); ?>'); // Set Title to Bootstrap modal title
+    $('#title_form').text('<?php echo MultiLang('edit'); ?> <?php echo MultiLang('ticket'); ?>'); // Set Title to Bootstrap modal title
 
     $.ajax({
-        url : "<?php echo site_url('destination/edit_view/')?>/" + id,
+        url : "<?php echo site_url('ticket/edit_view/')?>/" + id,
         type: "GET",
         dataType: "JSON",
         success: async function(data, textStatus, xhr)
         {
             if(xhr.status == '200'){
-                await $('#form_destination').html(data.html);
-                await $('.textarea').summernote({
-                    height: 150,
-                    toolbar: [
-                        [ 'style', [ 'style' ] ],
-                        [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'clear'] ],
-                        [ 'fontname', [ 'fontname' ] ],
-                        [ 'fontsize', [ 'fontsize' ] ],
-                        [ 'color', [ 'color' ] ],
-                        [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
-                        [ 'table', [ 'table' ] ],
-                        [ 'view', [ 'fullscreen', 'codeview' ] ]
-                    ]
+                await $('#form_ticket').html(data.html);
+                $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
+                await $(".calendar").datepicker({
+                    format: 'yyyy-mm-dd'
                 });
             }else{
                 toastr.error(xhr.statusText);
             }
 
+            $('#modal_form').modal('show'); // show bootstrap modal
+
         }
     });
 }
 
-async function save()
+function save()
 {
-    await $('#btnSave').text('<?php echo MultiLang('process'); ?>...'); //change button text
-    await $('#btnSave').attr('disabled',true); //set button disable 
+    $('#btnSave').text('<?php echo MultiLang('process'); ?>...'); //change button text
+    $('#btnSave').attr('disabled',true); //set button disable 
     var url;
 
     if(save_method == 'add') {
-        url = "<?php echo site_url('destination/add')?>";
+        url = "<?php echo site_url('ticket/add')?>";
     } else {
-        url = "<?php echo site_url('destination/edit')?>";
+        url = "<?php echo site_url('ticket/edit')?>";
     }
 
     $.ajax({
         url : url,
         type: "POST",
-        data: $('#form_destination').serialize(),
+        data: $('#form_ticket').serialize(),
         dataType: "json",
         success: async function(data, textStatus, xhr)
         {
@@ -288,13 +222,13 @@ async function save()
                 if(data.status)
                 { 
                     $('#modal_form').modal('toggle');
-                    $("#box_msg_destination").html('').hide();
+                    $("#box_msg_ticket").html('').hide();
                     await reload_table();
                     await toastr.success(data.message);
                 }
                 else
                 {
-                    await $('#box_msg_destination').html(data.message).fadeOut().fadeIn();
+                    await $('#box_msg_ticket').html(data.message).fadeOut().fadeIn();
                     $('#modal_form').animate({ scrollTop: 0 }, 'slow');
                 }
             }else{
@@ -311,10 +245,10 @@ async function save()
 
 function detail(id)
 {
-    $('#title_detail').text('<?php echo MultiLang('detail'); ?> <?php echo MultiLang('destination'); ?>'); // Set Title to Bootstrap modal title
+    $('#title_detail').text('<?php echo MultiLang('detail'); ?> <?php echo MultiLang('ticket'); ?>'); // Set Title to Bootstrap modal title
 
     $.ajax({
-        url : "<?php echo site_url('destination/detail/')?>/" + id,
+        url : "<?php echo site_url('ticket/detail/')?>/" + id,
         type: "GET",
         dataType: "JSON",
         success: function(data, textStatus, xhr)
@@ -334,8 +268,8 @@ function detail(id)
 function deletes(id,name)
 {
     $('#modal_delete').modal('show'); // show bootstrap modal when complete loaded
-    $('#title_delete').text('<?php echo MultiLang('delete'); ?> <?php echo MultiLang('destination'); ?>'); // Set title to Bootstrap modal title
-    $("#body_delete").html('<?php echo MultiLang('delete'); ?> <?php echo MultiLang('destination'); ?> <b>'+name+'</b> ?');
+    $('#title_delete').text('<?php echo MultiLang('delete'); ?> <?php echo MultiLang('ticket'); ?>'); // Set title to Bootstrap modal title
+    $("#body_delete").html('<?php echo MultiLang('delete'); ?> <?php echo MultiLang('ticket'); ?> <b>'+name+'</b> ?');
     $('#btnHapus').attr("onclick", "process_delete('"+id+"')");
 }
 
@@ -345,7 +279,7 @@ function process_delete(id)
     $('#btnHapus').attr('disabled',true); //set button disable 
 
     $.ajax({
-        url : "<?php echo site_url('destination/delete/')?>/" + id,
+        url : "<?php echo site_url('ticket/delete/')?>/" + id,
         type: "GET",
         dataType: "JSON",
         success: function(data, textStatus, xhr)
@@ -362,6 +296,39 @@ function process_delete(id)
             $('#modal_delete').modal('toggle');
 
         }
+    });
+}
+
+async function add_price(){
+    str = '<tr>';
+    str+= '<td>';
+    str+= '    <input type="text" name="price[start][]" class="form-control calendar" placeholder="yyyy-mm-dd">';
+    str+= '</td>';
+    str+= '<td>';
+    str+= '    <input type="text" name="price[end][]" class="form-control calendar" placeholder="yyyy-mm-dd">';
+    str+= '</td>';
+    str+= '<td>';
+    str+= '   <input type="text" class="form-control curr" name="price[price_local][]">';
+    str+= '</td>';
+    str+= '<td>';
+    str+= '    <input type="text" class="form-control curr" name="price[price_local][]">';
+    str+= '</td>';
+    str+= '<td>';
+    str+= '    <button type="button" class="btn btn-danger" onclick="delete_price()"><i class="fas fa-trash-alt"></i></button>';
+    str+= '</td>';
+    str+= '</tr>';
+    
+    await $('#table_price').append(str);
+    await $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
+    await $(".calendar").datepicker({
+        format: 'yyyy-mm-dd'
+    });
+}
+
+function delete_price(){
+    $('#table_price tr').click(function(){
+        $(this).remove();
+        return false;
     });
 }
 </script>
