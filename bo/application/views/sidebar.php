@@ -187,7 +187,7 @@ $.widget.bridge('uibutton', $.ui.button)
 <script src="assets/plugins/jquery-knob/jquery.knob.min.js"></script>
 <!-- daterangepicker -->
 <script src="assets/plugins/moment/moment.min.js"></script>
-<script src="assets/plugins/daterangepicker/daterangepicker.js"></script>
+// <script src="assets/plugins/daterangepicker/daterangepicker.js"></script>
 <!-- Tempusdominus Bootstrap 4 -->
 <script src="assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
 <!-- Summernote -->
@@ -209,6 +209,8 @@ $.widget.bridge('uibutton', $.ui.button)
 <script src="assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <!-- Datepicker -->
 <script src="assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+<!-- Datetimepicker -->
+// <script src="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.js"></script>
 <!-- InputMask -->
 <script src="assets/dist/js/jquery.mask.min.js"></script>
 <script>

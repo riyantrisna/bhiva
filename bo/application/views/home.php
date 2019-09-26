@@ -21,7 +21,7 @@
 		<!-- overlayScrollbars -->
 		<link rel="stylesheet" href="assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
 		<!-- Daterange picker -->
-		<link rel="stylesheet" href="assets/plugins/daterangepicker/daterangepicker.css">
+		<!-- <link rel="stylesheet" href="assets/plugins/daterangepicker/daterangepicker.css"> -->
 		<!-- summernote -->
 		<link rel="stylesheet" href="assets/plugins/summernote/summernote-bs4.css">
 		<!-- Google Font: Source Sans Pro -->
@@ -34,6 +34,8 @@
 		<link rel="stylesheet" href="assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 		<!-- Date picker -->
 		<link rel="stylesheet" href="assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css">
+		<!-- Datetime picker -->
+		<!-- <link rel="stylesheet" href="assets/plugins/bootstrap-datetimepicker/bootstrap-datetimepicker.css"> -->
 	</head>
 	<body class="hold-transition sidebar-mini layout-fixed">
 		<div class="wrapper">

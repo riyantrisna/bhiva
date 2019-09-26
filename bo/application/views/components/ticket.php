@@ -299,22 +299,23 @@ function process_delete(id)
     });
 }
 
-async function add_price(){
-    str = '<tr>';
+async function add_price(i){
+    str = '';
+    str+= '<tr>';
     str+= '<td>';
-    str+= '    <input type="text" name="price[start][]" class="form-control calendar" placeholder="yyyy-mm-dd">';
+    str+= '    <input type="text" name="start[]" class="form-control calendar" placeholder="yyyy-mm-dd">';
     str+= '</td>';
     str+= '<td>';
-    str+= '    <input type="text" name="price[end][]" class="form-control calendar" placeholder="yyyy-mm-dd">';
+    str+= '    <input type="text" name="end[]" class="form-control calendar" placeholder="yyyy-mm-dd">';
     str+= '</td>';
     str+= '<td>';
-    str+= '   <input type="text" class="form-control curr" name="price[price_local][]">';
+    str+= '   <input type="text" class="form-control curr" name="price_local[]">';
     str+= '</td>';
     str+= '<td>';
-    str+= '    <input type="text" class="form-control curr" name="price[price_local][]">';
+    str+= '    <input type="text" class="form-control curr" name="price_foreign[]">';
     str+= '</td>';
     str+= '<td>';
-    str+= '    <button type="button" class="btn btn-danger" onclick="delete_price()"><i class="fas fa-trash-alt"></i></button>';
+    str+= '    <button type="button" class="btn btn-danger" onclick="delete_price(this)"><i class="fas fa-trash-alt"></i></button>';
     str+= '</td>';
     str+= '</tr>';
     
@@ -325,10 +326,7 @@ async function add_price(){
     });
 }
 
-function delete_price(){
-    $('#table_price tr').click(function(){
-        $(this).remove();
-        return false;
-    });
+function delete_price(tr){
+    $(tr).parent().parent().remove();
 }
 </script>
