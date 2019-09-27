@@ -17,6 +17,8 @@ class Ticket extends CI_Controller {
 		$data['components'] = 'components/ticket';
 		$data['active_menu_parent'] = 'master_data';
         $data['active_menu'] = 'ticket';
+        $data['visitortype'] = $this->data->getPersontype();
+        $data['visitortype'] = json_encode($data['visitortype']);
 
 		$this->load->view('home', $data);
 	}
@@ -73,6 +75,7 @@ class Ticket extends CI_Controller {
 
         $lang = $this->data->getLang();
         $path_language = $this->config->item('path_language');
+        $visitortype = $this->data->getPersontype();
 
         $html = '<div class="form-group">';
         $html.=     '<label for="name">'.MultiLang('name').'</label>';
@@ -87,23 +90,42 @@ class Ticket extends CI_Controller {
         }
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="base_price_local">'.MultiLang('default_price_local').' (Rp) *</label>';
-        $html.=     '<input type="text" class="form-control curr" id="base_price_local" name="base_price_local">';
+        $html.=     '<label for="base_price_local">'.MultiLang('default_price_local').'</label>';
+        $html.=     '<br>';
+        if(!empty($visitortype)){
+            foreach ($visitortype as $key => $value) {
+        $html.=     $value->name.' (Rp) *';
+        $html.=     '<input type="text" id="base_price_local_<?php echo $value->code;?>" name="base_price_local['.$value->id.']" class="form-control curr">';
+        $html.=     '<input type="hidden" id="base_price_local_name_<?php echo $value->code;?>" name="base_price_local_name['.$value->id.']" value="'.$value->name.'" >';
+        $html.=     '<br>';
+            }
+        }
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="base_price_foreign">'.MultiLang('default_price_foreign').' (Rp) *</label>';
-        $html.=     '<input type="text" class="form-control curr" id="base_price_foreign" name="base_price_foreign">';
+        $html.=     '<br>';
+        if(!empty($visitortype)){
+            foreach ($visitortype as $key => $value) {
+        $html.=     $value->name.' (Rp) *';
+        $html.=     '<input type="text" id="base_price_foreign_<?php echo $value->code;?>" name="base_price_foreign['.$value->id.']" class="form-control curr">';
+        $html.=     '<input type="hidden" id="base_price_foreign_name_<?php echo $value->code;?>" name="base_price_foreign_name['.$value->id.']" value="'.$value->name.'" >';
+        $html.=     '<br>';
+            }
+        }
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="base_price_foreign">'.MultiLang('price_period').'</label>';
+        $html.=     '<label for="price_period">'.MultiLang('price_period').'</label>';
         $html.=     '<div>';
         $html.=         '<table class="table table-bordered" id="table_price">
                             <tr>
-                                <td style="width: 150px; text-align: center;">
+                                <td style="width: 140px; text-align: center;">
                                     '.MultiLang('start').'
                                 </td>
-                                <td style="width: 150px; text-align: center;">
+                                <td style="width: 140px; text-align: center;">
                                     '.MultiLang('end').'
+                                </td>
+                                <td style="width: 130px; text-align: center;">
+                                    '.MultiLang('visitor_type').'
                                 </td>
                                 <td style="text-align: center;">
                                     '.MultiLang('local_tourist_price').'<br>(Rp)
@@ -122,9 +144,24 @@ class Ticket extends CI_Controller {
                                 <td>
                                     <input type="text" name="end[]" class="form-control calendar" placeholder="yyyy-mm-dd">
                                 </td>
+                                <td>';
+        $html.=                     '<select name="visitortype[]" class="form-control">';
+        $html.=                         '<option value="">';
+        $html.=                             '-- '.MultiLang('select').' --';
+        $html.=                         '</option>';
+        if(!empty($visitortype)){
+            foreach ($visitortype as $key => $value) {
+        $html.=                         '<option value="'.$value->id.'">';
+        $html.=                             $value->name;
+        $html.=                         '</option>';
+            }
+        }
+        $html.=                     '</select>';
+        $html.=                 '</td>
                                 <td>
                                     <input type="text" class="form-control curr" name="price_local[]">
-                                </td>
+                                </td>name_name
+                                name_name
                                 <td>
                                     <input type="text" class="form-control curr" name="price_foreign[]">
                                 </td>
@@ -161,15 +198,19 @@ class Ticket extends CI_Controller {
         $name = $this->input->post('name', TRUE);
         $name_name = $this->input->post('name_name', TRUE);
         $base_price_local = $this->input->post('base_price_local', TRUE);
+        $base_price_local_name = $this->input->post('base_price_local_name', TRUE);
         $base_price_foreign = $this->input->post('base_price_foreign', TRUE);
+        $base_price_foreign_name = $this->input->post('base_price_foreign_name', TRUE);
         $status = $this->input->post('status', TRUE);
         $start = $this->input->post('start', TRUE);
         $end = $this->input->post('end', TRUE);
+        $visitortype = $this->input->post('visitortype', TRUE);
         $price_local = $this->input->post('price_local', TRUE);
         $price_foreign = $this->input->post('price_foreign', TRUE);
         $price = array(
             'start' => $start,
             'end' => $end,
+            'visitortype' => $visitortype,
             'price_local' => $price_local,
             'price_foreign' => $price_foreign
         );
@@ -188,15 +229,23 @@ class Ticket extends CI_Controller {
                 }
             }
         }
-
-        if(empty($base_price_local)){
-            $validation = $validation && false;
-            $validation_text.= '<li>'.MultiLang('default_price_local').' '.MultiLang('required').'</li>';
+        
+        if(!empty($base_price_local)){
+            foreach ($base_price_local as $key => $value) {
+                if(empty($value)){
+                    $validation = $validation && false;
+                    $validation_text.= '<li>'.MultiLang('default_price_local').' '.$base_price_local_name[$key].' '.MultiLang('required').'</li>';
+                }
+            }
         }
         
-        if(empty($base_price_foreign)){
-            $validation = $validation && false;
-            $validation_text.= '<li>'.MultiLang('default_price_foreign').' '.MultiLang('required').'</li>';
+        if(!empty($base_price_foreign)){
+            foreach ($base_price_foreign as $key => $value) {
+                if(empty($value)){
+                    $validation = $validation && false;
+                    $validation_text.= '<li>'.MultiLang('default_price_foreign').' '.$base_price_foreign_name[$key].' '.MultiLang('required').'</li>';
+                }
+            }
         }
 
         if(!isset($status) AND $status == ''){
@@ -208,13 +257,11 @@ class Ticket extends CI_Controller {
             $results = true;
             
             $data = array(
-                'ticket_base_price_local' => str_replace('.','',$base_price_local),
-                'ticket_base_price_foreign' => str_replace('.','',$base_price_foreign),
                 'ticket_status' => $status,
                 'insert_user_id' => $user_id,
                 'insert_datetime' => $date
             );
-            $results = $results && $this->data->addTicket($data, $name, $price);
+            $results = $results && $this->data->addTicket($data, $name, $base_price_local, $base_price_foreign, $price);
         
             if ($results) {
                 $result["status"] = TRUE;
@@ -248,8 +295,10 @@ class Ticket extends CI_Controller {
         $path_language = $this->config->item('path_language');
         $detail = $this->data->getDetailTicket($id);
         $detail_text = $this->data->getDetailTicketText($id);
+        $detail_pricedefault = $this->data->getDetailTicketPricedefault($id);
         $detail_price = $this->data->getDetailTicketPrice($id);
         $lang = $this->data->getLang();
+        $visitortype = $this->data->getPersontype();
 
         $html = '<div class="form-group">';
         $html.=     '<label for="name">'.MultiLang('name').'</label>';
@@ -268,24 +317,50 @@ class Ticket extends CI_Controller {
         }
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="base_price_local">'.MultiLang('default_price_local').' (Rp) *</label>';
-        $html.=     '<input type="text" class="form-control curr" id="base_price_local" name="base_price_local" value="'.$detail->base_price_local.'">';
+        $html.=     '<label for="base_price_local">'.MultiLang('default_price_local').'</label>';
+        $html.=     '<br>';
+        if(!empty($visitortype)){
+            foreach ($visitortype as $key => $value) {
+                foreach ($detail_pricedefault as $k => $v) {
+                    if($value->id == $v->visitortype_id){
+        $html.=     $value->name.' (Rp) *';
+        $html.=     '<input type="text" id="base_price_local_<?php echo $value->code;?>" name="base_price_local['.$value->id.']" class="form-control curr" value="'.$v->price_local.'">';
+        $html.=     '<input type="hidden" id="base_price_local_name_<?php echo $value->code;?>" name="base_price_local_name['.$value->id.']" value="'.$value->name.'" >';
+        $html.=     '<br>';
+                    }
+                }
+            }
+        }
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="base_price_foreign">'.MultiLang('default_price_foreign').' (Rp) *</label>';
-        $html.=     '<input type="text" class="form-control curr" id="base_price_foreign" name="base_price_foreign" value="'.$detail->base_price_foreign.'">';
-        $html.=     '<input type="hidden" id="id" name="id" value="'.$detail->id.'">';
+        $html.=     '<label for="base_price_foreign">'.MultiLang('default_price_foreign').'</label>';
+        $html.=     '<br>';
+        if(!empty($visitortype)){
+            foreach ($visitortype as $key => $value) {
+                foreach ($detail_pricedefault as $k => $v) {
+                    if($value->id == $v->visitortype_id){
+        $html.=     $value->name.' (Rp) *';
+        $html.=     '<input type="text" id="base_price_foreign_<?php echo $value->code;?>" name="base_price_foreign['.$value->id.']" class="form-control curr" value="'.$v->price_foreign.'">';
+        $html.=     '<input type="hidden" id="base_price_foreign_name_<?php echo $value->code;?>" name="base_price_foreign_name['.$value->id.']" value="'.$value->name.'" >';
+        $html.=     '<br>';
+                    }
+                }
+            }
+        }
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="base_price_foreign">'.MultiLang('price_period').'</label>';
+        $html.=     '<label for="price_period">'.MultiLang('price_period').'</label>';
         $html.=     '<div>';
         $html.=         '<table class="table table-bordered" id="table_price">
                             <tr>
-                                <td style="width: 150px; text-align: center;">
+                                <td style="width: 140px; text-align: center;">
                                     '.MultiLang('start').'
                                 </td>
-                                <td style="width: 150px; text-align: center;">
+                                <td style="width: 140px; text-align: center;">
                                     '.MultiLang('end').'
+                                </td>
+                                <td style="width: 130px; text-align: center;">
+                                    '.MultiLang('visitor_type').'
                                 </td>
                                 <td style="text-align: center;">
                                     '.MultiLang('local_tourist_price').'<br>(Rp)
@@ -311,6 +386,20 @@ class Ticket extends CI_Controller {
                                 <td>
                                     <input type="text" name="end[]" class="form-control calendar" placeholder="yyyy-mm-dd" value="'.$value->end.'">
                                 </td>
+                                <td>';
+        $html.=                     '<select name="visitortype[]" class="form-control">';
+        $html.=                         '<option value="">';
+        $html.=                             '-- '.MultiLang('select').' --';
+        $html.=                         '</option>';
+        if(!empty($visitortype)){
+            foreach ($visitortype as $k => $v) {
+        $html.=                         '<option value="'.$v->id.'" '.($value->visitortype_id == $v->id ? "selected" : "").'>';
+        $html.=                             $v->name;
+        $html.=                         '</option>';
+            }
+        }
+        $html.=                     '</select>';
+        $html.=                 '</td>
                                 <td>
                                     <input type="text" class="form-control curr" name="price_local[]" value="'.$value->price_local.'">
                                 </td>
@@ -330,6 +419,20 @@ class Ticket extends CI_Controller {
                                 <td>
                                     <input type="text" name="end[]" class="form-control calendar" placeholder="yyyy-mm-dd">
                                 </td>
+                                <td>';
+        $html.=                     '<select name="visitortype[]" class="form-control">';
+        $html.=                         '<option value="">';
+        $html.=                             '-- '.MultiLang('select').' --';
+        $html.=                         '</option>';
+        if(!empty($visitortype)){
+            foreach ($visitortype as $key => $value) {
+        $html.=                         '<option value="'.$value->id.'">';
+        $html.=                             $value->name;
+        $html.=                         '</option>';
+            }
+        }
+        $html.=                     '</select>';
+        $html.=                 '</td>
                                 <td>
                                     <input type="text" class="form-control curr" name="price_local[]">
                                 </td>
@@ -358,6 +461,7 @@ class Ticket extends CI_Controller {
                             '.MultiLang('not_active').'
                         </label>
                     </div>';
+        $html.=     '<input type="hidden" id="id" name="id" value="'.$detail->id.'">';
         $html.= '</div>';
 
         $data['html'] = $html;
@@ -371,15 +475,19 @@ class Ticket extends CI_Controller {
         $name = $this->input->post('name', TRUE);
         $name_name = $this->input->post('name_name', TRUE);
         $base_price_local = $this->input->post('base_price_local', TRUE);
+        $base_price_local_name = $this->input->post('base_price_local_name', TRUE);
         $base_price_foreign = $this->input->post('base_price_foreign', TRUE);
+        $base_price_foreign_name = $this->input->post('base_price_foreign_name', TRUE);
         $status = $this->input->post('status', TRUE);
         $start = $this->input->post('start', TRUE);
         $end = $this->input->post('end', TRUE);
+        $visitortype = $this->input->post('visitortype', TRUE);
         $price_local = $this->input->post('price_local', TRUE);
         $price_foreign = $this->input->post('price_foreign', TRUE);
         $price = array(
             'start' => $start,
             'end' => $end,
+            'visitortype' => $visitortype,
             'price_local' => $price_local,
             'price_foreign' => $price_foreign
         );
@@ -399,14 +507,22 @@ class Ticket extends CI_Controller {
             }
         }
 
-        if(empty($base_price_local)){
-            $validation = $validation && false;
-            $validation_text.= '<li>'.MultiLang('default_price_local').' '.MultiLang('required').'</li>';
+        if(!empty($base_price_local)){
+            foreach ($base_price_local as $key => $value) {
+                if(empty($value)){
+                    $validation = $validation && false;
+                    $validation_text.= '<li>'.MultiLang('default_price_local').' '.$base_price_local_name[$key].' '.MultiLang('required').'</li>';
+                }
+            }
         }
         
-        if(empty($base_price_foreign)){
-            $validation = $validation && false;
-            $validation_text.= '<li>'.MultiLang('default_price_foreign').' '.MultiLang('required').'</li>';
+        if(!empty($base_price_foreign)){
+            foreach ($base_price_foreign as $key => $value) {
+                if(empty($value)){
+                    $validation = $validation && false;
+                    $validation_text.= '<li>'.MultiLang('default_price_foreign').' '.$base_price_foreign_name[$key].' '.MultiLang('required').'</li>';
+                }
+            }
         }
 
         if(!isset($status) AND $status == ''){
@@ -418,13 +534,11 @@ class Ticket extends CI_Controller {
             $results = true;
 
             $data = array(
-                'ticket_base_price_local' => str_replace('.','',$base_price_local),
-                'ticket_base_price_foreign' => str_replace('.','',$base_price_foreign),
                 'ticket_status' => $status,
                 'update_user_id' => $user_id,
                 'update_datetime' => $date
             );
-            $results = $results && $this->data->updateTicket($data, $id, $name, $price);
+            $results = $results && $this->data->updateTicket($data, $id, $name, $base_price_local, $base_price_foreign, $price);
         
             if ($results) {
                 $result["status"] = TRUE;
@@ -456,11 +570,12 @@ class Ticket extends CI_Controller {
     public function detail($id){
 
         $path_language = $this->config->item('path_language');
-        $path_ticket = $this->config->item('path_ticket');
         $detail = $this->data->getDetailTicket($id);
         $detail_text = $this->data->getDetailTicketText($id);
+        $detail_pricedefault = $this->data->getDetailTicketPricedefault($id);
         $detail_price = $this->data->getDetailTicketPrice($id);
         $lang = $this->data->getLang();
+        $visitortype = $this->data->getPersontype();
 
         $html = '<div class="form-group">';
         $html.=     '<label for="title">'.MultiLang('name').'</label>';
@@ -478,15 +593,37 @@ class Ticket extends CI_Controller {
         }
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="base_price_local">'.MultiLang('default_price_local').' (Rp)</label>';
-        $html.=     '<div id="base_price_local">'.number_format($detail->base_price_local, 2, ',', '.').'</div>';
+        $html.=     '<label for="base_price_local">'.MultiLang('default_price_local').'</label>';
+        $html.=     '<br>';
+        if(!empty($visitortype)){
+            foreach ($visitortype as $key => $value) {
+                foreach ($detail_pricedefault as $k => $v) {
+                    if($value->id == $v->visitortype_id){
+        $html.=     $value->name.' (Rp) *';
+        $html.=     '<div style=" border:1px dashed #3e3e3e; padding: 5px; margin: 5px 0;">'.number_format($v->price_local, 2, ',', '.').'</div>';
+        $html.=     '<br>';
+                    }
+                }
+            }
+        }
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="base_price_foreign">'.MultiLang('default_price_foreign').' (Rp)</label>';
-        $html.=     '<div id="base_price_foreign">'.number_format($detail->base_price_foreign, 2, ',', '.').'</div>';
+        $html.=     '<label for="base_price_foreign">'.MultiLang('default_price_foreign').'</label>';
+        $html.=     '<br>';
+        if(!empty($visitortype)){
+            foreach ($visitortype as $key => $value) {
+                foreach ($detail_pricedefault as $k => $v) {
+                    if($value->id == $v->visitortype_id){
+        $html.=     $value->name.' (Rp) *';
+        $html.=     '<div style=" border:1px dashed #3e3e3e; padding: 5px; margin: 5px 0;">'.number_format($v->price_foreign, 2, ',', '.').'</div>';
+        $html.=     '<br>';
+                    }
+                }
+            }
+        }
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="base_price_foreign">'.MultiLang('price_period').'</label>';
+        $html.=     '<label for="price_period">'.MultiLang('price_period').'</label>';
         $html.=     '<div>';
         $html.=         '<table class="table table-bordered" id="table_price">
                             <tr>
@@ -495,6 +632,9 @@ class Ticket extends CI_Controller {
                                 </td>
                                 <td style="width: 170px; text-align: center;">
                                     '.MultiLang('end').'
+                                </td>
+                                <td style="width: 130px; text-align: center;">
+                                    '.MultiLang('visitor_type').'
                                 </td>
                                 <td style="text-align: center;">
                                     '.MultiLang('local_tourist_price').'<br>(Rp)
@@ -516,6 +656,9 @@ class Ticket extends CI_Controller {
                                 </td>
                                 <td style="text-align: center;">
                                     '.$this->data->getDateIndo($value->end).'
+                                </td>
+                                <td style="text-align: center;">
+                                    '.($value->visitortype_name).'
                                 </td>
                                 <td style="text-align: right;">
                                     '.number_format($value->price_local, 2, ',', '.').'

@@ -299,7 +299,12 @@ function process_delete(id)
     });
 }
 
+function isEmpty(str) {
+    return (!str || 0 === str.length);
+}
+
 async function add_price(i){
+    var visitortype = <?php echo $visitortype; ?>;
     str = '';
     str+= '<tr>';
     str+= '<td>';
@@ -307,6 +312,20 @@ async function add_price(i){
     str+= '</td>';
     str+= '<td>';
     str+= '    <input type="text" name="end[]" class="form-control calendar" placeholder="yyyy-mm-dd">';
+    str+= '</td>';
+    str+= '<td>';
+    str+=      '<select name="visitortype[]" class="form-control">';
+    str+=           '<option value="">';
+    str+=               '-- <?php echo MultiLang('select'); ?> --';
+    str+=           '</option>';
+    if(!isEmpty(visitortype)){
+        $.each( visitortype, function( key, value ) {
+    str+=           '<option value="'+value.id+'">';
+    str+=                value.name;
+    str+=           '</option>';
+        });
+    }
+    str+=      '</select>';
     str+= '</td>';
     str+= '<td>';
     str+= '   <input type="text" class="form-control curr" name="price_local[]">';

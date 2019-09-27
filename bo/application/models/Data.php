@@ -2195,16 +2195,12 @@ class Data extends CI_Model {
         if(!empty($keyword)){
             $str .= " AND ( ";
             $str .= " OR LOWER(b.`tickettext_name`) LIKE LOWER('%$keyword%') ";
-            $str .= " OR LOWER(a.`ticket_base_price_local`) LIKE LOWER('%$keyword%') ";
-            $str .= " OR LOWER(a.`ticket_base_price_foreign`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
         }
 
         $query = "
                 SELECT
                     a.`ticket_id` AS `id`,
-                    a.`ticket_base_price_local` AS `base_price_local`,
-                    a.`ticket_base_price_foreign` AS `base_price_foreign`,
                     a.`ticket_status` AS `status`,
                     b.`tickettext_name` AS `name`
                 FROM
@@ -2229,8 +2225,6 @@ class Data extends CI_Model {
         if(!empty($keyword)){
             $str .= " AND ( ";
             $str .= " OR LOWER(b.`tickettext_name`) LIKE LOWER('%$keyword%') ";
-            $str .= " OR LOWER(a.`ticket_base_price_local`) LIKE LOWER('%$keyword%') ";
-            $str .= " OR LOWER(a.`ticket_base_price_foreign`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
         }
 
@@ -2252,8 +2246,6 @@ class Data extends CI_Model {
         $query = "
                 SELECT
                     a.`ticket_id` AS `id`,
-                    a.`ticket_base_price_local` AS `base_price_local`,
-                    a.`ticket_base_price_foreign` AS `base_price_foreign`,
                     a.`ticket_status` AS `status`,
                     c.user_real_name AS insert_user,
                     a.insert_datetime,
@@ -2291,12 +2283,15 @@ class Data extends CI_Model {
         $query = "
                 SELECT
                     a.`ticketprice_ticket_id` AS `ticket_id`,
+                    a.`ticketprice_visitortype_id` AS `visitortype_id`,
+                    b.`visitortypetext_name` AS `visitortype_name`,
                     a.`ticketprice_start` AS `start`,
                     a.`ticketprice_end` AS `end`,
                     a.`ticketprice_price_local` AS `price_local`,
                     a.`ticketprice_price_foreign` AS `price_foreign`
                 FROM
                     `mst_ticket_price` a
+                    LEFT JOIN `ref_visitortype_text` b ON b.visitortypetext_visitortype_id = a.ticketprice_visitortype_id AND b.`visitortypetext_lang` = '".$this->user_lang."' 
                 WHERE 1 = 1
                 AND a.`ticketprice_ticket_id` = '".$id."'
         ";
@@ -2304,7 +2299,26 @@ class Data extends CI_Model {
         return $result->result();
     }
 
-    public function addTicket($data, $name, $price){
+    public function getDetailTicketPricedefault($id){
+
+        $query = "
+                SELECT
+                    a.`ticketpricedef_ticket_id` AS `ticket_id`,
+                    a.`ticketpricedef_visitortype_id` AS `visitortype_id`,
+                    b.`visitortypetext_name` AS `visitortype_name`,
+                    a.`ticketpricedef_price_local` AS `price_local`,
+                    a.`ticketpricedef_price_foreign` AS `price_foreign`
+                FROM
+                    `mst_ticket_pricedefault` a
+                    LEFT JOIN `ref_visitortype_text` b ON b.visitortypetext_visitortype_id = a.ticketpricedef_visitortype_id AND b.`visitortypetext_lang` = '".$this->user_lang."' 
+                WHERE 1 = 1
+                AND a.`ticketpricedef_ticket_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function addTicket($data, $name, $base_price_local, $base_price_foreign, $price){
         $this->default->trans_begin();
 
         $this->default->insert('mst_ticket',$data);
@@ -2320,12 +2334,25 @@ class Data extends CI_Model {
                 $this->default->insert('mst_ticket_text',$data);
             }
         }
+        
+        if(!empty($base_price_local)){
+            foreach ($base_price_local as $key => $value) {
+                $data = array(
+                    'ticketpricedef_ticket_id' => $ticket_id,
+                    'ticketpricedef_visitortype_id' => $key,
+                    'ticketpricedef_price_local' => str_replace('.','',$value),
+                    'ticketpricedef_price_foreign' => str_replace('.','',$base_price_foreign[$key])
+                );
+                $this->default->insert('mst_ticket_pricedefault',$data);
+            }
+        }
 
         if(!empty($price['start'])){
             foreach ($price['start'] as $key => $value) {
                 if(!empty($price['start'][$key]) AND !empty($price['end'][$key]) ANd !empty($price['price_local'][$key]) AND !empty($price['price_foreign'][$key])){
                     $data = array(
                         'ticketprice_ticket_id' => $ticket_id,
+                        'ticketprice_visitortype_id' => $price['visitortype'][$key],
                         'ticketprice_start' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['end'][$key] : $price['start'][$key]),
                         'ticketprice_end' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['start'][$key] : $price['end'][$key]),
                         'ticketprice_price_local' => str_replace('.','',$price['price_local'][$key]),
@@ -2346,7 +2373,7 @@ class Data extends CI_Model {
         }
     }
 
-    public function updateTicket($data, $id, $name, $price){
+    public function updateTicket($data, $id, $name, $base_price_local, $base_price_foreign, $price){
         $this->default->trans_begin();
 
         $this->default->where('ticket_id', $id);
@@ -2354,6 +2381,9 @@ class Data extends CI_Model {
 
         $this->default->where('tickettext_ticket_id', $id);
         $this->default->delete('mst_ticket_text');
+        
+        $this->default->where('ticketpricedef_ticket_id', $id);
+        $this->default->delete('mst_ticket_pricedefault');
         
         $this->default->where('ticketprice_ticket_id', $id);
         $this->default->delete('mst_ticket_price');
@@ -2369,11 +2399,24 @@ class Data extends CI_Model {
             }
         }
 
+        if(!empty($base_price_local)){
+            foreach ($base_price_local as $key => $value) {
+                $data = array(
+                    'ticketpricedef_ticket_id' => $id,
+                    'ticketpricedef_visitortype_id' => $key,
+                    'ticketpricedef_price_local' => str_replace('.','',$value),
+                    'ticketpricedef_price_foreign' => str_replace('.','',$base_price_foreign[$key])
+                );
+                $this->default->insert('mst_ticket_pricedefault',$data);
+            }
+        }
+
         if(!empty($price['start'])){
             foreach ($price['start'] as $key => $value) {
                 if(!empty($price['start'][$key]) AND !empty($price['end'][$key]) ANd !empty($price['price_local'][$key]) AND !empty($price['price_foreign'][$key])){
                     $data = array(
                         'ticketprice_ticket_id' => $id,
+                        'ticketprice_visitortype_id' => $price['visitortype'][$key],
                         'ticketprice_start' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['end'][$key] : $price['start'][$key]),
                         'ticketprice_end' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['start'][$key] : $price['end'][$key]),
                         'ticketprice_price_local' => str_replace('.','',$price['price_local'][$key]),
@@ -2399,6 +2442,8 @@ class Data extends CI_Model {
         $this->default->delete('mst_ticket_text');
         $this->default->where('ticketprice_ticket_id', $id);
         $this->default->delete('mst_ticket_price');
+        $this->default->where('ticketpricedef_ticket_id', $id);
+        $this->default->delete('mst_ticket_pricedefault');
         $this->default->where('ticket_id', $id);
         $this->default->delete('mst_ticket');
         $this->default->trans_complete();
@@ -2409,5 +2454,19 @@ class Data extends CI_Model {
             $this->default->trans_commit();
             return TRUE;
         }
+    }
+
+    public function getPersontype(){
+
+        $query = "
+                SELECT
+                    a.`visitortype_id` AS `id`,
+                    b.`visitortypetext_name` AS `name`
+                FROM
+                    `ref_visitortype` a
+                    LEFT JOIN `ref_visitortype_text` b ON b.visitortypetext_visitortype_id = a.visitortype_id AND b.`visitortypetext_lang` = '".$this->user_lang."' 
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
     }
 }
