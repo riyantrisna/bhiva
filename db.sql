@@ -457,11 +457,11 @@ CREATE TABLE `mst_ticket` (
   `update_user_id` bigint(20) DEFAULT NULL,
   `update_datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`ticket_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 /*Data for the table `mst_ticket` */
 
-insert  into `mst_ticket`(`ticket_id`,`ticket_base_price_local`,`ticket_base_price_foreign`,`ticket_status`,`insert_user_id`,`insert_datetime`,`update_user_id`,`update_datetime`) values (1,'75000.00','175000.00',1,5,'2019-09-24 21:42:30',5,'2019-09-26 09:32:24');
+insert  into `mst_ticket`(`ticket_id`,`ticket_base_price_local`,`ticket_base_price_foreign`,`ticket_status`,`insert_user_id`,`insert_datetime`,`update_user_id`,`update_datetime`) values (1,'75000.00','175000.00',1,5,'2019-09-24 21:42:30',5,'2019-09-27 08:28:14');
 
 /*Table structure for table `mst_ticket_price` */
 
@@ -479,7 +479,7 @@ CREATE TABLE `mst_ticket_price` (
 
 /*Data for the table `mst_ticket_price` */
 
-insert  into `mst_ticket_price`(`ticketprice_ticket_id`,`ticketprice_start`,`ticketprice_end`,`ticketprice_price_local`,`ticketprice_price_foreign`) values (1,'2019-09-01','2019-09-30','80000.00','200000.00'),(1,'2019-10-01','2019-10-31','70000.00','170000.00');
+insert  into `mst_ticket_price`(`ticketprice_ticket_id`,`ticketprice_start`,`ticketprice_end`,`ticketprice_price_local`,`ticketprice_price_foreign`) values (1,'2019-08-01','2019-09-01','80000.00','200000.00'),(1,'2019-10-01','2019-10-31','70000.00','170000.00');
 
 /*Table structure for table `mst_ticket_text` */
 
@@ -536,6 +536,19 @@ CREATE TABLE `mst_tourpackages_destination` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*Data for the table `mst_tourpackages_destination` */
+
+/*Table structure for table `mst_tourpackages_img` */
+
+DROP TABLE IF EXISTS `mst_tourpackages_img`;
+
+CREATE TABLE `mst_tourpackages_img` (
+  `tourpackagesimg_destination_id` int(11) DEFAULT NULL,
+  `tourpackagesimg_order` int(11) DEFAULT NULL,
+  `tourpackagesimg_img` text,
+  KEY `destimg_destination_id` (`tourpackagesimg_destination_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+/*Data for the table `mst_tourpackages_img` */
 
 /*Table structure for table `mst_tourpackages_price` */
 

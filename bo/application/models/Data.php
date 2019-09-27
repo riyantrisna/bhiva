@@ -2326,8 +2326,8 @@ class Data extends CI_Model {
                 if(!empty($price['start'][$key]) AND !empty($price['end'][$key]) ANd !empty($price['price_local'][$key]) AND !empty($price['price_foreign'][$key])){
                     $data = array(
                         'ticketprice_ticket_id' => $ticket_id,
-                        'ticketprice_start' => $price['start'][$key],
-                        'ticketprice_end' => $price['end'][$key],
+                        'ticketprice_start' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['end'][$key] : $price['start'][$key]),
+                        'ticketprice_end' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['start'][$key] : $price['end'][$key]),
                         'ticketprice_price_local' => str_replace('.','',$price['price_local'][$key]),
                         'ticketprice_price_foreign' => str_replace('.','',$price['price_foreign'][$key])
                     );
@@ -2374,8 +2374,8 @@ class Data extends CI_Model {
                 if(!empty($price['start'][$key]) AND !empty($price['end'][$key]) ANd !empty($price['price_local'][$key]) AND !empty($price['price_foreign'][$key])){
                     $data = array(
                         'ticketprice_ticket_id' => $id,
-                        'ticketprice_start' => $price['start'][$key],
-                        'ticketprice_end' => $price['end'][$key],
+                        'ticketprice_start' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['end'][$key] : $price['start'][$key]),
+                        'ticketprice_end' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['start'][$key] : $price['end'][$key]),
                         'ticketprice_price_local' => str_replace('.','',$price['price_local'][$key]),
                         'ticketprice_price_foreign' => str_replace('.','',$price['price_foreign'][$key])
                     );
