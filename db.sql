@@ -314,7 +314,7 @@ CREATE TABLE `core_key` (
   `update_user_id` bigint(20) DEFAULT NULL,
   `update_datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`key_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=115 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=latin1;
 
 /*Data for the table `core_key` */
 
@@ -690,7 +690,7 @@ CREATE TABLE `ref_visitortype` (
   `update_user_id` bigint(20) DEFAULT NULL,
   `update_datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`visitortype_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 /*Data for the table `ref_visitortype` */
 

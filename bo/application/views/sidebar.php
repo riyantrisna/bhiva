@@ -26,7 +26,7 @@
 
                 <li class="nav-item has-treeview <?php echo ($active_menu_parent == 'cms' ? 'menu-open' : ''); ?>">
                     <a href="<?php echo base_url();?>" class="nav-link <?php echo ($active_menu_parent == 'cms' ? 'active' : ''); ?>">
-                        <i class="nav-icon fas fa-hdd"></i>
+                        <i class="nav-icon fas fa-file-image"></i>
                         <p>
                             <?php echo MultiLang('cms'); ?>
                             <i class="right fas fa-angle-left"></i>
@@ -39,48 +39,36 @@
                                 <p><?php echo MultiLang('slider'); ?></p>
                             </a>
                         </li>
-                    </ul>
-                    <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="<?php echo base_url();?>service" class="nav-link <?php echo ($active_menu == 'service' ? 'active' : ''); ?>">
                                 <i class="fas fa-hands nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('service'); ?></p>
                             </a>
                         </li>
-                    </ul>
-                    <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="<?php echo base_url();?>gallery" class="nav-link <?php echo ($active_menu == 'gallery' ? 'active' : ''); ?>">
                                 <i class="fas fa-images nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('gallery'); ?></p>
                             </a>
                         </li>
-                    </ul>
-                    <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="<?php echo base_url();?>whoweare" class="nav-link <?php echo ($active_menu == 'whoweare' ? 'active' : ''); ?>">
                                 <i class="fas fa-users nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('who_we_are'); ?></p>
                             </a>
                         </li>
-                    </ul>
-                    <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="<?php echo base_url();?>contact" class="nav-link <?php echo ($active_menu == 'contact' ? 'active' : ''); ?>">
                                 <i class="fas fa-id-card nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('contact'); ?></p>
                             </a>
                         </li>
-                    </ul>
-                    <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="<?php echo base_url();?>privacypolicy" class="nav-link <?php echo ($active_menu == 'privacypolicy' ? 'active' : ''); ?>">
                                 <i class="fas fa-user-shield nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('privacy_policy'); ?></p>
                             </a>
                         </li>
-                    </ul>
-                    <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="<?php echo base_url();?>termcondition" class="nav-link <?php echo ($active_menu == 'termcondition' ? 'active' : ''); ?>">
                                 <i class="fas fa-file-signature nav-icon ml-4"></i>
@@ -136,21 +124,23 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
+                            <a href="<?php echo base_url();?>visitortype" class="nav-link <?php echo ($active_menu == 'visitortype' ? 'active' : ''); ?>">
+                                <i class="fas fa-walking nav-icon ml-4"></i>
+                                <p><?php echo MultiLang('visitor_type'); ?></p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="<?php echo base_url();?>language" class="nav-link <?php echo ($active_menu == 'language' ? 'active' : ''); ?>">
                                 <i class="fas fa-comment-dots nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('language'); ?></p>
                             </a>
                         </li>
-                    </ul>
-                    <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="<?php echo base_url();?>translation" class="nav-link <?php echo ($active_menu == 'translation' ? 'active' : ''); ?> set_url_log">
                                 <i class="fas fa-language nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('translation'); ?></p>
                             </a>
                         </li>
-                    </ul>
-                    <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="<?php echo base_url();?>user" class="nav-link <?php echo ($active_menu == 'user' ? 'active' : ''); ?>">
                                 <i class="fas fa-user nav-icon ml-4"></i>

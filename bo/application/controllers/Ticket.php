@@ -160,8 +160,7 @@ class Ticket extends CI_Controller {
         $html.=                 '</td>
                                 <td>
                                     <input type="text" class="form-control curr" name="price_local[]">
-                                </td>name_name
-                                name_name
+                                </td>
                                 <td>
                                     <input type="text" class="form-control curr" name="price_foreign[]">
                                 </td>

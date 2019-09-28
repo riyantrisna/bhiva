@@ -2469,4 +2469,161 @@ class Data extends CI_Model {
         $result = $this->default->query($query);
         return $result->result();
     }
+
+
+    // visitortype
+    public function getAllVisitortype($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( LOWER(b.`visitortypetext_name`) LIKE LOWER('%$keyword%') ";
+        }
+
+        $query = "
+            SELECT
+                a.`visitortype_id` AS `id`,
+                b.`visitortypetext_name` AS `name`
+            FROM
+                `ref_visitortype` a
+                LEFT JOIN `ref_visitortype_text` b ON b.visitortypetext_visitortype_id = a.visitortype_id AND b.`visitortypetext_lang` = '".$this->user_lang."' 
+            WHERE 1 = 1
+        ";
+        $query.= $str;
+        $query .= " ORDER BY $order $dir ";
+        if (isset($start) AND $start != '') {
+            $query .= " LIMIT $start, $length";
+        }
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllVisitortype($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( LOWER(b.`visitortypetext_name`) LIKE LOWER('%$keyword%') ";
+        }
+
+        $query = "
+                SELECT 
+                    COUNT(DISTINCT a.`visitortype_id`) AS total
+                FROM 
+                    `ref_visitortype` a
+                    LEFT JOIN `ref_visitortype_text` b ON b.visitortypetext_visitortype_id = a.visitortype_id AND b.`visitortypetext_lang` = '".$this->user_lang."' 
+                WHERE 1 = 1
+                ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function addVisitortype($data, $visitortype, $user_id, $date){
+        $this->default->trans_begin();
+        $this->default->insert('ref_visitortype',$data);
+        $visitortype_id = $this->default->insert_id();
+
+        if(!empty($visitortype)){
+            foreach ($visitortype as $key => $value) {
+                $data = array(
+                    'visitortypetext_visitortype_id' => $visitortype_id,
+                    'visitortypetext_lang' => $key,
+                    'visitortypetext_name' => $value
+                );
+                $this->default->insert('ref_visitortype_text',$data);
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function updateVisitortype($data, $id, $visitortype, $user_id, $date){
+        $this->default->trans_begin();
+        $this->default->where('visitortype_id', $id);
+        $this->default->update('ref_visitortype',$data);
+
+        if(!empty($visitortype)){
+            foreach ($visitortype as $key => $value) {
+                $data = array(
+                    'visitortypetext_name' => $value
+                );
+                $this->default->where('visitortypetext_visitortype_id', $id);
+                $this->default->where('visitortypetext_lang', $key);
+                $this->default->update('ref_visitortype_text',$data);
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function deleteVisitortype($id){
+        $this->default->trans_begin();
+        
+        $this->default->where('visitortypetext_visitortype_id', $id);
+        $this->default->delete('ref_visitortype_text');
+
+        $this->default->where('visitortype_id', $id);
+        $this->default->delete('ref_visitortype');
+        
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function getDetailVisitortype($id){
+
+        $query = "
+            SELECT
+                a.`visitortype_id` AS `id`,
+                c.user_real_name AS insert_user,
+                a.insert_datetime,
+                d.user_real_name AS update_user,
+                a.update_datetime
+            FROM
+                `ref_visitortype` a
+                LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                LEFT JOIN core_user d ON d.user_id = a.update_user_id
+            WHERE
+                a.`visitortype_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailVisitortypeText($id){
+
+        $query = "
+            SELECT
+                `visitortypetext_lang` AS `lang`,
+                `visitortypetext_name` AS `name`
+            FROM
+                `ref_visitortype_text`
+            WHERE
+                `visitortypetext_visitortype_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
 }
