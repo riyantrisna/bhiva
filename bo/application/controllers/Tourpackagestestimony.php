@@ -171,7 +171,7 @@ class Tourpackagestestimony extends CI_Controller {
     public function delete($id)
     {
         
-        $delete = $this->data->deletegetDetailTourpackagesTitle($id);
+        $delete = $this->data->deleteTourpackagesTestimony($id);
         if($delete){
             $result["status"] = TRUE;
             $result["message"] = MultiLang('msg_delete_success');
