@@ -2626,4 +2626,498 @@ class Data extends CI_Model {
         $result = $this->default->query($query);
         return $result->result();
     }
+
+    // tourpackages
+    public function getAllTourpackages($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " LOWER(b.`tourpackagestext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT
+                    a.`tourpackages_id` AS `id`,
+                    a.`tourpackages_status` AS `status`,
+                    b.`tourpackagestext_name` AS `name`
+                FROM
+                    `mst_tourpackages` a
+                    LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+        ";
+        $query.= $str;
+        $query .= " ORDER BY $order $dir ";
+        if (isset($start) AND $start != '') {
+            $query .= " LIMIT $start, $length";
+        }
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllTourpackages($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " LOWER(b.`tourpackagestext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT 
+                    COUNT(DISTINCT a.`tourpackages_id`) AS total
+                FROM 
+                `mst_tourpackages` a
+                LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+                ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTourpackages($id){
+
+        $query = "
+                SELECT
+                    a.`tourpackages_id` AS `id`,
+                    a.`tourpackages_base_price_local` AS `base_price_local`,
+                    a.`tourpackages_base_price_foreign` AS `base_price_foreign`,
+                    a.`tourpackages_is_rating_manual` AS `is_rating_manual`,
+                    a.`tourpackages_rating_manual` AS `rating_manual`,
+                    a.`tourpackages_total_rater_manual` AS `total_rater_manual`,
+                    a.`tourpackages_status` AS `status`,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `mst_tourpackages` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND a.`tourpackages_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTourpackagesText($id){
+
+        $query = "
+                SELECT
+                    a.`tourpackagestext_tourpackages_id` AS `tourpackages_id`,
+                    a.`tourpackagestext_lang` AS `lang`,
+                    a.`tourpackagestext_name` AS `name`,
+                    a.`tourpackagestext_text` AS `text`
+                FROM
+                    `mst_tourpackages_text` a
+                WHERE 1 = 1
+                AND a.`tourpackagestext_tourpackages_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getDetailTourpackagesImages($id){
+
+        $query = "
+                SELECT
+                    a.`tourpackagesimg_tourpackages_id` AS `tourpackages_id`,
+                    a.`tourpackagesimg_order` AS `order`,
+                    a.`tourpackagesimg_img` AS `img`
+                FROM
+                    `mst_tourpackages_img` a
+                WHERE 1 = 1
+                AND a.`tourpackagesimg_tourpackages_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+    
+    public function getDetailTourpackagesPrice($id){
+
+        $query = "
+                SELECT
+                    a.`tourpackagesprice_tourpackages_id` AS `tourpackages_id`,
+                    a.`tourpackagesprice_start` AS `start`,
+                    a.`tourpackagesprice_end` AS `end`,
+                    a.`tourpackagesprice_price_local` AS `price_local`,
+                    a.`tourpackagesprice_price_foreign` AS `price_foreign`
+                FROM
+                    `mst_tourpackages_price` a
+                WHERE 1 = 1
+                AND a.`tourpackagesprice_tourpackages_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getDetailTourpackagesDestination($id){
+
+        $query = "
+                SELECT
+                    a.`tourpackagesdest_tourpackages_id` AS `tourpackages_id`,
+                    a.`tourpackagesdest_destination_id` AS `destination_id`,
+                    b.`destinationtext_name` AS `destination_name`,
+                    a.`tourpackagesdest_day` AS `day`,
+                    a.`tourpackagesdest_order` AS `order`,
+                    a.`tourpackagesdest_is_night` AS `is_night`
+                FROM
+                    `mst_tourpackages_destination` a
+                    LEFT JOIN mst_destination_text b ON b.destinationtext_destination_id = a.`tourpackagesdest_destination_id` AND b.`destinationtext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+                AND a.`tourpackagesdest_tourpackages_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function addTourpackages($data, $name, $content, $images, $price, $destination){
+        $this->default->trans_begin();
+
+        $this->default->insert('mst_tourpackages',$data);
+        $tourpackages_id = $this->default->insert_id();
+
+        if(!empty($name)){
+            foreach ($name as $key => $value) {
+                $data = array(
+                    'tourpackagestext_tourpackages_id' => $tourpackages_id,
+                    'tourpackagestext_lang' => $key,
+                    'tourpackagestext_name' => $value,
+                    'tourpackagestext_text' => $content[$key]
+                );
+                $this->default->insert('mst_tourpackages_text',$data);
+            }
+        }
+
+        if(!empty($images)){
+            foreach ($images as $key => $value) {
+                $data = array(
+                    'tourpackagesimg_tourpackages_id' => $tourpackages_id,
+                    'tourpackagesimg_order' => $key,
+                    'tourpackagesimg_img' => $value
+                );
+                $this->default->insert('mst_tourpackages_img',$data);
+            }
+        }
+
+        if(!empty($price['start'])){
+            foreach ($price['start'] as $key => $value) {
+                if(!empty($price['start'][$key]) AND !empty($price['end'][$key]) ANd !empty($price['price_local'][$key]) AND !empty($price['price_foreign'][$key])){
+                    $data = array(
+                        'tourpackagesprice_tourpackages_id' => $tourpackages_id,
+                        'tourpackagesprice_start' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['end'][$key] : $price['start'][$key]),
+                        'tourpackagesprice_end' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['start'][$key] : $price['end'][$key]),
+                        'tourpackagesprice_price_local' => str_replace('.','',$price['price_local'][$key]),
+                        'tourpackagesprice_price_foreign' => str_replace('.','',$price['price_foreign'][$key])
+                    );
+                    $this->default->insert('mst_tourpackages_price',$data);
+                }
+            }
+        }
+
+        if(!empty($destination['destination'])){
+            foreach ($destination['destination'] as $key => $value) {
+                if(!empty($destination['destination'][$key]) AND !empty($destination['day'][$key]) ANd !empty($destination['order'][$key])){
+                    $data = array(
+                        'tourpackagesdest_tourpackages_id' => $tourpackages_id,
+                        'tourpackagesdest_destination_id' => $destination['destination'][$key],
+                        'tourpackagesdest_day' => $destination['day'][$key],
+                        'tourpackagesdest_order' => $destination['order'][$key],
+                        'tourpackagesdest_is_night' => ((isset($destination['is_night'][$key]) AND $destination['is_night'][$key] == 1) ? 1 : 0)
+                    );
+                    $this->default->insert('mst_tourpackages_destination',$data);
+                }
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function updateTourpackages($data, $id, $name, $content, $images, $price, $destination){
+        $this->default->trans_begin();
+
+        $this->default->where('tourpackages_id', $id);
+        $this->default->update('mst_tourpackages',$data);
+
+        $this->default->where('tourpackagestext_tourpackages_id', $id);
+        $this->default->delete('mst_tourpackages_text');
+        $this->default->where('tourpackagesimg_tourpackages_id', $id);
+        $this->default->delete('mst_tourpackages_img');
+        $this->default->where('tourpackagesprice_tourpackages_id', $id);
+        $this->default->delete('mst_tourpackages_price');
+        $this->default->where('tourpackagesdest_tourpackages_id', $id);
+        $this->default->delete('mst_tourpackages_destination');
+
+        if(!empty($name)){
+            foreach ($name as $key => $value) {
+                $data = array(
+                    'tourpackagestext_tourpackages_id' => $id,
+                    'tourpackagestext_lang' => $key,
+                    'tourpackagestext_name' => $value,
+                    'tourpackagestext_text' => $content[$key]
+                );
+                $this->default->insert('mst_tourpackages_text',$data);
+            }
+        }
+
+        if(!empty($images)){
+            foreach ($images as $key => $value) {
+                $data = array(
+                    'tourpackagesimg_tourpackages_id' => $id,
+                    'tourpackagesimg_order' => $key,
+                    'tourpackagesimg_img' => $value
+                );
+                $this->default->insert('mst_tourpackages_img',$data);
+            }
+        }
+
+        if(!empty($price['start'])){
+            foreach ($price['start'] as $key => $value) {
+                if(!empty($price['start'][$key]) AND !empty($price['end'][$key]) ANd !empty($price['price_local'][$key]) AND !empty($price['price_foreign'][$key])){
+                    $data = array(
+                        'tourpackagesprice_tourpackages_id' => $id,
+                        'tourpackagesprice_start' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['end'][$key] : $price['start'][$key]),
+                        'tourpackagesprice_end' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['start'][$key] : $price['end'][$key]),
+                        'tourpackagesprice_price_local' => str_replace('.','',$price['price_local'][$key]),
+                        'tourpackagesprice_price_foreign' => str_replace('.','',$price['price_foreign'][$key])
+                    );
+                    $this->default->insert('mst_tourpackages_price',$data);
+                }
+            }
+        }
+
+        if(!empty($destination['destination'])){
+            foreach ($destination['destination'] as $key => $value) {
+                if(!empty($destination['destination'][$key]) AND !empty($destination['day'][$key]) ANd !empty($destination['order'][$key])){
+                    $data = array(
+                        'tourpackagesdest_tourpackages_id' => $id,
+                        'tourpackagesdest_destination_id' => $destination['destination'][$key],
+                        'tourpackagesdest_day' => $destination['day'][$key],
+                        'tourpackagesdest_order' => $destination['order'][$key],
+                        'tourpackagesdest_is_night' => ((isset($destination['is_night'][$key]) AND $destination['is_night'][$key] == 1) ? 1 : 0)
+                    );
+                    $this->default->insert('mst_tourpackages_destination',$data);
+                }
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function deleteTourpackages($id){
+        $this->default->trans_begin();
+
+        $this->default->where('tourpackagesprice_tourpackages_id', $id);
+        $this->default->delete('mst_tourpackages_price');
+
+        $this->default->where('tourpackagesdest_tourpackages_id', $id);
+        $this->default->delete('mst_tourpackages_destination');
+
+        $this->default->where('tourpackagestext_tourpackages_id', $id);
+        $this->default->delete('mst_tourpackages_text');
+        
+        $this->default->where('tourpackagesimg_tourpackages_id', $id);
+        $this->default->delete('mst_tourpackages_img');
+
+        $this->default->where('tourpackages_id', $id);
+        $this->default->delete('mst_tourpackages');
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function getDestination(){
+
+        $query = "
+                SELECT
+                    a.`destinationtext_destination_id` AS `id`,
+                    a.`destinationtext_name` AS `name`
+                FROM
+                    `mst_destination_text` a
+                WHERE
+                    a.`destinationtext_lang` = '".$this->user_lang."' 
+                ORDER BY a.`destinationtext_name`
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+
+    // Tourpackages Testimony
+    public function getAllTourpackagesTestimony($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " LOWER(a.`tourpackagestesti_user_real_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`tourpackagestesti_testimony`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`tourpackagestesti_rating`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT
+                    a.`tourpackagestesti_token` AS token,
+                    a.`tourpackagestesti_tourpackages_id` AS tourpackages_id,
+                    a.`tourpackagestesti_user_id` AS user_id,
+                    a.`tourpackagestesti_user_real_name` AS user_real_name,
+                    b.`user_photo` AS photo,
+                    a.`tourpackagestesti_testimony` AS testimony,
+                    a.`tourpackagestesti_date` AS `date`,
+                    a.`tourpackagestesti_rating` AS rating,
+                    a.`tourpackagestesti_is_process` AS is_process,
+                    a.`tourpackagestesti_is_publish` AS is_publish,
+                    a.`insert_datetime`
+                FROM
+                    `mst_tourpackages_testimony`  a
+                    LEFT JOIN `core_user` b ON b.`user_id` = a.`tourpackagestesti_user_id`
+                WHERE
+                    a.`tourpackagestesti_tourpackages_id` =  $id
+        ";
+        $query.= $str;
+        $query .= " ORDER BY $order $dir ";
+        if (isset($start) AND $start != '') {
+            $query .= " LIMIT $start, $length";
+        }
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllTourpackagesTestimony($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " LOWER(a.`tourpackagestesti_user_real_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`tourpackagestesti_testimony`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`tourpackagestesti_rating`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT 
+                    COUNT(*) AS total
+                FROM 
+                    `mst_tourpackages_testimony`  a
+                    LEFT JOIN `core_user` b ON b.`user_id` = a.`tourpackagestesti_user_id`
+                WHERE
+                    a.`tourpackagestesti_tourpackages_id` =  $id
+                ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTourpackagesTitle($id){
+
+        $query = "
+                SELECT
+                    a.`tourpackagestext_tourpackages_id` AS `tourpackages_id`,
+                    a.`tourpackagestext_lang` AS `lang`,
+                    a.`tourpackagestext_name` AS `name`,
+                    a.`tourpackagestext_text` AS `text`
+                FROM
+                    `mst_tourpackages_text` a 
+                WHERE 1 = 1
+                AND a.`tourpackagestext_lang` = '".$this->user_lang."'
+                AND  a.`tourpackagestext_tourpackages_id` = $id
+                
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTourpackagesTestimony($id){
+
+        $query = "
+                SELECT
+                    a.`tourpackagestesti_token` AS token,
+                    a.`tourpackagestesti_tourpackages_id` AS tourpackages_id,
+                    f.`tourpackagestext_name` AS tourpackages_name,
+                    a.`tourpackagestesti_user_id` AS user_id,
+                    a.`tourpackagestesti_user_real_name` AS user_real_name,
+                    e.`user_photo` AS photo,
+                    a.`tourpackagestesti_date` AS `date`,
+                    a.`tourpackagestesti_testimony` AS testimony,
+                    a.`tourpackagestesti_rating` AS rating,
+                    a.`tourpackagestesti_is_process` AS is_process,
+                    a.`tourpackagestesti_is_publish` AS is_publish,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `mst_tourpackages_testimony` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                    LEFT JOIN core_user e ON e.user_id = a.`tourpackagestesti_user_id`
+                    LEFT JOIN `mst_tourpackages_text` f ON f.tourpackagestext_tourpackages_id = a.tourpackagestesti_tourpackages_id AND f.`tourpackagestext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+                AND a.`tourpackagestesti_token` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function updateTourpackagesTestimony($data, $id){
+        $this->default->trans_begin();
+
+        $this->default->where('tourpackagestesti_token', $id);
+        $this->default->update('mst_tourpackages_testimony',$data);
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function deleteTourpackagesTestimony($id){
+        $this->default->trans_begin();
+        $this->default->where('tourpackagestesti_token', $id);
+        $this->default->delete('mst_tourpackages_testimony');
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
 }

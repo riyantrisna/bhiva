@@ -102,7 +102,7 @@ class Ticket extends CI_Controller {
         }
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="base_price_foreign">'.MultiLang('default_price_foreign').' (Rp) *</label>';
+        $html.=     '<label for="base_price_foreign">'.MultiLang('default_price_foreign').'</label>';
         $html.=     '<br>';
         if(!empty($visitortype)){
             foreach ($visitortype as $key => $value) {
@@ -669,7 +669,7 @@ class Ticket extends CI_Controller {
             }
         }else{
         $html.=             '<tr>
-                                <td colspan="4" style="text-align: center;">
+                                <td colspan="5" style="text-align: center;">
                                     <i>-- '.MultiLang('empty_data').' --</i>
                                 </td>
                             </tr>';

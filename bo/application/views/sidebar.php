@@ -211,6 +211,6 @@ $(document).ready(function() {
                 window.location.href = "<?php echo base_url(); ?>";
             }
         });
-    }, (1000 * 60 * 10));
+    }, (1000 * 60));
 });
 </script>

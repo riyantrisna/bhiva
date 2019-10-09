@@ -544,3 +544,5 @@ $config['path_destination'] = $config['base_url'].'files/images/destination/';
 $config['path_destination_upload'] = 'files/images/destination/';
 $config['path_venue'] = $config['base_url'].'files/images/venue/';
 $config['path_venue_upload'] = 'files/images/venue/';
+$config['path_tourpackages'] = $config['base_url'].'files/images/tourpackages/';
+$config['path_tourpackages_upload'] = 'files/images/tourpackages/';
