@@ -114,6 +114,24 @@
                     </ul>
                 </li>
 
+                <li class="nav-item has-treeview <?php echo ($active_menu_parent == 'transaction' ? 'menu-open' : ''); ?>">
+                    <a href="<?php echo base_url();?>transaction" class="nav-link <?php echo ($active_menu_parent == 'transaction' ? 'active' : ''); ?>">
+                        <i class="nav-icon fas fa-receipt"></i>
+                        <p>
+                            <?php echo MultiLang('transaction'); ?>
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item has-treeview <?php echo ($active_menu_parent == 'venueschedule' ? 'menu-open' : ''); ?>">
+                    <a href="<?php echo base_url();?>venueschedule" class="nav-link <?php echo ($active_menu_parent == 'transaction' ? 'active' : ''); ?>">
+                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <p>
+                            <?php echo MultiLang('venue_schedule'); ?>
+                        </p>
+                    </a>
+                </li>
+
                 <li class="nav-item has-treeview <?php echo ($active_menu_parent == 'setting' ? 'menu-open' : ''); ?>">
                     <a href="<?php echo base_url();?>" class="nav-link <?php echo ($active_menu_parent == 'setting' ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-cog"></i>

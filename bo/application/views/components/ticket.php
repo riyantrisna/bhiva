@@ -26,6 +26,7 @@
                             <tr>
                                 <th><?php echo MultiLang('number'); ?></th>
                                 <th><?php echo MultiLang('name'); ?></th>
+                                <th><?php echo MultiLang('is_type_visitor'); ?></th>
                                 <th><?php echo MultiLang('status'); ?></th>
                                 <th><?php echo MultiLang('action'); ?></th>
                             </tr>
@@ -126,13 +127,33 @@ $(document).ready(function() {
 
         "columnDefs": [
             { 
-                "targets": [ 0,3 ], //last column
+                "targets": [ 0,4 ], //last column
                 "orderable": false, //set not orderable
             },
-            { "targets": 3, "width": '120px' }
+            { "targets": 4, "width": '120px' }
         ],
     });
 });
+
+async function cek_is_type_visitor(){
+    if($('#is_type_visitor').is(":checked")){
+        $('.visitor_type_col').show();
+        $('#div_base_price_local1').show();
+        $('#div_base_price_local2').hide();
+        $('#div_base_price_foreign1').show();
+        $('#div_base_price_foreign2').hide();
+        $('#button_add_price').attr("onclick","add_price()");
+        console.log('yes');
+    }else{
+        $('.visitor_type_col').hide();
+        $('#div_base_price_local1').hide();
+        $('#div_base_price_local2').show();
+        $('#div_base_price_foreign1').hide();
+        $('#div_base_price_foreign2').show();
+        $('#button_add_price').attr("onclick","add_price_not_visitor_type()");
+        console.log('no');
+    }
+}
 
 function reload_table()
 {
@@ -159,6 +180,12 @@ function add()
                 $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
                 await $(".calendar").datepicker({
                     format: 'yyyy-mm-dd'
+                });
+
+                await cek_is_type_visitor();
+
+                $('#is_type_visitor').on('click', function(){
+                    cek_is_type_visitor();
                 });
             }else{
                 toastr.error(xhr.statusText);
@@ -188,6 +215,11 @@ function edit(id)
                 $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
                 await $(".calendar").datepicker({
                     format: 'yyyy-mm-dd'
+                });
+                await cek_is_type_visitor();
+
+                $('#is_type_visitor').on('click', function(){
+                    cek_is_type_visitor();
                 });
             }else{
                 toastr.error(xhr.statusText);
@@ -313,7 +345,49 @@ async function add_price(){
     str+= '<td>';
     str+= '    <input type="text" name="end[]" class="form-control calendar" placeholder="yyyy-mm-dd">';
     str+= '</td>';
+    str+= '<td class="visitor_type_col">';
+    str+=      '<select name="visitortype[]" class="form-control">';
+    str+=           '<option value="">';
+    str+=               '-- <?php echo MultiLang('select'); ?> --';
+    str+=           '</option>';
+    if(!isEmpty(visitortype)){
+        $.each( visitortype, function( key, value ) {
+    str+=           '<option value="'+value.id+'">';
+    str+=                value.name;
+    str+=           '</option>';
+        });
+    }
+    str+=      '</select>';
+    str+= '</td>';
     str+= '<td>';
+    str+= '   <input type="text" class="form-control curr" name="price_local[]">';
+    str+= '</td>';
+    str+= '<td>';
+    str+= '    <input type="text" class="form-control curr" name="price_foreign[]">';
+    str+= '</td>';
+    str+= '<td>';
+    str+= '    <button type="button" class="btn btn-danger" onclick="delete_price(this)"><i class="fas fa-trash-alt"></i></button>';
+    str+= '</td>';
+    str+= '</tr>';
+    
+    await $('#table_price').append(str);
+    await $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
+    await $(".calendar").datepicker({
+        format: 'yyyy-mm-dd'
+    });
+}
+
+async function add_price_not_visitor_type(){
+    var visitortype = <?php echo $visitortype; ?>;
+    str = '';
+    str+= '<tr>';
+    str+= '<td>';
+    str+= '    <input type="text" name="start[]" class="form-control calendar" placeholder="yyyy-mm-dd">';
+    str+= '</td>';
+    str+= '<td>';
+    str+= '    <input type="text" name="end[]" class="form-control calendar" placeholder="yyyy-mm-dd">';
+    str+= '</td>';
+    str+= '<td class="visitor_type_col" style="display: none;">';
     str+=      '<select name="visitortype[]" class="form-control">';
     str+=           '<option value="">';
     str+=               '-- <?php echo MultiLang('select'); ?> --';
@@ -348,4 +422,6 @@ async function add_price(){
 function delete_price(tr){
     $(tr).parent().parent().remove();
 }
+
+
 </script>

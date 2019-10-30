@@ -119,7 +119,7 @@ $(document).ready(function() {
                 "targets": [ 0,2,3 ], //last column
                 "orderable": false, //set not orderable
             },
-            { "targets": 3, "width": '120px' }
+            { "targets": 3, "width": '120px' },
         ],
     });
 });
