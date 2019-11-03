@@ -1130,6 +1130,74 @@ class Data extends CI_Model {
         }
     }
 
+    //greeting
+    public function getDetailGreeting($id){
+
+        $query = "
+                SELECT
+                    a.`greeting_id` AS `id`,
+                    a.`greeting_img` AS `img`,
+                    a.`greeting_link_img` AS `link_img`,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `cms_greeting` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND a.`greeting_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailGreetingText($id){
+
+        $query = "
+                SELECT
+                    a.`greetingtext_greeting_id` AS `greeting_id`,
+                    a.`greetingtext_lang` AS `lang`,
+                    a.`greetingtext_text` AS `text`
+                FROM
+                    `cms_greeting_text` a
+                WHERE 1 = 1
+                AND a.`greetingtext_greeting_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function updateGreeting($data, $id, $content){
+        $this->default->trans_begin();
+
+        $this->default->where('greeting_id', $id);
+        $this->default->update('cms_greeting',$data);
+
+        $this->default->where('greetingtext_greeting_id', $id);
+        $this->default->delete('cms_greeting_text');
+
+        if(!empty($content)){
+            foreach ($content as $key => $value) {
+                $data = array(
+                    'greetingtext_greeting_id' => $id,
+                    'greetingtext_lang' => $key,
+                    'greetingtext_text' => $value
+                );
+                $this->default->insert('cms_greeting_text',$data);
+            }
+        }
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
     //whoweare
     public function getDetailWhoweare($id){
 
@@ -1756,18 +1824,22 @@ class Data extends CI_Model {
             $str .= " OR LOWER(b.`destinationtext_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`destinationtext_text`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`destination_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(c.`desloc_name`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
         }
 
         $query = "
                 SELECT
                     a.`destination_id` AS `id`,
+                    a.`destination_desloc_id` AS `desloc_id`,
+                    c.`desloc_name` AS `desloc_name`,
                     a.`destination_status` AS `status`,
                     b.`destinationtext_name` AS `name`,
                     b.`destinationtext_text` AS `text`
                 FROM
                     `mst_destination` a
                     LEFT JOIN `mst_destination_text` b ON b.`destinationtext_destination_id` = a.`destination_id` AND b.`destinationtext_lang` = '".$this->user_lang."'
+                    LEFT JOIN `ref_destination_location` c ON c.desloc_id = a.`destination_desloc_id`
                 WHERE 1 = 1
         ";
         $query.= $str;
@@ -1789,6 +1861,7 @@ class Data extends CI_Model {
             $str .= " OR LOWER(b.`destinationtext_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`destinationtext_text`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`destination_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(c.`desloc_name`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
         }
 
@@ -1798,6 +1871,7 @@ class Data extends CI_Model {
                 FROM 
                 `mst_destination` a
                 LEFT JOIN `mst_destination_text` b ON b.`destinationtext_destination_id` = a.`destination_id` AND b.`destinationtext_lang` = '".$this->user_lang."'
+                LEFT JOIN `ref_destination_location` c ON c.desloc_id = a.`destination_desloc_id`
                 WHERE 1 = 1
                 ";
         $query.= $str;
@@ -1810,6 +1884,8 @@ class Data extends CI_Model {
         $query = "
                 SELECT
                     a.`destination_id` AS `id`,
+                    a.`destination_desloc_id` AS `desloc_id`,
+                    e.`desloc_name` AS `desloc_name`,
                     a.`destination_status` AS `status`,
                     c.user_real_name AS insert_user,
                     a.insert_datetime,
@@ -1819,6 +1895,7 @@ class Data extends CI_Model {
                     `mst_destination` a
                     LEFT JOIN core_user c ON c.user_id = a.insert_user_id
                     LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                    LEFT JOIN `ref_destination_location` e ON e.desloc_id = a.`destination_desloc_id`
                 WHERE 1 = 1
                 AND a.`destination_id` = '".$id."'
         ";
@@ -1963,6 +2040,20 @@ class Data extends CI_Model {
             $this->default->trans_commit();
             return TRUE;
         }
+    }
+
+    public function getComboLocationDestination(){
+
+        $query = "
+                SELECT
+                    a.`desloc_id` AS `id`,
+                    a.`desloc_name` AS `name`
+                FROM
+                    `ref_destination_location` a
+                ORDER BY a.desloc_order ASC
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
     }
 
 
@@ -3140,6 +3231,117 @@ class Data extends CI_Model {
         }else{
             $this->default->trans_commit();
             return TRUE;
+        }
+    }
+
+
+    // destinationlocation
+    public function getAllDestinationlocation($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(a.`desloc_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`desloc_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`desloc_is_show_home`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+            SELECT 
+                a.`desloc_id` AS `id`,
+                a.`desloc_name` AS `name`,
+                a.`desloc_order` AS `order`,
+                a.`desloc_is_show_home` AS `is_show_home`
+            FROM
+                `ref_destination_location` a
+            WHERE 1 = 1
+        ";
+        $query.= $str;
+        $query .= " ORDER BY $order $dir ";
+        if (isset($start) AND $start != '') {
+            $query .= " LIMIT $start, $length";
+        }
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllDestinationlocation($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(a.`desloc_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`desloc_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`desloc_is_show_home`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT 
+                    COUNT(DISTINCT a.`desloc_id`) AS total
+                FROM 
+                    ref_destination_location a 
+                WHERE 1 = 1
+                ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailDestinationlocation($id){
+
+        $query = "
+            SELECT 
+                a.`desloc_id` AS `id`,
+                a.`desloc_name` AS `name`,
+                a.`desloc_order` AS `order`,
+                a.`desloc_is_show_home` AS `is_show_home`,
+                c.user_real_name AS insert_user,
+                a.insert_datetime,
+                d.user_real_name AS update_user,
+                a.update_datetime
+            FROM
+                `ref_destination_location` a
+                LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                LEFT JOIN core_user d ON d.user_id = a.update_user_id
+            WHERE 1 = 1
+            AND a.`desloc_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function addDestinationlocation($data){
+        $query = $this->default->insert('ref_destination_location',$data);
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function updateDestinationlocation($data, $id){
+        $this->default->where('desloc_id', $id);
+        $query = $this->default->update('ref_destination_location',$data);
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function deleteDestinationlocation($id){
+        $this->default->where('desloc_id', $id);
+        $query = $this->default->delete('ref_destination_location');
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
         }
     }
 }

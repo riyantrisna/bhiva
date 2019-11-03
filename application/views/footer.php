@@ -1,7 +1,7 @@
 <!-- Footer -->
 <form style="margin-top: 2rem !important;">
     <div class="form-row align-middle justify-content-center col-md-12"
-        style="background-color: #0090D6; padding-top:1rem;">
+        style="background-color: #0C74A8; padding-top:1rem; margin-left:0;">
         <div class="col-md-6 row justify-content-left text-center form-group" style="padding-top: 7px;">
             <span style="color: #ffffff;"><?php echo MultiLang('text_subscribe'); ?></span>
         </div>
@@ -19,12 +19,32 @@
 <footer>
     <div class="container pt-5 border-bottom">
         <div class="row">
-            <div class="col-md-3 col-sm-12 mb-3 text-center">
+            <div class="col-md-3 col-sm-12 mb-3 text-left">
                 <img src="assets/images/logo-home-text.png" height="60"/>
+                <ul class="list-group mt-3">
+                    <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer" style="font-size: 14px;">
+                        <?php echo $contact->address; ?>
+                    </li>
+                    <?php if(!empty($contact->email)){ ?>
+                    <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
+                        <a href=""><i class="fas fa-envelope mr-2"></i> <?php echo $contact->email;?></a>
+                    </li>
+                    <?php } ?>
+                    <?php if(!empty($contact->phone)){ ?>
+                    <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
+                        <a href=""><i class="fas fa-phone mr-2"></i> <?php echo $contact->phone;?></a>
+                    </li>
+                    <?php } ?>
+                    <?php if(!empty($contact->wa)){ ?>
+                    <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
+                        <a href=""><i class="fab fa-whatsapp  mr-3"></i><?php echo $contact->wa;?></a>
+                    </li>
+                    <?php } ?>
+                </ul>
             </div>
             <div class="col-md-9 col-sm-12">
                 <div class="col-md-3 col-sm-6 col-6 p-0 float-left mb-3">
-                    <h5 class="mb-4 font-weight-bold text-uppercase text-grey-theme"><?php echo MultiLang('service'); ?></h5>
+                    <div class="mb-4 text-uppercase font-footer font-weight-bold"><?php echo MultiLang('service'); ?></div>
                     <ul class="list-group">
                         <?php
                         if(!empty($service)){
@@ -40,7 +60,7 @@
                     </ul>
                 </div>
                 <div class="col-md-3 col-sm-6 col-6 mb-3 p-0 float-left">
-                    <h5 class="mb-4 font-weight-bold text-uppercase text-grey-theme"><?php echo MultiLang('company'); ?></h5>
+                    <div class="mb-4 text-uppercase font-footer font-weight-bold"><?php echo MultiLang('company'); ?></div>
                     <ul class="list-group">
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
                             <a href=""><?php echo MultiLang('who_we_are');?></a>
@@ -54,7 +74,7 @@
                     </ul>
                 </div>
                 <div class="col-md-3 col-sm-6 col-6 mb-3 p-0 float-left">
-                    <h5 class="mb-4 font-weight-bold text-uppercase text-grey-theme"><?php echo MultiLang('follow_us_on'); ?></h5>
+                    <div class="mb-4 text-uppercase font-footer font-weight-bold"><?php echo MultiLang('follow_us_on'); ?></div>
                     <ul class="list-group">
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
                             <a href=""><i class="fab fa-facebook-f mr-3"></i> Facebook</a>
@@ -69,7 +89,7 @@
                 </div>
 
                 <div class="col-md-3 col-sm-6 col-6 p-0 mb-3 float-left">
-                    <h5 class="mb-4 font-weight-bold text-uppercase text-grey-theme"><?php echo MultiLang('support');?></h5>
+                    <div class="mb-4 text-uppercase font-footer font-weight-bold"><?php echo MultiLang('support');?></div>
                     <ul class="list-group">
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
                             <a href=""><?php echo MultiLang('privacy_policy');?></a>
@@ -78,7 +98,7 @@
                             <a href=""><?php echo MultiLang('term_and_condition');?></a>
                         </li>
                     </ul>
-                </div>
+                </div.>
             </div>
         </div>
     </div>

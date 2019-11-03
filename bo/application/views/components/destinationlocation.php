@@ -4,8 +4,8 @@
         <div class="row mb-2">
             <div class="col-sm-12">
                 <ol class="breadcrumb float-sm-left">
-                    <li class="breadcrumb-item"><?php echo MultiLang('master_data'); ?></li>
-                    <li class="breadcrumb-item active"><?php echo MultiLang('destination'); ?></li>
+                    <li class="breadcrumb-item"><?php echo MultiLang('setting'); ?></li>
+                    <li class="breadcrumb-item active"><?php echo MultiLang('destination_location'); ?></li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -26,8 +26,8 @@
                             <tr>
                                 <th><?php echo MultiLang('number'); ?></th>
                                 <th><?php echo MultiLang('name'); ?></th>
-                                <th><?php echo MultiLang('location'); ?></th>
-                                <th><?php echo MultiLang('status'); ?></th>
+                                <th><?php echo MultiLang('order'); ?></th>
+                                <th><?php echo MultiLang('is_show_home'); ?></th>
                                 <th><?php echo MultiLang('action'); ?></th>
                             </tr>
                         </thead>
@@ -42,7 +42,7 @@
 
 <!-- Modal Form -->
 <div class="modal fade" id="modal_form" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="title_form"></h5>
@@ -51,8 +51,8 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<div id="box_msg_destination"></div>
-				<form id="form_destination" autocomplete="nope">
+				<div id="box_msg_destinationlocation"></div>
+				<form id="form_destinationlocation" autocomplete="nope">
 					
 				</form>
 			</div>
@@ -65,7 +65,7 @@
 </div>
 
 <div class="modal fade" id="modal_detail" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="title_detail"></h5>
@@ -102,6 +102,28 @@
 	</div>
 </div>
 
+<style>
+.btn-files {
+    position: relative;
+    overflow: hidden;
+}
+.btn-files input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+</style>
+
 <script>
 
 function isNumber(evt) {
@@ -120,14 +142,14 @@ $(document).ready(function() {
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": "<?php echo base_url(); ?>destination/data",
+            "url": "<?php echo base_url(); ?>destinationlocation/data",
             "type": "POST"
         },
         "order": [[ 1, 'asc' ]], //Initial no order.
 
         "columnDefs": [
             { 
-                "targets": [ 0, 4 ], //last column
+                "targets": [ 0,4 ], //last column
                 "orderable": false, //set not orderable
             },
             { "targets": 4, "width": '120px' }
@@ -140,148 +162,123 @@ function reload_table()
     table.ajax.reload(null,false); //reload datatable ajax 
 }
 
-function readURL(input, i) {
+function readURL(input) {
 
-    var fileTypes = ['jpg', 'jpeg', 'png', 'gif', 'JPG', 'JPEG', 'PNG', 'GIF'];
+var fileTypes = ['jpg', 'jpeg', 'png', 'gif', 'JPG', 'JPEG', 'PNG', 'GIF'];
 
-    $('.msg_images').html('');
+$('.msg_images').html('');
     if (input.files && input.files[0]) {
         var reader = new FileReader();
         
-        if(input.files[0].size <= 1024000){
+        if(input.files[0].size <= 512000){
 
             var extension = input.files[0].name.split('.').pop().toLowerCase(),
             isSuccess = fileTypes.indexOf(extension) > -1;
 
             if(isSuccess){
                 reader.onload = function (e) {
-                    $('#label_images_'+i).hide();
-                    $('#show_images_'+i).attr('src', e.target.result).fadeOut().fadeIn();
-                    $('#file_image_value_'+i).val(e.target.result);
-                    $('#remove_'+i).show();
+                    $('#label_images').hide();
+                    $('#show_images').attr('src', e.target.result).fadeOut().fadeIn();
+                    $('#file_photo_value').val(e.target.result);
+                    $('#remove').show();
                 };
                 reader.readAsDataURL(input.files[0]);
             }else{
-                $('#msg_images_'+i).html('<?php echo MultiLang('allowed_file_is'); ?> jpg, JPG, jpeg, JPEG, png, PNG, gif, GIF');
+                $('#msg_images').html('<?php echo MultiLang('allowed_file_is'); ?> jpg, JPG, jpeg, JPEG, png, PNG, gif, GIF');
             }
         }else{
-            $('#msg_images_'+i).html('<?php echo MultiLang('max_file_is'); ?> 1024KB');
+            $('#msg_images').html('<?php echo MultiLang('max_file_is'); ?> 1024KB');
         }
-
-        
     }
 }
 
-function removeImage(i)
+function removeImage()
 {
-    $('#label_images_'+i).show();
-    $('#show_images_'+i).removeAttr('src').hide();
-    $('#file_image_value_'+i).val('');
-    $('#remove_'+i).hide();
+    $('#label_images').show();
+    $('#show_images').removeAttr('src').hide();
+    $('#file_photo_value').val('');
+    $('#remove').hide();
     $('.msg_images').html('');
 }
 
-async function add()
+function add()
 {
     save_method = 'add';
-    $('#modal_form').modal('show'); // show bootstrap modal
-    await $('#form_destination').html('');
-    $('#form_destination')[0].reset(); // reset form on modals
-    $("#box_msg_destination").html('').hide();
+    $('#form_destinationlocation')[0].reset(); // reset form on modals
+    $("#box_msg_destinationlocation").html('').hide();
     $('#btnSave').text('<?php echo MultiLang('save'); ?>');
     $('#btnSave').attr('disabled',false);
-    $('#title_form').text('<?php echo MultiLang('add'); ?> <?php echo MultiLang('destination'); ?>'); // Set Title to Bootstrap modal title
+    $('#title_form').text('<?php echo MultiLang('add'); ?> <?php echo MultiLang('destination_location'); ?>'); // Set Title to Bootstrap modal title
 
     $.ajax({
-        url : "<?php echo site_url('destination/add_view/')?>",
+        url : "<?php echo site_url('destinationlocation/add_view/')?>",
         type: "GET",
         dataType: "JSON",
         success: async function(data, textStatus, xhr)
         {
             if(xhr.status == '200'){
-                
-                await $('#form_destination').html(data.html);
+                await $('#form_destinationlocation').html(data.html);
+                await $("#birthday").datepicker({
+                    format: 'yyyy-mm-dd'
+                });
                 //image
                 await $('#remove_file').hide();
                 await $('#selector_file').show();
-                await $('#file_image_show').hide();
-                await $('.textarea').summernote({
-                    height: 150,
-                    toolbar: [
-                        [ 'style', [ 'style' ] ],
-                        [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'clear'] ],
-                        [ 'fontname', [ 'fontname' ] ],
-                        [ 'fontsize', [ 'fontsize' ] ],
-                        [ 'color', [ 'color' ] ],
-                        [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
-                        [ 'table', [ 'table' ] ],
-                        [ 'view', [ 'fullscreen', 'codeview' ] ]
-                    ]
-                });
+                await $('#file_photo_show').hide();
             }else{
                 toastr.error(xhr.statusText);
             }
-            
+            $('#modal_form').modal('show'); // show bootstrap modal
         }
     });
 }
 
-async function edit(id)
+function edit(id)
 {
     save_method = 'edit';
-    $('#modal_form').modal('show'); // show bootstrap modal
-    await $('#form_destination').html('');
-    $('#form_destination')[0].reset(); // reset form on modals
-    $("#box_msg_destination").html('').hide();
+    $('#form_destinationlocation')[0].reset(); // reset form on modals
+    $("#box_msg_destinationlocation").html('').hide();
     $('#btnSave').text('<?php echo MultiLang('save'); ?>');
     $('#btnSave').attr('disabled',false);
-    $('#title_form').text('<?php echo MultiLang('edit'); ?> <?php echo MultiLang('destination'); ?>'); // Set Title to Bootstrap modal title
+    $('#title_form').text('<?php echo MultiLang('edit'); ?> <?php echo MultiLang('destination_location'); ?>'); // Set Title to Bootstrap modal title
 
     $.ajax({
-        url : "<?php echo site_url('destination/edit_view/')?>/" + id,
+        url : "<?php echo site_url('destinationlocation/edit_view/')?>/" + id,
         type: "GET",
         dataType: "JSON",
         success: async function(data, textStatus, xhr)
         {
             if(xhr.status == '200'){
-                await $('#form_destination').html(data.html);
-                await $('.textarea').summernote({
-                    height: 150,
-                    toolbar: [
-                        [ 'style', [ 'style' ] ],
-                        [ 'font', [ 'bold', 'italic', 'underline', 'strikethrough', 'clear'] ],
-                        [ 'fontname', [ 'fontname' ] ],
-                        [ 'fontsize', [ 'fontsize' ] ],
-                        [ 'color', [ 'color' ] ],
-                        [ 'para', [ 'ol', 'ul', 'paragraph', 'height' ] ],
-                        [ 'table', [ 'table' ] ],
-                        [ 'view', [ 'fullscreen', 'codeview' ] ]
-                    ]
+                await $('#form_destinationlocation').html(data.html);
+                await $("#birthday").datepicker({
+                    format: 'yyyy-mm-dd'
                 });
             }else{
                 toastr.error(xhr.statusText);
             }
 
+            $('#modal_form').modal('show'); // show bootstrap modal
+
         }
     });
 }
 
-async function save()
+function save()
 {
-    await $('#btnSave').text('<?php echo MultiLang('process'); ?>...'); //change button text
-    await $('#btnSave').attr('disabled',true); //set button disable 
+    $('#btnSave').text('<?php echo MultiLang('process'); ?>...'); //change button text
+    $('#btnSave').attr('disabled',true); //set button disable 
     var url;
 
     if(save_method == 'add') {
-        url = "<?php echo site_url('destination/add')?>";
+        url = "<?php echo site_url('destinationlocation/add')?>";
     } else {
-        url = "<?php echo site_url('destination/edit')?>";
+        url = "<?php echo site_url('destinationlocation/edit')?>";
     }
 
     $.ajax({
         url : url,
         type: "POST",
-        data: $('#form_destination').serialize(),
+        data: $('#form_destinationlocation').serialize(),
         dataType: "json",
         success: async function(data, textStatus, xhr)
         {
@@ -289,13 +286,13 @@ async function save()
                 if(data.status)
                 { 
                     $('#modal_form').modal('toggle');
-                    $("#box_msg_destination").html('').hide();
+                    $("#box_msg_destinationlocation").html('').hide();
                     await reload_table();
                     await toastr.success(data.message);
                 }
                 else
                 {
-                    await $('#box_msg_destination').html(data.message).fadeOut().fadeIn();
+                    await $('#box_msg_destinationlocation').html(data.message).fadeOut().fadeIn();
                     $('#modal_form').animate({ scrollTop: 0 }, 'slow');
                 }
             }else{
@@ -312,10 +309,10 @@ async function save()
 
 function detail(id)
 {
-    $('#title_detail').text('<?php echo MultiLang('detail'); ?> <?php echo MultiLang('destination'); ?>'); // Set Title to Bootstrap modal title
+    $('#title_detail').text('<?php echo MultiLang('detail'); ?> <?php echo MultiLang('destination_location'); ?>'); // Set Title to Bootstrap modal title
 
     $.ajax({
-        url : "<?php echo site_url('destination/detail/')?>/" + id,
+        url : "<?php echo site_url('destinationlocation/detail/')?>/" + id,
         type: "GET",
         dataType: "JSON",
         success: function(data, textStatus, xhr)
@@ -335,8 +332,8 @@ function detail(id)
 function deletes(id,name)
 {
     $('#modal_delete').modal('show'); // show bootstrap modal when complete loaded
-    $('#title_delete').text('<?php echo MultiLang('delete'); ?> <?php echo MultiLang('destination'); ?>'); // Set title to Bootstrap modal title
-    $("#body_delete").html('<?php echo MultiLang('delete'); ?> <?php echo MultiLang('destination'); ?> <b>'+name+'</b> ?');
+    $('#title_delete').text('<?php echo MultiLang('delete'); ?> <?php echo MultiLang('destination_location'); ?>'); // Set title to Bootstrap modal title
+    $("#body_delete").html('<?php echo MultiLang('delete'); ?> <?php echo MultiLang('destination_location'); ?> <b>'+name+'</b> ?');
     $('#btnHapus').attr("onclick", "process_delete('"+id+"')");
 }
 
@@ -346,7 +343,7 @@ function process_delete(id)
     $('#btnHapus').attr('disabled',true); //set button disable 
 
     $.ajax({
-        url : "<?php echo site_url('destination/delete/')?>/" + id,
+        url : "<?php echo site_url('destinationlocation/delete/')?>/" + id,
         type: "GET",
         dataType: "JSON",
         success: function(data, textStatus, xhr)

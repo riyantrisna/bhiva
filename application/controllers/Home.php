@@ -12,14 +12,16 @@ class Home extends CI_Controller {
 
 	public function index()
 	{
-		
-		$data['slider'] = $this->data->getSlider();
-		$data['tourpackages'] = $this->data->getTourpackages();
-		$data['service'] = $this->data->getService();
 		$data['lang'] = $this->data->getLang();
 		$data['lang_set'] = $this->data->getLangDetail();
 		$data['path_language'] = $this->config->item('path_language');
+		$data['service'] = $this->data->getService();
+		$data['contact'] = $this->data->getContact();
+
+		$data['slider'] = $this->data->getSlider();
+		$data['greeting'] = $this->data->getGreeting();
 		$data['ticket'] = $this->data->getTicket();
+		$data['tourpackages'] = $this->data->getTourpackages();
 
 		$this->load->view('home', $data);
 

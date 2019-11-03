@@ -177,7 +177,7 @@ class Service extends CI_Controller {
                         for($i=1; $i<=4; $i++){
         $html.=             '<div class="col" style="text-align: center;">
                                 <label id="label_images_'.$i.'" for="images_'.$i.'" style="cursor: pointer;">
-                                    <img style="width:180px; height:100px; border:1px dashed #C3C3C3;" src="assets/images/upload-images.png" />
+                                    <img style="width:180px; height:100px; border:1px dashed #C3C3C3;" src="../assets/images/upload-images.png" />
                                 </label>
                                 
                                 <input type="file" name="images_'.$i.'" id="images_'.$i.'" style="display:none;" onchange="readURL(this,\''.$i.'\')" accept="image/*"/>
@@ -473,7 +473,7 @@ class Service extends CI_Controller {
                                     }
         $html.=             '<div class="col" style="text-align: center;">
                                 <label id="label_images_'.$i.'" for="images_'.$i.'" style="cursor: pointer;'.(!empty($value->img) ? 'display:none;' : '').'">
-                                    <img style="width:180px; height:100px; border:1px dashed #C3C3C3;" src="assets/images/upload-images.png" />
+                                    <img style="width:180px; height:100px; border:1px dashed #C3C3C3;" src="../assets/images/upload-images.png" />
                                 </label>
                                 
                                 <input type="file" name="images_'.$i.'" id="images_'.$i.'" style="display:none;" onchange="readURL(this,\''.$i.'\')" accept="image/*"/>
@@ -736,7 +736,7 @@ class Service extends CI_Controller {
                             foreach ($detail_images as $key => $value) {
                                 if($value->order == $i){
         $html.=             '<div class="col" style="text-align: center;">
-                                <img style="width:180px; height:100px; border:1px dashed #C3C3C3; margin-bottom: 5px;" id="show_images_'.$i.'" src="'.(!empty($value->img) ? $path_service.$value->img : 'assets/images/upload-images.png').'" />
+                                <img style="width:180px; height:100px; border:1px dashed #C3C3C3; margin-bottom: 5px;" id="show_images_'.$i.'" src="'.(!empty($value->img) ? $path_service.$value->img : '../assets/images/upload-images.png').'" />
 
                             </div>';
                                 }

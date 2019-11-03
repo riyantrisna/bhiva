@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Whoweare extends CI_Controller {
+class Greeting extends CI_Controller {
 
 	function __construct(){
 		parent::__construct();
@@ -14,19 +14,19 @@ class Whoweare extends CI_Controller {
 
 	public function index()
 	{
-		$data['components'] = 'components/whoweare';
+		$data['components'] = 'components/greeting';
 		$data['active_menu_parent'] = 'cms';
-        $data['active_menu'] = 'whoweare';
+        $data['active_menu'] = 'greeting';
 
         $path_language = $this->config->item('path_language');
-        $path_whoweare = $this->config->item('path_whoweare');
-        $detail = $this->data->getDetailWhoweare(1);
-        $detail_text = $this->data->getDetailWhoweareText(1);
+        $path_greeting = $this->config->item('path_greeting');
+        $detail = $this->data->getDetailGreeting(1);
+        $detail_text = $this->data->getDetailGreetingText(1);
         $lang = $this->data->getLang();
 
         if(!empty($detail->img)){
-            $type = pathinfo($path_whoweare.$detail->img, PATHINFO_EXTENSION);
-            $base_64_images = base64_encode(file_get_contents($path_whoweare.$detail->img));
+            $type = pathinfo($path_greeting.$detail->img, PATHINFO_EXTENSION);
+            $base_64_images = base64_encode(file_get_contents($path_greeting.$detail->img));
             $base_64_images = 'data:image/' . $type . ';base64,' .$base_64_images;
         }else{
             $base_64_images = '';
@@ -42,7 +42,7 @@ class Whoweare extends CI_Controller {
                             
                             <input type="file" name="images" id="images" style="display:none;" onchange="readURL(this)" accept="image/*"/>
 
-                            <img style="width:360px; height:200px; border:1px dashed #C3C3C3; margin-bottom: 5px; '.(!empty($detail->img) ? '' : 'display:none;').'" id="show_images" '.(!empty($detail->img) ? 'src="'.$path_whoweare.$detail->img.'"' : '').' />
+                            <img style="width:360px; height:200px; border:1px dashed #C3C3C3; margin-bottom: 5px; '.(!empty($detail->img) ? '' : 'display:none;').'" id="show_images" '.(!empty($detail->img) ? 'src="'.$path_greeting.$detail->img.'"' : '').' />
                             <br>
                             <div style="height: 40px;">
                                 <span id="remove" class="btn btn-warning" onclick="removeImage()" style="cursor: pointer; margin-bottom: 5px; '.(!empty($detail->img) ? '' : 'display:none;').'">
@@ -55,6 +55,10 @@ class Whoweare extends CI_Controller {
                             <input type="hidden" id="file_image_value_old" name="file_image_value_old" value="'.$detail->img.'"/>
                         </div>
                     </div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="link_img">'.MultiLang('link_img').' *</label>';
+        $html.=    '<textarea id="link_img" name="link_img" class="form-control">'.$detail->link_img.'</textarea>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="content">'.MultiLang('content').'</label>';
@@ -87,7 +91,8 @@ class Whoweare extends CI_Controller {
 
     public function edit()
     {   
-        $path_whoweare_upload = $this->config->item('path_whoweare_upload');
+        $path_greeting_upload = $this->config->item('path_greeting_upload');
+        $link_img = $this->input->post('link_img', TRUE);
         $content = $this->input->post('content', TRUE);
         $content_name = $this->input->post('content_name', TRUE);
         $file_image_value = $this->input->post('file_image_value');
@@ -120,29 +125,31 @@ class Whoweare extends CI_Controller {
             if(!empty($file_image_value)){
                 $max_size = '1024'; // in KB
                 $type_allow = 'jpg|JPG|png|PNG|jpeg|JPEG|gif|GIF';
-                $upload = $this->data->uploadBase64($file_image_value, $path_whoweare_upload, $max_size, $type_allow);
+                $upload = $this->data->uploadBase64($file_image_value, $path_greeting_upload, $max_size, $type_allow);
             }
 
             if($upload['status']){
                 if(!empty($file_image_value)){
                     $data = array(
-                        'whoweare_img' => (!empty($upload['file'])) ? $upload['file'] : NULL,
+                        'greeting_img' => (!empty($upload['file'])) ? $upload['file'] : NULL,
+                        'greeting_link_img' => (!empty($link_img)) ? $link_img : NULL,
                         'update_user_id' => $user_id,
                         'update_datetime' => $date
                     );
                 }else{
                     $data = array(
+                        'greeting_link_img' => (!empty($link_img)) ? $link_img : NULL,
                         'update_user_id' => $user_id,
                         'update_datetime' => $date
                     );
                 }
-                $results = $results && $this->data->updateWhoweare($data, 1, $content);
+                $results = $results && $this->data->updateGreeting($data, 1, $content);
             
                 if ($results) {
                     $result["status"] = TRUE;
                     $result["message"] = MultiLang('msg_update_success');
                     if(!empty($file_image_value) AND !empty($file_image_value_old)){
-                        @unlink($path_whoweare_upload.$file_image_value_old);
+                        @unlink($path_greeting_upload.$file_image_value_old);
                         $result['new_file'] = $upload['file'];
                     }
                 } else {
@@ -153,7 +160,7 @@ class Whoweare extends CI_Controller {
                             <span aria-hidden="true">&times;</span>
                         </button>';
                     $result["message"].= '</div>';
-                    @unlink($path_whoweare_upload.$file_image_value);
+                    @unlink($path_greeting_upload.$file_image_value);
                 }
 
             }else{

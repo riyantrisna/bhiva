@@ -30,7 +30,8 @@ class Destination extends CI_Controller {
 
         $columns = array( 
             1 => 'b.`destinationtext_name`',
-            2 => 'a.`destination_status`'
+            2 => 'c.`desloc_name`',
+            3 => 'a.`destination_status`'
         );
 
         $filter['order'] = $columns[$this->input->post('order')[0]['column']];
@@ -48,6 +49,7 @@ class Destination extends CI_Controller {
                 $row = array();
                 $row[] = $no;
                 $row[] = $value->name;
+                $row[] = $value->desloc_name;
                 $row[] = ($value->status == 1) ? MultiLang('active') : MultiLang('not_active');
     
                 //add html for action
@@ -72,6 +74,7 @@ class Destination extends CI_Controller {
     public function add_view(){
 
         $lang = $this->data->getLang();
+        $destination_location = $this->data->getComboLocationDestination();
         $path_language = $this->config->item('path_language');
 
         $html = '<div class="form-group">';
@@ -85,6 +88,21 @@ class Destination extends CI_Controller {
         $html.=     '<br>';
             }
         }
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="location">'.MultiLang('location').' *</label>';
+        $html.=     '<select id="location" name="location" class="form-control">';
+        $html.=         '<option value="">';
+        $html.=             '-- '.MultiLang('select').' --';
+        $html.=         '</option>';
+        if(!empty($destination_location)){
+            foreach ($destination_location as $key => $value) {
+        $html.=         '<option value="'.$value->id.'">';
+        $html.=             $value->name;
+        $html.=         '</option>';
+            }
+        }
+        $html.=     '</select>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="content">'.MultiLang('content').'</label>';
@@ -120,7 +138,7 @@ class Destination extends CI_Controller {
                         for($i=1; $i<=4; $i++){
         $html.=             '<div class="col" style="text-align: center;">
                                 <label id="label_images_'.$i.'" for="images_'.$i.'" style="cursor: pointer;">
-                                    <img style="width:180px; height:100px; border:1px dashed #C3C3C3;" src="assets/images/upload-images.png" />
+                                    <img style="width:180px; height:100px; border:1px dashed #C3C3C3;" src="../assets/images/upload-images.png" />
                                 </label>
                                 
                                 <input type="file" name="images_'.$i.'" id="images_'.$i.'" style="display:none;" onchange="readURL(this,\''.$i.'\')" accept="image/*"/>
@@ -155,6 +173,7 @@ class Destination extends CI_Controller {
         $name_name = $this->input->post('name_name', TRUE);
         $content = $this->input->post('content', TRUE);
         $content_name = $this->input->post('content_name', TRUE);
+        $location = $this->input->post('location', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');
 
@@ -171,6 +190,11 @@ class Destination extends CI_Controller {
                     $validation_text.= '<li>'.MultiLang('name').' '.$name_name[$key].' '.MultiLang('required').'</li>';
                 }
             }
+        }
+        
+        if(empty($location)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('location').' '.$name_name[$key].' '.MultiLang('required').'</li>';
         }
         
         if(!empty($content)){
@@ -224,6 +248,7 @@ class Destination extends CI_Controller {
 
             if($upload_status){
                 $data = array(
+                    'destination_desloc_id' => $location,
                     'destination_status' => $status,
                     'insert_user_id' => $user_id,
                     'insert_datetime' => $date
@@ -280,6 +305,7 @@ class Destination extends CI_Controller {
         $detail_text = $this->data->getDetailDestinationText($id);
         $detail_images = $this->data->getDetailDestinationImages($id);
         $lang = $this->data->getLang();
+        $destination_location = $this->data->getComboLocationDestination();
 
         $html = '<div class="form-group">';
         $html.=     '<label for="name">'.MultiLang('name').'</label>';
@@ -296,6 +322,21 @@ class Destination extends CI_Controller {
                 }
             }
         }
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="location">'.MultiLang('location').' *</label>';
+        $html.=     '<select id="location" name="location" class="form-control">';
+        $html.=         '<option value="">';
+        $html.=             '-- '.MultiLang('select').' --';
+        $html.=         '</option>';
+        if(!empty($destination_location)){
+            foreach ($destination_location as $key => $value) {
+        $html.=         '<option value="'.$value->id.'" '.($detail->desloc_id == $value->id ? "selected" : "").'>';
+        $html.=             $value->name;
+        $html.=         '</option>';
+            }
+        }
+        $html.=     '</select>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="content">'.MultiLang('content').'</label>';
@@ -345,7 +386,7 @@ class Destination extends CI_Controller {
                                     }
         $html.=             '<div class="col" style="text-align: center;">
                                 <label id="label_images_'.$i.'" for="images_'.$i.'" style="cursor: pointer;'.(!empty($value->img) ? 'display:none;' : '').'">
-                                    <img style="width:180px; height:100px; border:1px dashed #C3C3C3;" src="assets/images/upload-images.png" />
+                                    <img style="width:180px; height:100px; border:1px dashed #C3C3C3;" src="../assets/images/upload-images.png" />
                                 </label>
                                 
                                 <input type="file" name="images_'.$i.'" id="images_'.$i.'" style="display:none;" onchange="readURL(this,\''.$i.'\')" accept="image/*"/>
@@ -383,6 +424,7 @@ class Destination extends CI_Controller {
         $name_name = $this->input->post('name_name', TRUE);
         $content = $this->input->post('content', TRUE);
         $content_name = $this->input->post('content_name', TRUE);
+        $location = $this->input->post('location', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');
         $file_image_value_old = $this->input->post('file_image_value_old');
@@ -400,6 +442,11 @@ class Destination extends CI_Controller {
                     $validation_text.= '<li>'.MultiLang('name').' '.$name_name[$key].' '.MultiLang('required').'</li>';
                 }
             }
+        }
+
+        if(empty($location)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('location').' '.$name_name[$key].' '.MultiLang('required').'</li>';
         }
         
         if(!empty($content)){
@@ -453,6 +500,7 @@ class Destination extends CI_Controller {
 
             if($upload_status){
                 $data = array(
+                    'destination_desloc_id' => $location,
                     'destination_status' => $status,
                     'update_user_id' => $user_id,
                     'update_datetime' => $date
@@ -557,7 +605,7 @@ class Destination extends CI_Controller {
                             foreach ($detail_images as $key => $value) {
                                 if($value->order == $i){
         $html.=             '<div class="col" style="text-align: center;">
-                                <img style="width:180px; height:100px; border:1px dashed #C3C3C3; margin-bottom: 5px;" id="show_images_'.$i.'" src="'.(!empty($value->img) ? $path_destination.$value->img : 'assets/images/upload-images.png').'" />
+                                <img style="width:180px; height:100px; border:1px dashed #C3C3C3; margin-bottom: 5px;" id="show_images_'.$i.'" src="'.(!empty($value->img) ? $path_destination.$value->img : '../assets/images/upload-images.png').'" />
 
                             </div>';
                                 }

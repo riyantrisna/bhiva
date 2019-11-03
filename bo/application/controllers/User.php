@@ -157,7 +157,7 @@ class User extends CI_Controller {
                     <div class="row">
                         <div class="col" style="text-align: center;">
                             <label id="label_images" for="images" style="cursor: pointer;">
-                                <img style="width:150px; height:150px; border:1px dashed #C3C3C3;" src="assets/images/upload-image.png" />
+                                <img style="width:150px; height:150px; border:1px dashed #C3C3C3;" src="../assets/images/upload-image.png" />
                             </label>
                             
                             <input type="file" name="images" id="images" style="display:none;" onchange="readURL(this)" accept="image/*"/>
@@ -426,7 +426,7 @@ class User extends CI_Controller {
                     <div class="row">
                         <div class="col" style="text-align: center;">
                             <label id="label_images" for="images" style="cursor: pointer;'.(!empty($detail->photo) ? 'display:none;' : '').'">
-                                <img style="width:150px; height:150px; border:1px dashed #C3C3C3;" src="assets/images/upload-image.png" />
+                                <img style="width:150px; height:150px; border:1px dashed #C3C3C3;" src="../assets/images/upload-image.png" />
                             </label>
                             
                             <input type="file" name="images" id="images" style="display:none;" onchange="readURL(this)" accept="image/*"/>

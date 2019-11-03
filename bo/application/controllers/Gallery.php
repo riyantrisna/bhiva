@@ -114,7 +114,7 @@ class Gallery extends CI_Controller {
                     <div class="row">
                         <div class="col" style="text-align: center; height: 245px;">
                             <label id="label_images" for="images" style="cursor: pointer;">
-                                <img style="width:360px; height:200px; border:1px dashed #C3C3C3;" src="assets/images/upload-images.png" />
+                                <img style="width:360px; height:200px; border:1px dashed #C3C3C3;" src="../assets/images/upload-images.png" />
                             </label>
                             
                             <input type="file" name="images" id="images" style="display:none;" onchange="readURL(this)" accept="image/*"/>
@@ -293,7 +293,7 @@ class Gallery extends CI_Controller {
                     <div class="row">
                         <div class="col" style="text-align: center; height: 245px;">
                             <label id="label_images" for="images" style="cursor: pointer;'.(!empty($detail->img) ? 'display:none;' : '').'">
-                                <img style="width:360px; height:200px; border:1px dashed #C3C3C3;" src="assets/images/upload-images.png" />
+                                <img style="width:360px; height:200px; border:1px dashed #C3C3C3;" src="../assets/images/upload-images.png" />
                             </label>
                             
                             <input type="file" name="images" id="images" style="display:none;" onchange="readURL(this)" accept="image/*"/>

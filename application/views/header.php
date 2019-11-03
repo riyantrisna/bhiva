@@ -17,63 +17,67 @@
 </head>
 <body>
 <!-- Navbar -->
-<nav class="navbar navbar-expand-md border-grey-theme-bottom" style="background-color: #ffffff">
-	<a href="<?php echo base_url();?>" class="navbar-brand">
-		<img src="assets/images/logo-home.png" height="40"/>
+<nav class="navbar navbar-expand-md sticky-top border-grey-theme-bottom" style="background-color: #ffffff;">
+	<a href="<?php echo base_url();?>" class="" style="">
+		<img src="assets/images/logo-home.png" height="58"/>
 	</a>
 	<button class="navbar-toggler" data-toggle="collapse" data-target="#navbarMenu">
 		<i class="fas fa-bars" style="color: #35405a !important;"></i>
 	</button>
 	<div class="collapse navbar-collapse" id="navbarMenu">
 		<ul class="navbar-nav ml-auto text-uppercase">
-			<li class="nav-item ml-2">
-				<a href="<?php echo base_url();?>" class="nav-link text-grey-theme font-weight-bold"><?php echo MultiLang('home'); ?></a>
+			<li class="nav-item ml-1">
+				<a href="<?php echo base_url();?>" class="nav-link font-navbar"><?php echo MultiLang('home'); ?></a>
 			</li>
-			<li class="nav-item ml-2 dropdown">
-				<a href="#" class="nav-link dropdown-toggle text-grey-theme font-weight-bold" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo MultiLang('service'); ?></a>
+			<li class="nav-item ml-1 dropdown">
+				<a href="#" class="nav-link dropdown-toggle font-navbar" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo MultiLang('service'); ?></a>
 
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					<?php
 					if(!empty($service)){
 						foreach ($service as $key => $value) {
 					?>
-					<a class="dropdown-item" href="#"><?php echo $value->name?></a>
+					<a class="dropdown-item font-navbar" href="#"><?php echo $value->name?></a>
 					<?php
 						}
 					}
 					?>
 				</div>
 			</li>
-			<li class="nav-item ml-2">
-				<a href="<?php echo base_url();?>" class="nav-link text-grey-theme font-weight-bold"><?php echo MultiLang('gallery'); ?></a>
+			<li class="nav-item ml-1">
+				<a href="<?php echo base_url();?>" class="nav-link font-navbar"><?php echo MultiLang('gallery'); ?></a>
 			</li>
-			<li class="nav-item ml-2">
-				<a href="<?php echo base_url();?>" class="nav-link text-grey-theme font-weight-bold"><?php echo MultiLang('who_we_are'); ?></a>
+			<li class="nav-item ml-1">
+				<a href="<?php echo base_url();?>" class="nav-link font-navbar"><?php echo MultiLang('who_we_are'); ?></a>
 			</li>
-			<li class="nav-item ml-2">
-				<a href="<?php echo base_url();?>" class="nav-link text-grey-theme font-weight-bold"><?php echo MultiLang('contact'); ?></a>
+			<li class="nav-item ml-1 mr-3">
+				<a href="<?php echo base_url();?>" class="nav-link font-navbar"><?php echo MultiLang('contact'); ?></a>
 			</li>
-			<li class="nav-item ml-2 dropdown">
-				<a href="#" class="nav-link text-grey-theme font-weight-bold dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					<img src="<?php echo $path_language.$lang_set->icon;?>" style="max-width:20px !important;" /> <?php echo $lang_set->code?>
+			
+			
+			<li class="nav-item ml-5">&nbsp;</li>
+			
+			<li class="nav-item ml-1">
+				<a href="#" class="nav-link" style="color:#0C74A8"; data-toggle="modal" data-target="#modal_form_login"><?php echo MultiLang('login'); ?></a>
+			</li>
+			<li class="nav-item ml-1">
+				<a href="#" class="nav-link" style="color:#328C0E"; data-toggle="modal" data-target="#modal_form_register"><?php echo MultiLang('register'); ?></a>
+			</li>
+			<li class="nav-item ml-1 dropdown">
+				<a href="#" class="nav-link font-navbar dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<img src="<?php echo $path_language.$lang_set->icon;?>" style="max-width:18px !important;" /> <?php echo $lang_set->code?>
 				</a>
-				<div class="dropdown-menu mb-2" aria-labelledby="navbarDropdown">
+				<div class="dropdown-menu dropdown-menu-right mb-2" aria-labelledby="navbarDropdown">
 					<?php
 					if(!empty($lang)){					
 						foreach ($lang as $key => $value) {
 					?>
-					<a class="dropdown-item" href="#"><img src="<?php echo $path_language.$value->icon;?>" style="max-width:20px !important;" /> <span class="text-capitalize"><?php echo $value->name?></span> (<?php echo $value->code?>)</a>
+					<a class="dropdown-item font-navbar" href="#"><img src="<?php echo $path_language.$value->icon;?>" style="max-width:18px !important;" /> <span class="text-capitalize"><?php echo $value->name?></span> (<?php echo $value->code?>)</a>
 					<?php
 						}
 					}
 					?>
 				</div>
-			</li>
-			
-			<li class="nav-item ml-5"></li>
-			
-			<li class="nav-item justify-content-center text-center">
-				<a href="#" class="btn btn-primary ml-2" data-toggle="modal" data-target="#modal_form_register"><?php echo MultiLang('register'); ?></a><a href="#" class="btn btn-warning ml-2" data-toggle="modal" data-target="#modal_form_login"><?php echo MultiLang('login'); ?></a>
 			</li>
 		</ul>
 	</div>

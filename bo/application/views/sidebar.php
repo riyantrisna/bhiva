@@ -52,6 +52,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="<?php echo base_url();?>greeting" class="nav-link <?php echo ($active_menu == 'greeting' ? 'active' : ''); ?>">
+                                <i class="fas fa-handshake nav-icon ml-4"></i>
+                                <p><?php echo MultiLang('greeting'); ?></p>
+                            </a>
+                        </li>
+                        </li>
+                        <li class="nav-item">
                             <a href="<?php echo base_url();?>whoweare" class="nav-link <?php echo ($active_menu == 'whoweare' ? 'active' : ''); ?>">
                                 <i class="fas fa-users nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('who_we_are'); ?></p>
@@ -141,6 +148,14 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+
+                        <li class="nav-item">
+                            <a href="<?php echo base_url();?>destinationlocation" class="nav-link <?php echo ($active_menu == 'destinationlocation' ? 'active' : ''); ?>">
+                                <i class="fas fa-map-marker-alt nav-icon ml-4"></i>
+                                <p><?php echo MultiLang('destination_location'); ?></p>
+                            </a>
+                        </li>
+
                         <li class="nav-item">
                             <a href="<?php echo base_url();?>visitortype" class="nav-link <?php echo ($active_menu == 'visitortype' ? 'active' : ''); ?>">
                                 <i class="fas fa-walking nav-icon ml-4"></i>

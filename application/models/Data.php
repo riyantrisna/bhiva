@@ -13,19 +13,20 @@ class Data extends CI_Model {
         $path_slider_upload = $this->config->item('path_slider_upload');
         $query = "
             SELECT
-            a.`slider_id` AS `id`,
-            a.`slider_link` AS link,
-            a.`slider_order` AS 'order',
-            CONCAT('".$path_slider_upload."',a.`slider_img`) AS img,
-            b.`slidertext_title` AS title,
-            b.`slidertext_title_link` AS title_link,
-            b.`slidertext_text` AS 'text'
+                a.`slider_id` AS `id`,
+                a.`slider_link` AS link,
+                a.`slider_order` AS 'order',
+                CONCAT('".$path_slider_upload."',a.`slider_img`) AS img,
+                b.`slidertext_title` AS title,
+                b.`slidertext_title_link` AS title_link,
+                b.`slidertext_text` AS 'text'
             FROM
-            `cms_slider` a 
+                `cms_slider` a 
             LEFT JOIN `cms_slider_text` b ON b.`slidertext_slider_id` = a.`slider_id` AND b.`slidertext_lang` = '".$this->user_lang."'
             WHERE
-            a.`slider_status` = 1
-            ORDER BY a.`slider_order`
+                a.`slider_status` = 1
+            ORDER BY 
+                a.`slider_order`
             LIMIT 7
         ";
         $result = $this->default->query($query);
@@ -36,16 +37,18 @@ class Data extends CI_Model {
         $path_tourpackages_upload = $this->config->item('path_tourpackages_upload');
         $query = "
             SELECT
-            a.`tourpackages_id` AS id,
-            a.`tourpackages_base_price_local` AS `base_price_local`,
-            b.`tourpackagestext_name` AS 'name',
-            CONCAT('".$path_tourpackages_upload."',c.`tourpackagesimg_img`) AS 'img'
+                a.`tourpackages_id` AS id,
+                a.`tourpackages_base_price_local` AS `base_price_local`,
+                b.`tourpackagestext_name` AS 'name',
+                CONCAT('".$path_tourpackages_upload."',c.`tourpackagesimg_img`) AS 'img'
             FROM 
-            `mst_tourpackages` a
-            LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
-            LEFT JOIN `mst_tourpackages_img` c ON c.`tourpackagesimg_tourpackages_id` = a.`tourpackages_id` AND c.`tourpackagesimg_order` = 1
-            WHERE a.`tourpackages_status` = 1
-            ORDER BY a.`tourpackages_id`
+                `mst_tourpackages` a
+                LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_tourpackages_img` c ON c.`tourpackagesimg_tourpackages_id` = a.`tourpackages_id` AND c.`tourpackagesimg_order` = 1
+            WHERE 
+                a.`tourpackages_status` = 1
+            ORDER BY 
+                (SELECT COUNT(trx.`transactiontourpackages_transaction_id`) FROM `trx_transaction_tourpackages` trx WHERE trx.transactiontourpackages_tourpackages_id = a.`tourpackages_id`) DESC
             LIMIT 4
         ";
         $result = $this->default->query($query);
@@ -90,6 +93,43 @@ class Data extends CI_Model {
         ";
         $result = $this->default->query($query);
         return $result->result();
+    }
+
+    public function getContact(){
+        $path_contact_upload = $this->config->item('path_contact_upload');
+        $query = "
+            SELECT 
+                `contact_id` AS id,
+                `contact_address` AS address,
+                `contact_email` AS email,
+                `contact_phone` AS phone,
+                `contact_wa` As wa,
+                `contact_fb` AS fb,
+                `contact_ig` AS ig,
+                `contact_twitter` AS twitter,
+                CONCAT('".$path_contact_upload."', `contact_img_maps`) AS img_maps,
+                `contact_link_maps` AS link_maps
+            FROM
+            `cms_contact` 
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+    
+    public function getGreeting(){
+        $path_greeting_upload = $this->config->item('path_greeting_upload');
+        $query = "
+            SELECT
+                a.`greeting_id`  AS `id`,
+                CONCAT('".$path_greeting_upload."', a.`greeting_img`) AS img,
+                a.`greeting_link_img`  AS `link_img`,
+                b.`greetingtext_text` AS 'text'
+            FROM
+                `cms_greeting` a 
+            LEFT JOIN `cms_greeting_text` b ON b.`greetingtext_greeting_id` = a.`greeting_id` AND b.`greetingtext_lang` = '".$this->user_lang."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
     }
 
     public function getLang(){
