@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Home extends CI_Controller {
+class Whoweare extends CI_Controller {
 
 	function __construct()
 	{
@@ -19,14 +19,10 @@ class Home extends CI_Controller {
 		$data['contact'] = $this->data->getContact();
 		$data['destination_location'] = $this->data->getDestinationLocation();
 
-		$data['slider'] = $this->data->getSlider();
-		$data['greeting'] = $this->data->getGreeting();
-		$data['ticket'] = $this->data->getTicket();
 		$data['tourpackages'] = $this->data->getTourpackages();
-		$data['destination_location_home'] = $this->data->getDestinationLocationHome();
-		$data['destination'] = $this->data->getDestination();
+		$data['whoweare'] = $this->data->getWhoweare();
 
-		$this->load->view('home', $data);
+		$this->load->view('whoweare', $data);
 
 	}	
 	

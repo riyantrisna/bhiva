@@ -54,6 +54,61 @@ class Data extends CI_Model {
         $result = $this->default->query($query);
         return $result->result();
     }
+    
+    public function getDestinationLocation(){
+        $query = "
+            SELECT
+                a.`desloc_id` AS `id`,
+                a.`desloc_name` AS `name`
+            FROM
+                `ref_destination_location` a
+            ORDER BY
+                a.`desloc_order` ASC
+        ";
+        
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getDestinationLocationHome(){
+        $query = "
+            SELECT
+                a.`desloc_id` AS `id`,
+                a.`desloc_name` AS `name`
+            FROM
+                `ref_destination_location` a
+            WHERE
+                a.`desloc_is_show_home` = 1
+                AND a.`desloc_id` IN (SELECT des.`destination_desloc_id` FROM `mst_destination` des WHERE des.`destination_status` = 1)
+            ORDER BY
+                a.`desloc_order` ASC
+        ";
+        
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getDestination(){
+        $path_destination_upload = $this->config->item('path_destination_upload');
+        $query = "
+            SELECT
+                a.`destination_id` AS id,
+                a.`destination_desloc_id` AS desloc_id,
+                b.`destinationtext_name` AS 'name',
+                CONCAT('".$path_destination_upload."',c.`destinationimg_img`) AS 'img'
+            FROM 
+                `mst_destination` a
+                LEFT JOIN `mst_destination_text` b ON b.`destinationtext_destination_id` = a.`destination_id` AND b.`destinationtext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_destination_img` c ON c.`destinationimg_destination_id` = a.`destination_id` AND c.`destinationimg_order` = 1
+            WHERE 
+                a.`destination_status` = 1
+            ORDER BY 
+                b.`destinationtext_name` DESC
+            LIMIT 4
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
 
     public function getService(){
         $path_service_upload = $this->config->item('path_service_upload');
@@ -127,6 +182,22 @@ class Data extends CI_Model {
             FROM
                 `cms_greeting` a 
             LEFT JOIN `cms_greeting_text` b ON b.`greetingtext_greeting_id` = a.`greeting_id` AND b.`greetingtext_lang` = '".$this->user_lang."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getWhoweare(){
+        $path_whoweare_upload = $this->config->item('path_whoweare_upload');
+        $query = "
+            SELECT
+                a.`whoweare_id`  AS `id`,
+                CONCAT('".$path_whoweare_upload."', a.`whoweare_img`) AS img,
+                b.`whowearetext_text` AS 'text'
+            FROM
+                `cms_whoweare` a 
+            LEFT JOIN `cms_whoweare_text` b ON b.`whowearetext_whoweare_id` = a.`whoweare_id` AND b.`whowearetext_lang` = '".$this->user_lang."'
+        
         ";
         $result = $this->default->query($query);
         return $result->row();

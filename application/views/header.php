@@ -48,10 +48,10 @@
 				<a href="<?php echo base_url();?>" class="nav-link font-navbar"><?php echo MultiLang('gallery'); ?></a>
 			</li>
 			<li class="nav-item ml-1">
-				<a href="<?php echo base_url();?>" class="nav-link font-navbar"><?php echo MultiLang('who_we_are'); ?></a>
+				<a href="<?php echo base_url();?>whoweare" class="nav-link font-navbar"><?php echo MultiLang('who_we_are'); ?></a>
 			</li>
 			<li class="nav-item ml-1 mr-3">
-				<a href="<?php echo base_url();?>" class="nav-link font-navbar"><?php echo MultiLang('contact'); ?></a>
+				<a href="<?php echo base_url();?>contact" class="nav-link font-navbar"><?php echo MultiLang('contact'); ?></a>
 			</li>
 			
 			

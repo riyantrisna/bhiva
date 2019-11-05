@@ -59,6 +59,22 @@
                         ?>
                     </ul>
                 </div>
+                <div class="col-md-3 col-sm-6 col-6 p-0 float-left mb-3">
+                    <div class="mb-4 text-uppercase font-footer font-weight-bold"><?php echo MultiLang('destination'); ?></div>
+                    <ul class="list-group">
+                        <?php
+                        if(!empty($destination_location)){
+                            foreach ($destination_location as $key => $value) {
+                        ?>
+                        <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
+                            <a href="#"><?php echo $value->name?></a>
+                        </li>
+                        <?php
+                            }
+                        }
+                        ?>
+                    </ul>
+                </div>
                 <div class="col-md-3 col-sm-6 col-6 mb-3 p-0 float-left">
                     <div class="mb-4 text-uppercase font-footer font-weight-bold"><?php echo MultiLang('company'); ?></div>
                     <ul class="list-group">
@@ -77,13 +93,13 @@
                     <div class="mb-4 text-uppercase font-footer font-weight-bold"><?php echo MultiLang('follow_us_on'); ?></div>
                     <ul class="list-group">
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                            <a href=""><i class="fab fa-facebook-f mr-3"></i> Facebook</a>
+                            <a href="<?php echo $contact->fb;?>" target="_blank"><i class="fab fa-facebook-f mr-3"></i> Facebook</a>
                         </li>
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                            <a href=""><i class="fab fa-twitter mr-2"></i> Twitter</a>
+                            <a href="<?php echo $contact->twitter;?>" target="_blank"><i class="fab fa-twitter mr-2"></i> Twitter</a>
                         </li>
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                            <a href=""><i class="fab fa-instagram mr-3"></i>Instagram</a>
+                            <a href="<?php echo $contact->ig;?>" target="_blank"><i class="fab fa-instagram mr-3"></i>Instagram</a>
                         </li>
                     </ul>
                 </div>
@@ -98,7 +114,7 @@
                             <a href=""><?php echo MultiLang('term_and_condition');?></a>
                         </li>
                     </ul>
-                </div.>
+                </div>
             </div>
         </div>
     </div>
