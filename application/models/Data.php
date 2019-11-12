@@ -203,6 +203,51 @@ class Data extends CI_Model {
         return $result->row();
     }
 
+    public function getGallery(){
+        $path_gallery_upload = $this->config->item('path_gallery_upload');
+        $query = "
+            SELECT
+                a.`gallery_id` AS `id`,
+                a.`gallery_parent_id` AS parent_id,
+                a.`gallery_type` AS type,
+                CONCAT('".$path_gallery_upload."',a.`gallery_img`) AS img,
+                b.`gallerytext_title` AS title
+            FROM
+                `cms_gallery` a 
+            LEFT JOIN `cms_gallery_text` b ON b.`gallerytext_gallery_id` = a.`gallery_id` AND b.`gallerytext_lang` = '".$this->user_lang."'
+            WHERE
+                a.`gallery_status` = 1
+                AND a.`gallery_type` = 1
+            ORDER BY 
+                a.`gallery_order`
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+    
+    public function getGalleryPhoto($parent_id){
+        $path_gallery_upload = $this->config->item('path_gallery_upload');
+        $query = "
+            SELECT
+                a.`gallery_id` AS `id`,
+                a.`gallery_parent_id` AS parent_id,
+                a.`gallery_type` AS type,
+                CONCAT('".$path_gallery_upload."',a.`gallery_img`) AS img,
+                b.`gallerytext_title` AS title
+            FROM
+                `cms_gallery` a 
+            LEFT JOIN `cms_gallery_text` b ON b.`gallerytext_gallery_id` = a.`gallery_id` AND b.`gallerytext_lang` = '".$this->user_lang."'
+            WHERE
+                a.`gallery_status` = 1
+                AND a.`gallery_type` = 2
+                AND a.`gallery_parent_id` = '".$parent_id."'
+            ORDER BY 
+                a.`gallery_order`
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
     public function getLang(){
         $query = "
             SELECT

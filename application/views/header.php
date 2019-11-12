@@ -14,6 +14,8 @@
 	<link rel="stylesheet" href="assets/dist/css/main.css">
 	<!-- Date picker -->
 	<link rel="stylesheet" href="assets/bootstrap-datepicker/bootstrap-datepicker.min.css">
+	<!-- lightbox -->
+	<link rel="stylesheet" href="assets/dist/css/ekko-lightbox.css">
 </head>
 <body>
 <!-- Navbar -->
@@ -45,7 +47,7 @@
 				</div>
 			</li>
 			<li class="nav-item ml-1">
-				<a href="<?php echo base_url();?>" class="nav-link font-navbar"><?php echo MultiLang('gallery'); ?></a>
+				<a href="<?php echo base_url();?>gallery" class="nav-link font-navbar"><?php echo MultiLang('gallery'); ?></a>
 			</li>
 			<li class="nav-item ml-1">
 				<a href="<?php echo base_url();?>whoweare" class="nav-link font-navbar"><?php echo MultiLang('who_we_are'); ?></a>

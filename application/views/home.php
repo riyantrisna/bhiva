@@ -4,7 +4,9 @@
 			$this->load->view('header');
 		?>
 		<div>
-			<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+			<div id="carouselExampleIndicators" class="carousel fade-carousel slide" data-ride="carousel">
+				<!-- Overlay -->
+  				<div class="overlay"></div>
 				<ol class="carousel-indicators">
 				<?php
 				if(!empty($slider)){
@@ -21,17 +23,13 @@
 				if(!empty($slider)){					
 					foreach ($slider as $key => $value) {
 				?>
-					<div class="carousel-item <?php echo (($key==0) ? 'active' : ''); ?>" style="background-image: url('<?php echo base_url().$value->img;?>')">
-						<!-- <img class="w-100" src="<?php echo base_url().$value->img;?>" alt="<?php echo $value->title;?>"> -->
-						<div class="carousel-caption">
-							<div class="d-flex align-items-center justify-content-center">
-								<span style="font-weight: bold; font-size: 8vw;"><?php echo $value->title;?></span>
-							</div>
-							<div class="align-items-center justify-content-center">
-								<span style="font-size: 2vw;">
-									<a class="btn btn-warning" href="<?php echo $value->link; ?>"><?php echo $value->title_link;?></a>
-								</span>
-							</div>
+					<div class="carousel-item <?php echo (($key==0) ? 'active' : ''); ?> slides">
+						<div class="slide" style="background-image: url('<?php echo base_url().$value->img;?>')"></div>
+						<div class="hero">
+							<hgroup>
+								<h1><?php echo $value->title;?></h1>
+							</hgroup>
+							<a class="btn btn-hero btn-lg" href="<?php echo $value->link; ?>"><?php echo $value->title_link;?></a>
 						</div>
 					</div>
 				<?php
@@ -39,11 +37,11 @@
 				}
 				?>
 				</div>
-				<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+				<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev" style="z-index: 3 !important;">
 					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
 					<span class="sr-only">Previous</span>
 				</a>
-				<a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+				<a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next"style="z-index: 3 !important;">
 					<span class="carousel-control-next-icon" aria-hidden="true"></span>
 					<span class="sr-only">Next</span>
 				</a>

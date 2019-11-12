@@ -27,17 +27,17 @@
                     </li>
                     <?php if(!empty($contact->email)){ ?>
                     <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                        <a href=""><i class="fas fa-envelope mr-2"></i> <?php echo $contact->email;?></a>
+                        <a href="javascript:void(0)"><i class="fas fa-envelope mr-2"></i> <?php echo $contact->email;?></a>
                     </li>
                     <?php } ?>
                     <?php if(!empty($contact->phone)){ ?>
                     <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                        <a href=""><i class="fas fa-phone mr-2"></i> <?php echo $contact->phone;?></a>
+                        <a href="javascript:void(0)"><i class="fas fa-phone mr-2"></i> <?php echo $contact->phone;?></a>
                     </li>
                     <?php } ?>
                     <?php if(!empty($contact->wa)){ ?>
                     <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                        <a href=""><i class="fab fa-whatsapp  mr-3"></i><?php echo $contact->wa;?></a>
+                        <a href="javascript:void(0)"><i class="fab fa-whatsapp  mr-3"></i><?php echo $contact->wa;?></a>
                     </li>
                     <?php } ?>
                 </ul>
@@ -79,13 +79,13 @@
                     <div class="mb-4 text-uppercase font-footer font-weight-bold"><?php echo MultiLang('company'); ?></div>
                     <ul class="list-group">
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                            <a href=""><?php echo MultiLang('who_we_are');?></a>
+                            <a href="<?php echo base_url();?>gallery"><?php echo MultiLang('gallery'); ?></a>
                         </li>
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                            <a href=""><?php echo MultiLang('contact'); ?></a>
+                            <a href="<?php echo base_url();?>whoweare"><?php echo MultiLang('who_we_are');?></a>
                         </li>
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                            <a href=""><?php echo MultiLang('gallery'); ?></a>
+                            <a href="<?php echo base_url();?>contact"><?php echo MultiLang('contact'); ?></a>
                         </li>
                     </ul>
                 </div>
@@ -121,8 +121,16 @@
 </footer>
 <!-- ./Footer -->
 
+<div id="loaders" class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-sm" style="display: table; position: relative; margin: 0 auto; top: calc(50% - 24px);">
+        <div class="modal-content" style="width: 48px; background-color: transparent; border: none;">
+            <span class="fa fa-spinner fa-spin fa-3x" style="color: #ffffff;"></span>
+        </div>
+    </div>
+</div>
+
 <!-- jQuery -->
-<script src="assets/dist/js/jquery-3.3.1.slim.min.js"></script>
+<script src="assets/dist/js/jquery/jquery.js"></script>
 <!-- popper -->
 <script src="assets/dist/js/popper.min.js"></script>
 <!-- Bootstrap 4 -->
@@ -131,6 +139,8 @@
 <script src="assets/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
 <!-- Main -->
 <script src="assets/dist/js/main.js"></script>
+<!-- lightbox -->
+<script src="assets/dist/js/ekko-lightbox.min.js"></script>
 
 <script>
 $(document).ready(function() {
@@ -138,4 +148,5 @@ $(document).ready(function() {
 		format: 'yyyy-mm-dd'
 	});
 });
+
 </script>
