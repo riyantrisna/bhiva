@@ -115,7 +115,6 @@ class Data extends CI_Model {
         $query = "
             SELECT
                 a.`service_id` AS `id`,
-                a.`service_is_top`AS is_top,
                 a.`service_order` AS 'order',
                 a.`service_status` AS 'status',
                 CONCAT('".$path_service_upload."',c.`serviceimg_img`) AS img,
@@ -246,6 +245,32 @@ class Data extends CI_Model {
         ";
         $result = $this->default->query($query);
         return $result->result();
+    }
+
+    public function Privacypolicy(){
+        $query = "
+            SELECT
+                a.`privacypolicy_id`  AS `id`,
+                b.`privacypolicytext_text` AS 'text'
+            FROM
+                `cms_privacypolicy` a 
+            LEFT JOIN `cms_privacypolicy_text` b ON b.`privacypolicytext_privacypolicy_id` = a.`privacypolicy_id` AND b.`privacypolicytext_lang` = '".$this->user_lang."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+    
+    public function Termandcondition(){
+        $query = "
+            SELECT
+                a.`termcondition_id`  AS `id`,
+                b.`termconditiontext_text` AS 'text'
+            FROM
+                `cms_termcondition` a 
+            LEFT JOIN `cms_termcondition_text` b ON b.`termconditiontext_termcondition_id` = a.`termcondition_id` AND b.`termconditiontext_lang` = '".$this->user_lang."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
     }
 
     public function getLang(){

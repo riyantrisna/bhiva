@@ -904,7 +904,6 @@ class Data extends CI_Model {
                 SELECT
                     a.`service_id` AS `id`,
                     a.`service_order` AS `order`,
-                    a.`service_is_top` AS `is_top`,
                     a.`service_status` AS `status`,
                     a.`service_type` AS `type`,
                     b.`servicetext_name` AS `name`,
@@ -973,7 +972,6 @@ class Data extends CI_Model {
                 SELECT
                     a.`service_id` AS `id`,
                     a.`service_order` AS `order`,
-                    a.`service_is_top` AS `is_top`,
                     a.`service_status` AS `status`,
                     a.`service_type` AS `type`,
                     c.user_real_name AS insert_user,

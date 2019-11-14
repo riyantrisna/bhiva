@@ -74,7 +74,7 @@
 					if(!empty($lang)){					
 						foreach ($lang as $key => $value) {
 					?>
-					<a class="dropdown-item font-navbar" href="#"><img src="<?php echo $path_language.$value->icon;?>" style="max-width:18px !important;" /> <span class="text-capitalize"><?php echo $value->name?></span> (<?php echo $value->code?>)</a>
+					<a class="dropdown-item font-navbar" href="<?php echo base_url();?>home/changelanguage/<?php echo $value->code;?>"><img src="<?php echo $path_language.$value->icon;?>" style="max-width:18px !important;" /> <span class="text-capitalize"><?php echo $value->name?></span> (<?php echo $value->code?>)</a>
 					<?php
 						}
 					}

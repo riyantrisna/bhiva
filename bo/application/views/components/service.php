@@ -27,7 +27,6 @@
                                 <th><?php echo MultiLang('number'); ?></th>
                                 <th><?php echo MultiLang('name'); ?></th>
                                 <th><?php echo MultiLang('type'); ?></th>
-                                <th><?php echo MultiLang('is_top'); ?>?</th>
                                 <th><?php echo MultiLang('order'); ?></th>
                                 <th><?php echo MultiLang('status'); ?></th>
                                 <th><?php echo MultiLang('action'); ?></th>
@@ -129,10 +128,10 @@ $(document).ready(function() {
 
         "columnDefs": [
             { 
-                "targets": [ 0, 6 ], //last column
+                "targets": [ 0, 5 ], //last column
                 "orderable": false, //set not orderable
             },
-            { "targets": 6, "width": '120px' }
+            { "targets": 5, "width": '120px' }
         ],
     });
 });

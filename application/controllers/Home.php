@@ -28,6 +28,17 @@ class Home extends CI_Controller {
 
 		$this->load->view('home', $data);
 
+	}
+
+	public function changelanguage($lang)
+	{
+		$session_data = array(
+			'user_lang' =>  $lang
+		);
+		//set session userdata
+		$this->session->set_userdata($session_data);
+		redirect(base_url());
+
 	}	
 	
 }

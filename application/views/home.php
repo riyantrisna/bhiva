@@ -29,7 +29,11 @@
 							<hgroup>
 								<h1><?php echo $value->title;?></h1>
 							</hgroup>
+							<?php
+							if(!empty($value->link)){
+							?>
 							<a class="btn btn-hero btn-lg" href="<?php echo $value->link; ?>"><?php echo $value->title_link;?></a>
+							<?php } ?>
 						</div>
 					</div>
 				<?php
@@ -150,7 +154,7 @@
 					?>
 						<div class="col-lg-3 col-md-6 col-sm-12">
 							<a href="#" class="d-block mb-4 h-100">
-								<div class=" img-hover-zoom img-hover-zoom--brightness">
+								<div class="img-hover-zoom img-hover-zoom--brightness">
 									<img class="img-fluid" src="<?php echo base_url().$value->img;?>" alt="">
 									<span class="centered-text-img"><?php echo $value->name;?></span>
 								</div>

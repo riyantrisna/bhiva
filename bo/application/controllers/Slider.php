@@ -50,7 +50,7 @@ class Slider extends CI_Controller {
                 $row = array();
                 $row[] = $no;
                 $row[] = $value->title;
-                $row[] = (!empty($value->link) ? '<a href="'.$value->link.'" target="_blank">'.$value->link.'</a>' : $detail->link);
+                $row[] = (!empty($value->link) ? '<a href="'.$value->link.'" target="_blank">'.$value->link.'</a>' : $value->link);
                 $row[] = $value->order;
                 $row[] = ($value->status == 1) ? MultiLang('active') : MultiLang('not_active');
     

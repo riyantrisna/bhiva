@@ -31,9 +31,8 @@ class Service extends CI_Controller {
         $columns = array( 
             1 => 'b.`servicetext_name`',
             2 => 'a.`service_type`',
-            3 => 'a.`service_is_top`',
-            4 => 'a.`service_order`',
-            5 => 'a.`service_status`'
+            3 => 'a.`service_order`',
+            4 => 'a.`service_status`'
         );
 
         $filter['order'] = $columns[$this->input->post('order')[0]['column']];
@@ -63,7 +62,6 @@ class Service extends CI_Controller {
                     $type = '-';
                 }
                 $row[] = $type;
-                $row[] = ($value->is_top == 1) ? MultiLang('yes') : MultiLang('no');
                 $row[] = $value->order;
                 $row[] = ($value->status == 1) ? MultiLang('active') : MultiLang('not_active');
     
@@ -147,15 +145,6 @@ class Service extends CI_Controller {
                     </div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="is_top">'.MultiLang('is_top').'?</label>';
-        $html.=     '<div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="1" name="is_top" id="is_top">
-                        <label class="form-check-label" for="is_top">
-                        '.MultiLang('yes').'
-                        </label>
-                    </div>';
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
         $html.=     '<label for="status">'.MultiLang('status').' *</label>';
         $html.=     '<div class="form-check">
                         <input class="form-check-input" type="radio" name="status" id="status1" value="1" checked>
@@ -214,7 +203,6 @@ class Service extends CI_Controller {
         $content_name = $this->input->post('content_name', TRUE);
         $order = $this->input->post('order', TRUE);
         $type = $this->input->post('type', TRUE);
-        $is_top = $this->input->post('is_top', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');
 
@@ -251,19 +239,21 @@ class Service extends CI_Controller {
             $validation = $validation && false;
             $validation_text.= '<li>'.MultiLang('type').' '.MultiLang('required').'</li>';
         }else{
-            $check = $this->data->checkServiceTypeExist($type);
-            if(!empty($check->id)){
-                $validation = $validation && false;
-                if($type == 0){
-                    $type_text = MultiLang('information');
-                }elseif($type == 1){
-                    $type_text = MultiLang('tour_packages');
-                }elseif($type == 2){
-                    $type_text = MultiLang('ticket');
-                }elseif($type == 3){
-                    $type_text = MultiLang('venue');
+            if($type != 0){
+                $check = $this->data->checkServiceTypeExist($type);
+                if(!empty($check->id)){
+                    $validation = $validation && false;
+                    if($type == 0){
+                        $type_text = MultiLang('information');
+                    }elseif($type == 1){
+                        $type_text = MultiLang('tour_packages');
+                    }elseif($type == 2){
+                        $type_text = MultiLang('ticket');
+                    }elseif($type == 3){
+                        $type_text = MultiLang('venue');
+                    }
+                    $validation_text.= '<li>'.MultiLang('type').' <b>'.$type_text.'</b> '.MultiLang('existed').'</li>';
                 }
-                $validation_text.= '<li>'.MultiLang('type').' <b>'.$type_text.'</b> '.MultiLang('existed').'</li>';
             }
         }
 
@@ -310,7 +300,6 @@ class Service extends CI_Controller {
             if($upload_status){
                 $data = array(
                     'service_order' => $order,
-                    'service_is_top' => isset($is_top) ? 1 : 0,
                     'service_status' => $status,
                     'service_type' => $type,
                     'insert_user_id' => $user_id,
@@ -434,15 +423,6 @@ class Service extends CI_Controller {
                     </div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="is_top">'.MultiLang('is_top').'?</label>';
-        $html.=     '<div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="1" name="is_top" id="is_top" '.($detail->is_top == 1 ? "checked" : "").'>
-                        <label class="form-check-label" for="is_top">
-                        '.MultiLang('yes').'
-                        </label>
-                    </div>';
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
         $html.=     '<label for="status">'.MultiLang('status').' *</label>';
         $html.=     '<div class="form-check">
                         <input class="form-check-input" type="radio" name="status" id="status1" value="1" '.($detail->status == 1 ? "checked" : "").'>
@@ -513,7 +493,6 @@ class Service extends CI_Controller {
         $content_name = $this->input->post('content_name', TRUE);
         $order = $this->input->post('order', TRUE);
         $type = $this->input->post('type', TRUE);
-        $is_top = $this->input->post('is_top', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');
         $file_image_value_old = $this->input->post('file_image_value_old');
@@ -551,19 +530,22 @@ class Service extends CI_Controller {
             $validation = $validation && false;
             $validation_text.= '<li>'.MultiLang('type').' '.MultiLang('required').'</li>';
         }else{
-            $check = $this->data->checkServiceTypeExist($type, $id);
-            if(!empty($check->id)){
-                $validation = $validation && false;
-                if($type == 0){
-                    $type_text = MultiLang('information');
-                }elseif($type == 1){
-                    $type_text = MultiLang('tour_packages');
-                }elseif($type == 2){
-                    $type_text = MultiLang('ticket');
-                }elseif($type == 3){
-                    $type_text = MultiLang('venue');
+            if($type != 0){
+                $check = $this->data->checkServiceTypeExist($type, $id);
+                
+                if(!empty($check->id)){
+                    $validation = $validation && false;
+                    if($type == 0){
+                        $type_text = MultiLang('information');
+                    }elseif($type == 1){
+                        $type_text = MultiLang('tour_packages');
+                    }elseif($type == 2){
+                        $type_text = MultiLang('ticket');
+                    }elseif($type == 3){
+                        $type_text = MultiLang('venue');
+                    }
+                    $validation_text.= '<li>'.MultiLang('type').' <b>'.$type_text.'</b> '.MultiLang('existed').'</li>';
                 }
-                $validation_text.= '<li>'.MultiLang('type').' <b>'.$type_text.'</b> '.MultiLang('existed').'</li>';
             }
         }
 
@@ -610,7 +592,6 @@ class Service extends CI_Controller {
             if($upload_status){
                 $data = array(
                     'service_order' => $order,
-                    'service_is_top' => isset($is_top) ? 1 : 0,
                     'service_status' => $status,
                     'service_type' => $type,
                     'update_user_id' => $user_id,
@@ -719,10 +700,6 @@ class Service extends CI_Controller {
                 }elseif($detail->type == 3){
         $html.=     '<div>'.MultiLang('venue').'</div>';
                 }
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
-        $html.=     '<label for="is_top">'.MultiLang('is_top').'?</label>';
-        $html.=     '<div>'.($detail->is_top == 1 ? MultiLang('yes') : MultiLang('no')).'</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="status">'.MultiLang('status').'</label>';

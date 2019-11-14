@@ -20,7 +20,7 @@
     <div class="container pt-5 border-bottom">
         <div class="row">
             <div class="col-md-3 col-sm-12 mb-3 text-left">
-                <img src="assets/images/logo-home-text.png" height="60"/>
+                <img src="<?php echo base_url();?>assets/images/logo-home-text.png" height="60"/>
                 <ul class="list-group mt-3">
                     <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer" style="font-size: 14px;">
                         <?php echo $contact->address; ?>
@@ -108,15 +108,20 @@
                     <div class="mb-4 text-uppercase font-footer font-weight-bold"><?php echo MultiLang('support');?></div>
                     <ul class="list-group">
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                            <a href=""><?php echo MultiLang('privacy_policy');?></a>
+                            <a href="<?php echo base_url();?>privacypolicy" target="_blank"><?php echo MultiLang('privacy_policy');?></a>
                         </li>
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                            <a href=""><?php echo MultiLang('term_and_condition');?></a>
+                            <a href="<?php echo base_url();?>termandcondition" target="_blank"><?php echo MultiLang('term_and_condition');?></a>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
+    </div>
+</footer>
+<footer class="py-4 bg-dark text-white-50" style="flex-shrink: none;">
+    <div class="container text-center">
+      <small>Copyright &copy; 2019 BHIVA</small>
     </div>
 </footer>
 <!-- ./Footer -->

@@ -55,13 +55,18 @@
 					if(!empty($gallery_photo_first)){
 						foreach ($gallery_photo_first as $key => $value) {
 					?>
-					<div class="col-lg-3 col-md-4 col-6">
-						<a href="<?php echo base_url().$value->img;?>" class="d-block mb-4 h-100" data-toggle="lightbox" data-gallery="gallery">
+					<div class="col-12 col-sm-6 col-md-4 col-lg-3 text-center">
+						<a href="<?php echo base_url().$value->img;?>" class="d-block mb-4 h-100 text-decoration-none" data-toggle="lightbox" data-gallery="gallery" data-title="<?php echo $value->title;?>">
 							<img class="img-fluid img-thumbnail" src="<?php echo base_url().$value->img;?>" alt="<?php echo $value->title;?>" style="height: 180px;">
+							<div class="text-center" style="font-size: 16px; color: #212529;"><?php echo $value->title;?></div>
 						</a>
 					</div>
 					<?php
 						}
+					}else{
+					?>
+						<div class="col-12 text-center"><i>-- <?php echo MultiLang('blank_photo_data');?> --</i></div>
+					<?php
 					}
 					?>
 					
@@ -275,7 +280,9 @@
 
 				$(document).on("click", '[data-toggle="lightbox"]', function(event) {
 					event.preventDefault();
-					$(this).ekkoLightbox();
+					$(this).ekkoLightbox({
+						alwaysShowClose: true,
+					});
 				});
 			});
 
@@ -295,11 +302,11 @@
 							await $('#loaders').on('shown.bs.modal', function (e) {
 								$('#loaders').modal('hide');
 							})
-							if(data.datas == "1"){
+							// if(data.datas == "1"){
 								await $('html, body').animate({
 									scrollTop: $("#title_gallery").offset().top - 100
 								}, 1000);
-							}
+							// }
 						}else{
 							await $('#loaders').on('shown.bs.modal', function (e) {
 								$('#loaders').modal('hide');
