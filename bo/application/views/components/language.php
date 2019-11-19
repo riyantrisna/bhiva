@@ -67,7 +67,7 @@
                         <div class="row">
                             <div class="col" style="text-align: center; height: 125px;">
                                 <label id="label_images" for="images" style="cursor: pointer;">
-                                    <img style="width:80px; height:80px; border:1px dashed #C3C3C3;" src="assets/images/upload-image.png" />
+                                    <img style="width:80px; height:80px; border:1px dashed #C3C3C3;" src="../assets/images/upload-image.png" />
                                 </label>
                                 
                                 <input type="file" name="images" id="images" style="display:none;" onchange="readURL(this)" accept="image/*"/>

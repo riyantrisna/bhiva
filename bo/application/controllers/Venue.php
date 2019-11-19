@@ -153,7 +153,7 @@ class Venue extends CI_Controller {
 
         $name = $this->input->post('name', TRUE);
         $name_name = $this->input->post('name_name', TRUE);
-        $content = $this->input->post('content', TRUE);
+        $content = $this->input->post('content');
         $content_name = $this->input->post('content_name', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');
@@ -381,7 +381,7 @@ class Venue extends CI_Controller {
         $id = $this->input->post('id', TRUE);
         $name = $this->input->post('name', TRUE);
         $name_name = $this->input->post('name_name', TRUE);
-        $content = $this->input->post('content', TRUE);
+        $content = $this->input->post('content');
         $content_name = $this->input->post('content_name', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');

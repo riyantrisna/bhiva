@@ -5,23 +5,25 @@
 	<!-- Tell the browser to be responsive to screen width -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- bootstrap -->
-	<link rel="stylesheet" href="assets/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="<?php echo base_url();?>assets/dist/css/bootstrap.min.css">
 	<!-- Font Awesome -->
-	<link rel="stylesheet" href="assets/fontawesome-free/css/all.min.css">
+	<link rel="stylesheet" href="<?php echo base_url();?>assets/fontawesome-free/css/all.min.css">
 	<!-- Google Font: Source Sans Pro -->
-	<link href="assets/google-font.css" rel="stylesheet">
+	<link href="<?php echo base_url();?>assets/google-font.css" rel="stylesheet">
 	<!-- Font Awesome -->
-	<link rel="stylesheet" href="assets/dist/css/main.css">
+	<link rel="stylesheet" href="<?php echo base_url();?>assets/dist/css/main.css">
 	<!-- Date picker -->
-	<link rel="stylesheet" href="assets/bootstrap-datepicker/bootstrap-datepicker.min.css">
+	<link rel="stylesheet" href="<?php echo base_url();?>assets/bootstrap-datepicker/bootstrap-datepicker.min.css">
 	<!-- lightbox -->
-	<link rel="stylesheet" href="assets/dist/css/ekko-lightbox.css">
+	<link rel="stylesheet" href="<?php echo base_url();?>assets/dist/css/ekko-lightbox.css">
+	<!-- Social Share Kit CSS -->
+	<link rel="stylesheet" href="<?php echo base_url();?>assets/dist/css/social-share-kit.css" type="text/css">
 </head>
 <body>
 <!-- Navbar -->
 <nav class="navbar navbar-expand-md sticky-top border-grey-theme-bottom" style="background-color: #ffffff;">
 	<a href="<?php echo base_url();?>" class="" style="">
-		<img src="assets/images/logo-home.png" height="58"/>
+		<img src="<?php echo base_url();?>assets/images/logo-home.png" height="58"/>
 	</a>
 	<button class="navbar-toggler" data-toggle="collapse" data-target="#navbarMenu">
 		<i class="fas fa-bars" style="color: #35405a !important;"></i>
@@ -39,7 +41,7 @@
 					if(!empty($service)){
 						foreach ($service as $key => $value) {
 					?>
-					<a class="dropdown-item font-navbar" href="#"><?php echo $value->name?></a>
+					<a class="dropdown-item font-navbar" href="<?php echo base_url();?>service/view/<?php echo $value->id.'/'.(str_replace(' ','-',$value->name));?>"><?php echo $value->name?></a>
 					<?php
 						}
 					}

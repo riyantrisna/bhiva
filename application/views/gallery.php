@@ -56,9 +56,9 @@
 						foreach ($gallery_photo_first as $key => $value) {
 					?>
 					<div class="col-12 col-sm-6 col-md-4 col-lg-3 text-center">
-						<a href="<?php echo base_url().$value->img;?>" class="d-block mb-4 h-100 text-decoration-none" data-toggle="lightbox" data-gallery="gallery" data-title="<?php echo $value->title;?>">
+						<a href="<?php echo base_url().$value->img;?>" class="d-block mb-4 h-100 text-decoration-none" data-toggle="lightbox" data-gallery="gallery" <?php if(!empty($value->title)){?> data-title="<?php echo $value->title;?>" <?php } ?>>
 							<img class="img-fluid img-thumbnail" src="<?php echo base_url().$value->img;?>" alt="<?php echo $value->title;?>" style="height: 180px;">
-							<div class="text-center" style="font-size: 16px; color: #212529;"><?php echo $value->title;?></div>
+						<?php if(!empty($value->title)){?> <div class="text-center" style="font-size: 16px; color: #212529;"><?php echo $value->title;?></div><?php } ?>
 						</a>
 					</div>
 					<?php
@@ -281,7 +281,7 @@
 				$(document).on("click", '[data-toggle="lightbox"]', function(event) {
 					event.preventDefault();
 					$(this).ekkoLightbox({
-						alwaysShowClose: true,
+						// alwaysShowClose: true,
 					});
 				});
 			});

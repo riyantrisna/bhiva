@@ -277,7 +277,7 @@ class Tourpackages extends CI_Controller {
 
         $name = $this->input->post('name', TRUE);
         $name_name = $this->input->post('name_name', TRUE);
-        $content = $this->input->post('content', TRUE);
+        $content = $this->input->post('content');
         $content_name = $this->input->post('content_name', TRUE);
         $base_price_local = $this->input->post('base_price_local', TRUE);
         $base_price_foreign = $this->input->post('base_price_foreign', TRUE);
@@ -747,7 +747,7 @@ class Tourpackages extends CI_Controller {
         $id = $this->input->post('id', TRUE);
         $name = $this->input->post('name', TRUE);
         $name_name = $this->input->post('name_name', TRUE);
-        $content = $this->input->post('content', TRUE);
+        $content = $this->input->post('content');
         $content_name = $this->input->post('content_name', TRUE);
         $base_price_local = $this->input->post('base_price_local', TRUE);
         $base_price_foreign = $this->input->post('base_price_foreign', TRUE);

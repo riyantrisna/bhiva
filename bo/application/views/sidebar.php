@@ -52,6 +52,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="<?php echo base_url();?>travelpost" class="nav-link <?php echo ($active_menu == 'travelpost' ? 'active' : ''); ?>">
+                                <i class="fas fa-newspaper nav-icon ml-4"></i>
+                                <p><?php echo MultiLang('travelpost'); ?></p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="<?php echo base_url();?>greeting" class="nav-link <?php echo ($active_menu == 'greeting' ? 'active' : ''); ?>">
                                 <i class="fas fa-handshake nav-icon ml-4"></i>
                                 <p><?php echo MultiLang('greeting'); ?></p>

@@ -93,7 +93,7 @@ class Greeting extends CI_Controller {
     {   
         $path_greeting_upload = $this->config->item('path_greeting_upload');
         $link_img = $this->input->post('link_img', TRUE);
-        $content = $this->input->post('content', TRUE);
+        $content = $this->input->post('content');
         $content_name = $this->input->post('content_name', TRUE);
         $file_image_value = $this->input->post('file_image_value');
         $file_image_value_old = $this->input->post('file_image_value_old');

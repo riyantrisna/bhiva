@@ -37,9 +37,18 @@ class Gallery extends CI_Controller {
 			foreach ($gallery_photo as $key => $value) {
 				
 			$photos.= '	<div class="col-12 col-sm-6 col-md-4 col-lg-3 text-center">
-							<a href="'.base_url().$value->img.'" class="d-block mb-4 h-100 text-decoration-none" data-toggle="lightbox" data-gallery="gallery" data-title="'.$value->title.'">
-								<img class="img-fluid img-thumbnail" src="'.base_url().$value->img.'" alt="'.$value->title.'" style="height: 180px;">
+							<a href="'.base_url().$value->img.'" class="d-block mb-4 h-100 text-decoration-none" data-toggle="lightbox" data-gallery="gallery"';
+			if(!empty($value->title)){
+			$photos.= '	data-title="'.$value->title.'"';
+			}
+			$photos.= '	>
+								<img class="img-fluid img-thumbnail" src="'.base_url().$value->img.'" alt="'.$value->title.'" style="height: 180px;">';
+			if(!empty($value->title)){
+			$photos.= '
 								<div class="text-center" style="font-size: 16px; color: #212529;">'.$value->title.'</div>
+			';
+			}
+			$photos.= '
 							</a>
 						</div>';
 			}

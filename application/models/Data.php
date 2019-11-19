@@ -131,6 +131,43 @@ class Data extends CI_Model {
         $result = $this->default->query($query);
         return $result->result();
     }
+
+    public function getServiceDetail($id){
+        $path_service_upload = $this->config->item('path_service_upload');
+        $query = "
+            SELECT
+                a.`service_id` AS `id`,
+                a.`service_order` AS 'order',
+                a.`service_status` AS 'status',
+                b.`servicetext_name` AS 'name',
+                b.`servicetext_text` AS 'text'
+            FROM
+                `cms_service` a 
+            LEFT JOIN `cms_service_text` b ON b.`servicetext_service_id` = a.`service_id` AND b.`servicetext_lang` = '".$this->user_lang."'
+            WHERE
+                a.`service_status`= 1
+                AND a.`service_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getServiceDetailImage($id){
+        $path_service_upload = $this->config->item('path_service_upload');
+        $query = "
+            SELECT
+                CONCAT('".$path_service_upload."',a.`serviceimg_img`) AS img
+            FROM
+                `cms_service_img` a
+            WHERE
+                a.`serviceimg_service_id` = '".$id."'
+                AND a.`serviceimg_img` IS NOT NULL
+            ORDER BY 
+                a.`serviceimg_order`
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
     
     public function getTicket(){
         $query = "
@@ -184,6 +221,137 @@ class Data extends CI_Model {
         ";
         $result = $this->default->query($query);
         return $result->row();
+    }
+
+    public function getTravelPost(){
+        $path_travelpost_upload = $this->config->item('path_travelpost_upload');
+        $query = "
+            SELECT
+                a.`travelpost_id` AS `id`,
+                a.`travelpost_status` AS 'status',
+                CONCAT('".$path_travelpost_upload."',c.`travelpostimg_img`) AS img,
+                b.`travelposttext_name` AS 'name',
+                b.`travelposttext_text` AS 'text',
+                d.`user_real_name` AS creator,
+                IFNULL(a.`update_datetime`, a.`insert_datetime`) AS date
+            FROM
+                `cms_travelpost` a 
+            LEFT JOIN `cms_travelpost_text` b ON b.`travelposttext_travelpost_id` = a.`travelpost_id` AND b.`travelposttext_lang` = '".$this->user_lang."'
+            LEFT JOIN `cms_travelpost_img` c ON c.`travelpostimg_travelpost_id` = a.`travelpost_id` AND c.`travelpostimg_order` = 1
+            LEFT JOIN core_user d ON d.user_id = IFNULL(a.`update_user_id`, a.`insert_user_id`)
+            WHERE
+                a.`travelpost_status`= 1
+            ORDER BY `travelpost_id` DESC
+            LIMIT 3
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getTotalTravelPostList(){
+        $path_travelpost_upload = $this->config->item('path_travelpost_upload');
+        $query = "
+            SELECT
+                a.`travelpost_id` AS `id`
+            FROM
+                `cms_travelpost` a 
+            LEFT JOIN `cms_travelpost_text` b ON b.`travelposttext_travelpost_id` = a.`travelpost_id` AND b.`travelposttext_lang` = '".$this->user_lang."'
+            LEFT JOIN `cms_travelpost_img` c ON c.`travelpostimg_travelpost_id` = a.`travelpost_id` AND c.`travelpostimg_order` = 1
+            LEFT JOIN core_user d ON d.user_id = IFNULL(a.`update_user_id`, a.`insert_user_id`)
+            WHERE
+                a.`travelpost_status`= 1
+        ";
+        $result = $this->default->query($query);
+        return $result->num_rows();
+    }
+
+    public function getTravelPostList($page, $limit){
+        $path_travelpost_upload = $this->config->item('path_travelpost_upload');
+        $query = "
+            SELECT
+                a.`travelpost_id` AS `id`,
+                a.`travelpost_status` AS 'status',
+                CONCAT('".$path_travelpost_upload."',c.`travelpostimg_img`) AS img,
+                b.`travelposttext_name` AS 'name',
+                b.`travelposttext_text` AS 'text',
+                d.`user_real_name` AS creator,
+                IFNULL(a.`update_datetime`, a.`insert_datetime`) AS date
+            FROM
+                `cms_travelpost` a 
+            LEFT JOIN `cms_travelpost_text` b ON b.`travelposttext_travelpost_id` = a.`travelpost_id` AND b.`travelposttext_lang` = '".$this->user_lang."'
+            LEFT JOIN `cms_travelpost_img` c ON c.`travelpostimg_travelpost_id` = a.`travelpost_id` AND c.`travelpostimg_order` = 1
+            LEFT JOIN core_user d ON d.user_id = IFNULL(a.`update_user_id`, a.`insert_user_id`)
+            WHERE
+                a.`travelpost_status`= 1
+            ORDER BY `travelpost_id` DESC
+            LIMIT ".$page." , ".$limit."
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+    
+    public function getTravelPostDetail($id){
+        $query = "
+            SELECT
+                a.`travelpost_id` AS `id`,
+                a.`travelpost_status` AS 'status',
+                b.`travelposttext_name` AS 'name',
+                b.`travelposttext_text` AS 'text',
+                d.`user_real_name` AS creator,
+                IFNULL(a.`update_datetime`, a.`insert_datetime`) AS date
+            FROM
+                `cms_travelpost` a 
+            LEFT JOIN `cms_travelpost_text` b ON b.`travelposttext_travelpost_id` = a.`travelpost_id` AND b.`travelposttext_lang` = '".$this->user_lang."'
+            LEFT JOIN core_user d ON d.user_id = IFNULL(a.`update_user_id`, a.`insert_user_id`)
+            WHERE
+                a.`travelpost_status`= 1
+                AND a.`travelpost_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getTravelPostDetailImage($id){
+        $path_travelpost_upload = $this->config->item('path_travelpost_upload');
+        $query = "
+            SELECT
+                CONCAT('".$path_travelpost_upload."',a.`travelpostimg_img`) AS img
+            FROM
+                `cms_travelpost_img` a
+            WHERE
+                a.`travelpostimg_travelpost_id` = '".$id."'
+                AND a.`travelpostimg_img` IS NOT NULL
+            ORDER BY 
+                a.`travelpostimg_order`
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getTravelPostLatest($id){
+        $path_travelpost_upload = $this->config->item('path_travelpost_upload');
+        $query = "
+            SELECT
+                a.`travelpost_id` AS `id`,
+                a.`travelpost_status` AS 'status',
+                CONCAT('".$path_travelpost_upload."',c.`travelpostimg_img`) AS img,
+                b.`travelposttext_name` AS 'name',
+                b.`travelposttext_text` AS 'text',
+                d.`user_real_name` AS creator,
+                IFNULL(a.`update_datetime`, a.`insert_datetime`) AS date
+            FROM
+                `cms_travelpost` a 
+            LEFT JOIN `cms_travelpost_text` b ON b.`travelposttext_travelpost_id` = a.`travelpost_id` AND b.`travelposttext_lang` = '".$this->user_lang."'
+            LEFT JOIN `cms_travelpost_img` c ON c.`travelpostimg_travelpost_id` = a.`travelpost_id` AND c.`travelpostimg_order` = 1
+            LEFT JOIN core_user d ON d.user_id = IFNULL(a.`update_user_id`, a.`insert_user_id`)
+            WHERE
+                a.`travelpost_status`= 1
+                AND a.`travelpost_id` NOT IN ('".$id."')
+            ORDER BY `travelpost_id` DESC
+            LIMIT 5
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
     }
 
     public function getWhoweare(){

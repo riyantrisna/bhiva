@@ -51,37 +51,44 @@
 				</a>
 			</div>
 			
-			<div class="container pt-5">
+			<div class="container pt-2">
 				<div class="row">
-					<div class="col-md-6 col-sm-12 mb-3 text-left">
+					<div class="col-md-6 col-sm-12 pb-3 pt-5 text-left">
 						<h5 class="text-center mb-4"><?php echo MultiLang('bhiva'); ?></h5>
-						<?php echo $greeting->text;?>
+						<p class="text-justify"><?php echo $greeting->text;?></p>
 						<?php if(!empty($greeting->img)){ ?>
 						<div class="mt-3">
 							<?php if(!empty($greeting->link_img)){ ?>
 							<a href="<?php echo $greeting->link_img;?>" target="_blank">
-								<img class="d-block w-100" src="<?php echo base_url().$greeting->img;?>" alt="">
+								<img class="d-block w-100" src="<?php echo base_url().$greeting->img;?>" alt="Bhiva Location Maps">
 							</a>
 							<?php }else{ ?>
-								<img class="d-block w-100" src="<?php echo base_url().$greeting->img;?>" alt="">
+								<img class="d-block w-100" src="<?php echo base_url().$greeting->img;?>" alt="Bhiva Location Maps">
 							<?php } ?>
 						</div>
 						<?php } ?>
 					</div>
-					<div class="col-md-6 col-sm-12 mb-3 text-left" style="border-left: 1px solid #8f8f8f">
+					<div class="col-md-6 col-sm-12 pb-3 pt-5 text-left" style="border-left: 1px solid #C7C7C7">
 						<h5 class="text-center mb-4"><?php echo MultiLang('travel_post'); ?></h5>
-						<div class="mt-3" style="display: flex;" >
-							<img class="d-block w-50 h-50" src="<?php echo base_url().'files/images/contact/no-image-available.jpg';?>" alt="">
-							<p class="ml-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-						</div>
-						<div class="mt-3" style="display: flex;" >
-							<img class="d-block w-50 h-50" src="<?php echo base_url().'files/images/contact/no-image-available.jpg';?>" alt="">
-							<p class="ml-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-						</div>
-						<div class="mt-3" style="display: flex;" >
-							<img class="d-block w-50 h-50" src="<?php echo base_url().'files/images/contact/no-image-available.jpg';?>" alt="">
-							<p class="ml-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-						</div>
+
+						<?php
+						if(!empty($travel_post)){
+							foreach ($travel_post as $key => $value) {
+						?>
+						<a class="text-decoration-none" href="<?php echo base_url();?>travelpost/read/<?php echo $value->id.'/'.(str_replace(' ','-',$value->name));?>">
+							<div class="mt-3 row">
+								<img class="col-md-6 col-sm-12 d-block h100" src="<?php echo base_url().$value->img;?>" alt="">
+								<p class="col-md-6 col-sm-12" style="color: #212529;">
+									<?php echo $value->name; ?>
+									<br>
+									<span class="font-italic text-black-50" style="font-size: 14px;"><?php echo $value->creator;?>, <?php echo $value->date;?></span>
+								</p>
+							</div>
+						</a>
+						<?php
+							}
+						}
+						?>
 					</div>
 				</div>
 			</div>

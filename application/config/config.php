@@ -161,7 +161,7 @@ $config['composer_autoload'] = FALSE;
 | DO NOT CHANGE THIS UNLESS YOU FULLY UNDERSTAND THE REPERCUSSIONS!!
 |
 */
-$config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
+$config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-@\=\,\.';
 
 /*
 |--------------------------------------------------------------------------
@@ -549,3 +549,5 @@ $config['path_tourpackages'] = $config['base_url_image'].'files/images/tourpacka
 $config['path_tourpackages_upload'] = 'files/images/tourpackages/';
 $config['path_greeting'] = $config['base_url_image'].'files/images/greeting/';
 $config['path_greeting_upload'] = 'files/images/greeting/';
+$config['path_travelpost'] = $config['base_url_image'].'files/images/travelpost/';
+$config['path_travelpost_upload'] = 'files/images/travelpost/';

@@ -51,7 +51,7 @@
                             foreach ($service as $key => $value) {
                         ?>
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                            <a href="#"><?php echo $value->name?></a>
+                            <a href="<?php echo base_url();?>service/view/<?php echo $value->id.'/'.(str_replace(' ','-',$value->name));?>"><?php echo $value->name?></a>
                         </li>
                         <?php
                             }
@@ -86,6 +86,9 @@
                         </li>
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
                             <a href="<?php echo base_url();?>contact"><?php echo MultiLang('contact'); ?></a>
+                        </li>
+                        <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
+                            <a href="<?php echo base_url();?>travelpost"><?php echo MultiLang('travel_post'); ?></a>
                         </li>
                     </ul>
                 </div>
@@ -135,17 +138,19 @@
 </div>
 
 <!-- jQuery -->
-<script src="assets/dist/js/jquery/jquery.js"></script>
+<script src="<?php echo base_url();?>assets/dist/js/jquery/jquery.js"></script>
 <!-- popper -->
-<script src="assets/dist/js/popper.min.js"></script>
+<script src="<?php echo base_url();?>assets/dist/js/popper.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="assets/dist/js/bootstrap.min.js"></script>
+<script src="<?php echo base_url();?>assets/dist/js/bootstrap.min.js"></script>
 <!-- Datepicker -->
-<script src="assets/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+<script src="<?php echo base_url();?>assets/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
 <!-- Main -->
-<script src="assets/dist/js/main.js"></script>
+<script src="<?php echo base_url();?>assets/dist/js/main.js"></script>
 <!-- lightbox -->
-<script src="assets/dist/js/ekko-lightbox.min.js"></script>
+<script src="<?php echo base_url();?>assets/dist/js/ekko-lightbox.min.js"></script>
+<!-- Social Share Kit JS -->
+<script src="<?php echo base_url();?>assets/dist/js/social-share-kit.js"></script>
 
 <script>
 $(document).ready(function() {

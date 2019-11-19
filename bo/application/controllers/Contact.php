@@ -101,7 +101,7 @@ class Contact extends CI_Controller {
     public function edit()
     {   
         $path_contact_upload = $this->config->item('path_contact_upload');
-        $address = $this->input->post('address', TRUE);
+        $address = $this->input->post('address');
         $email = $this->input->post('email', TRUE);
         $phone = $this->input->post('phone', TRUE);
         $wa = $this->input->post('wa', TRUE);

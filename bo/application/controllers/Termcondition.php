@@ -56,7 +56,7 @@ class Termcondition extends CI_Controller {
     public function edit()
     {   
         $path_termcondition_upload = $this->config->item('path_termcondition_upload');
-        $content = $this->input->post('content', TRUE);
+        $content = $this->input->post('content');
         $content_name = $this->input->post('content_name', TRUE);
 
         $date = date('Y-m-d H:i:s');

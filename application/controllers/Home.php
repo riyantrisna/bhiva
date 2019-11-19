@@ -21,6 +21,12 @@ class Home extends CI_Controller {
 
 		$data['slider'] = $this->data->getSlider();
 		$data['greeting'] = $this->data->getGreeting();
+		$data['travel_post'] = $this->data->getTravelPost();
+		if(!empty($data['travel_post'])){
+			foreach ($data['travel_post'] as $key => $value) {
+				$data['travel_post'][$key]->date = $this->data->getDatetimeIndo($value->date);
+			}
+		}
 		$data['ticket'] = $this->data->getTicket();
 		$data['tourpackages'] = $this->data->getTourpackages();
 		$data['destination_location_home'] = $this->data->getDestinationLocationHome();

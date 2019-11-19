@@ -161,14 +161,14 @@ class Galleryimages extends CI_Controller {
         $validation = true;
         $validation_text = '';
         
-        if(!empty($title)){
-            foreach ($title as $key => $value) {
-                if(empty($value)){
-                    $validation = $validation && false;
-                    $validation_text.= '<li>'.MultiLang('title').' '.$title_name[$key].' '.MultiLang('required').'</li>';
-                }
-            }
-        }
+        // if(!empty($title)){
+        //     foreach ($title as $key => $value) {
+        //         if(empty($value)){
+        //             $validation = $validation && false;
+        //             $validation_text.= '<li>'.MultiLang('title').' '.$title_name[$key].' '.MultiLang('required').'</li>';
+        //         }
+        //     }
+        // }
 
         if(empty($order)){
             $validation = $validation && false;
@@ -344,14 +344,14 @@ class Galleryimages extends CI_Controller {
         $validation = true;
         $validation_text = '';
         
-        if(!empty($title)){
-            foreach ($title as $key => $value) {
-                if(empty($value)){
-                    $validation = $validation && false;
-                    $validation_text.= '<li>'.MultiLang('title').' '.$title_name[$key].' '.MultiLang('required').'</li>';
-                }
-            }
-        }
+        // if(!empty($title)){
+        //     foreach ($title as $key => $value) {
+        //         if(empty($value)){
+        //             $validation = $validation && false;
+        //             $validation_text.= '<li>'.MultiLang('title').' '.$title_name[$key].' '.MultiLang('required').'</li>';
+        //         }
+        //     }
+        // }
 
         if(empty($order)){
             $validation = $validation && false;

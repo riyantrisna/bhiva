@@ -219,6 +219,33 @@ class Data extends CI_Model {
 
     }   
 
+    public function uploadBase64Content($image, $path, $id){
+
+
+        $image_name = md5(uniqid(rand(), true).date('YmdHis')).'-'.$id;
+        $ext = explode(';', $image);
+        $ext = explode('/', $ext[0]);
+        $ext = end($ext);
+        $filename = $image_name.'.'.$ext;
+        $image = explode(',', $image);   
+        $file = $path.$filename;
+
+        $status = file_put_contents($file, base64_decode($image[1]));
+        if($status !== false){
+            chmod($file,0777);
+            $result['status'] = true;
+            $result['file'] = $filename;
+            $result['message'] = MultiLang('success_upload');
+        }else{
+            $result['status'] = false;
+            $result['file'] = '';
+            $result['message'] = MultiLang('failed_upload');
+        }
+
+        return $result;
+
+    }   
+
     // language
     public function getAllLanguage($filter){
         if (is_array($filter))
@@ -3340,6 +3367,227 @@ class Data extends CI_Model {
             return TRUE;
         }else{
             return FALSE;
+        }
+    }
+
+
+    // travelpost
+    public function getAllTravelpost($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(b.`travelposttext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(b.`travelposttext_text`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`travelpost_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT
+                    a.`travelpost_id` AS `id`,
+                    a.`travelpost_status` AS `status`,
+                    b.`travelposttext_name` AS `name`,
+                    b.`travelposttext_text` AS `text`
+                FROM
+                    `cms_travelpost` a
+                    LEFT JOIN `cms_travelpost_text` b ON b.`travelposttext_travelpost_id` = a.`travelpost_id` AND b.`travelposttext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+        ";
+        $query.= $str;
+        $query .= " ORDER BY $order $dir ";
+        if (isset($start) AND $start != '') {
+            $query .= " LIMIT $start, $length";
+        }
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllTravelpost($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($keyword)){
+            $str .= " AND ( ";
+            $str .= " OR LOWER(b.`travelposttext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(b.`travelposttext_text`) LIKE LOWER('%$keyword%') ";
+            $str .= " OR LOWER(a.`travelpost_order`) LIKE LOWER('%$keyword%') ";
+            $str .= " ) ";
+        }
+
+        $query = "
+                SELECT 
+                    COUNT(DISTINCT a.`travelpost_id`) AS total
+                FROM 
+                `cms_travelpost` a
+                LEFT JOIN `cms_travelpost_text` b ON b.`travelposttext_travelpost_id` = a.`travelpost_id` AND b.`travelposttext_lang` = '".$this->user_lang."'
+                WHERE 1 = 1
+                ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTravelpost($id){
+
+        $query = "
+                SELECT
+                    a.`travelpost_id` AS `id`,
+                    a.`travelpost_status` AS `status`,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `cms_travelpost` a
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND a.`travelpost_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTravelpostText($id){
+
+        $query = "
+                SELECT
+                    a.`travelposttext_travelpost_id` AS `travelpost_id`,
+                    a.`travelposttext_lang` AS `lang`,
+                    a.`travelposttext_name` AS `name`,
+                    a.`travelposttext_text` AS `text`
+                FROM
+                    `cms_travelpost_text` a
+                WHERE 1 = 1
+                AND a.`travelposttext_travelpost_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getDetailTravelpostImages($id){
+
+        $query = "
+                SELECT
+                    a.`travelpostimg_travelpost_id` AS `travelpost_id`,
+                    a.`travelpostimg_order` AS `order`,
+                    a.`travelpostimg_img` AS `img`
+                FROM
+                    `cms_travelpost_img` a
+                WHERE 1 = 1
+                AND a.`travelpostimg_travelpost_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function addTravelpost($data, $name, $content, $images){
+        $this->default->trans_begin();
+
+        $this->default->insert('cms_travelpost',$data);
+        $travelpost_id = $this->default->insert_id();
+
+        if(!empty($name)){
+            foreach ($name as $key => $value) {
+                $data = array(
+                    'travelposttext_travelpost_id' => $travelpost_id,
+                    'travelposttext_lang' => $key,
+                    'travelposttext_name' => $value,
+                    'travelposttext_text' => $content[$key]
+                );
+                $this->default->insert('cms_travelpost_text',$data);
+            }
+        }
+
+        if(!empty($images)){
+            foreach ($images as $key => $value) {
+                $data = array(
+                    'travelpostimg_travelpost_id' => $travelpost_id,
+                    'travelpostimg_order' => $key,
+                    'travelpostimg_img' => $value
+                );
+                $this->default->insert('cms_travelpost_img',$data);
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function updateTravelpost($data, $id, $name, $content, $images){
+        $this->default->trans_begin();
+
+        $this->default->where('travelpost_id', $id);
+        $this->default->update('cms_travelpost',$data);
+
+        $this->default->where('travelposttext_travelpost_id', $id);
+        $this->default->delete('cms_travelpost_text');
+        
+        $this->default->where('travelpostimg_travelpost_id', $id);
+        $this->default->delete('cms_travelpost_img');
+
+        if(!empty($name)){
+            foreach ($name as $key => $value) {
+                $data = array(
+                    'travelposttext_travelpost_id' => $id,
+                    'travelposttext_lang' => $key,
+                    'travelposttext_name' => $value,
+                    'travelposttext_text' => $content[$key]
+                );
+                $this->default->insert('cms_travelpost_text',$data);
+            }
+        }
+
+        if(!empty($images)){
+            foreach ($images as $key => $value) {
+                $data = array(
+                    'travelpostimg_travelpost_id' => $id,
+                    'travelpostimg_order' => $key,
+                    'travelpostimg_img' => $value
+                );
+                $this->default->insert('cms_travelpost_img',$data);
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function deleteTravelpost($id){
+        $this->default->trans_begin();
+
+        $this->default->where('travelposttext_travelpost_id', $id);
+        $this->default->delete('cms_travelpost_text');
+        
+        $this->default->where('travelpostimg_travelpost_id', $id);
+        $this->default->delete('cms_travelpost_img');
+
+        $this->default->where('travelpost_id', $id);
+        $this->default->delete('cms_travelpost');
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
         }
     }
 }

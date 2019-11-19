@@ -173,7 +173,7 @@ class Slider extends CI_Controller {
 
         $title = $this->input->post('title', TRUE);
         $title_name = $this->input->post('title_name', TRUE);
-        $content = $this->input->post('content', TRUE);
+        $content = $this->input->post('content');
         $content_name = $this->input->post('content_name', TRUE);
         $title_link = $this->input->post('title_link', TRUE);
         $title_link_name = $this->input->post('title_link_name', TRUE);
@@ -395,7 +395,7 @@ class Slider extends CI_Controller {
         $id = $this->input->post('id', TRUE);
         $title = $this->input->post('title', TRUE);
         $title_name = $this->input->post('title_name', TRUE);
-        $content = $this->input->post('content', TRUE);
+        $content = $this->input->post('content');
         $content_name = $this->input->post('content_name', TRUE);
         $title_link = $this->input->post('title_link', TRUE);
         $title_link_name = $this->input->post('title_link_name', TRUE);

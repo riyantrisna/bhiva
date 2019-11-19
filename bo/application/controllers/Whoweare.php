@@ -88,7 +88,7 @@ class Whoweare extends CI_Controller {
     public function edit()
     {   
         $path_whoweare_upload = $this->config->item('path_whoweare_upload');
-        $content = $this->input->post('content', TRUE);
+        $content = $this->input->post('content');
         $content_name = $this->input->post('content_name', TRUE);
         $file_image_value = $this->input->post('file_image_value');
         $file_image_value_old = $this->input->post('file_image_value_old');

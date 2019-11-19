@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Destination extends CI_Controller {
+class Travelpost extends CI_Controller {
 
 	function __construct(){
 		parent::__construct();
@@ -14,9 +14,9 @@ class Destination extends CI_Controller {
 
 	public function index()
 	{
-		$data['components'] = 'components/destination';
-		$data['active_menu_parent'] = 'master_data';
-        $data['active_menu'] = 'destination';
+		$data['components'] = 'components/travelpost';
+		$data['active_menu_parent'] = 'cms';
+        $data['active_menu'] = 'travelpost';
 
 		$this->load->view('home', $data);
 	}
@@ -29,16 +29,15 @@ class Destination extends CI_Controller {
         $filter['start'] = $this->input->post('start');
 
         $columns = array( 
-            1 => 'b.`destinationtext_name`',
-            2 => 'c.`desloc_name`',
-            3 => 'a.`destination_status`'
+            1 => 'b.`travelposttext_name`',
+            2 => 'a.`travelpost_status`'
         );
 
         $filter['order'] = $columns[$this->input->post('order')[0]['column']];
         $filter['dir'] = $this->input->post('order')[0]['dir'];
 
-		$list = $this->data->getAllDestination($filter);
-        $count = $this->data->getTotalAllDestination($filter);
+		$list = $this->data->getAllTravelpost($filter);
+        $count = $this->data->getTotalAllTravelpost($filter);
         
         $data = array();
         $no = $_POST['start'];
@@ -49,7 +48,6 @@ class Destination extends CI_Controller {
                 $row = array();
                 $row[] = $no;
                 $row[] = $value->name;
-                $row[] = $value->desloc_name;
                 $row[] = ($value->status == 1) ? MultiLang('active') : MultiLang('not_active');
     
                 //add html for action
@@ -74,11 +72,10 @@ class Destination extends CI_Controller {
     public function add_view(){
 
         $lang = $this->data->getLang();
-        $destination_location = $this->data->getComboLocationDestination();
         $path_language = $this->config->item('path_language');
 
         $html = '<div class="form-group">';
-        $html.=     '<label for="name">'.MultiLang('name').'</label>';
+        $html.=     '<label for="name">'.MultiLang('title').'</label>';
         $html.=     '<br>';
         if(!empty($lang)){
             foreach ($lang as $key => $value) {
@@ -88,21 +85,6 @@ class Destination extends CI_Controller {
         $html.=     '<br>';
             }
         }
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
-        $html.=     '<label for="location">'.MultiLang('location').' *</label>';
-        $html.=     '<select id="location" name="location" class="form-control">';
-        $html.=         '<option value="">';
-        $html.=             '-- '.MultiLang('select').' --';
-        $html.=         '</option>';
-        if(!empty($destination_location)){
-            foreach ($destination_location as $key => $value) {
-        $html.=         '<option value="'.$value->id.'">';
-        $html.=             $value->name;
-        $html.=         '</option>';
-            }
-        }
-        $html.=     '</select>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="content">'.MultiLang('content').'</label>';
@@ -167,13 +149,12 @@ class Destination extends CI_Controller {
     public function add()
     {
 
-        $path_destination_upload = $this->config->item('path_destination_upload');
+        $path_travelpost_upload = $this->config->item('path_travelpost_upload');
 
         $name = $this->input->post('name', TRUE);
         $name_name = $this->input->post('name_name', TRUE);
         $content = $this->input->post('content');
         $content_name = $this->input->post('content_name', TRUE);
-        $location = $this->input->post('location', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');
 
@@ -187,14 +168,9 @@ class Destination extends CI_Controller {
             foreach ($name as $key => $value) {
                 if(empty($value)){
                     $validation = $validation && false;
-                    $validation_text.= '<li>'.MultiLang('name').' '.$name_name[$key].' '.MultiLang('required').'</li>';
+                    $validation_text.= '<li>'.MultiLang('title').' '.$name_name[$key].' '.MultiLang('required').'</li>';
                 }
             }
-        }
-        
-        if(empty($location)){
-            $validation = $validation && false;
-            $validation_text.= '<li>'.MultiLang('location').' '.$name_name[$key].' '.MultiLang('required').'</li>';
         }
         
         if(!empty($content)){
@@ -237,7 +213,7 @@ class Destination extends CI_Controller {
             foreach ($file_image_value as $key => $value) {
                 $upload = '';
                 if(!empty($value)){
-                    $upload = $this->data->uploadBase64($value, $path_destination_upload, $max_size, $type_allow);
+                    $upload = $this->data->uploadBase64($value, $path_travelpost_upload, $max_size, $type_allow);
                     if(!$upload['status']){
                         $upload_status = $upload_status && false;
                         $msg_upload.= '<li>'.MultiLang('image').' '.($key+1).': '.$upload['message'].'</li>';
@@ -248,12 +224,11 @@ class Destination extends CI_Controller {
 
             if($upload_status){
                 $data = array(
-                    'destination_desloc_id' => $location,
-                    'destination_status' => $status,
+                    'travelpost_status' => $status,
                     'insert_user_id' => $user_id,
                     'insert_datetime' => $date
                 );
-                $results = $results && $this->data->addDestination($data, $name, $content, $images_name);
+                $results = $results && $this->data->addTravelpost($data, $name, $content, $images_name);
             
                 if ($results) {
                     $result["status"] = TRUE;
@@ -268,7 +243,7 @@ class Destination extends CI_Controller {
                     $result["message"].= '</div>';
                     foreach ($file_image_value as $key => $value) {
                         if(!empty($value)){
-                            @unlink($path_destination_upload.$value);
+                            @unlink($path_travelpost_upload.$value);
                         }
                     }
                     
@@ -300,15 +275,14 @@ class Destination extends CI_Controller {
     public function edit_view($id){
 
         $path_language = $this->config->item('path_language');
-        $path_destination = $this->config->item('path_destination');
-        $detail = $this->data->getDetailDestination($id);
-        $detail_text = $this->data->getDetailDestinationText($id);
-        $detail_images = $this->data->getDetailDestinationImages($id);
+        $path_travelpost = $this->config->item('path_travelpost');
+        $detail = $this->data->getDetailTravelpost($id);
+        $detail_text = $this->data->getDetailTravelpostText($id);
+        $detail_images = $this->data->getDetailTravelpostImages($id);
         $lang = $this->data->getLang();
-        $destination_location = $this->data->getComboLocationDestination();
 
         $html = '<div class="form-group">';
-        $html.=     '<label for="name">'.MultiLang('name').'</label>';
+        $html.=     '<label for="name">'.MultiLang('title').'</label>';
         $html.=     '<br>';
         if(!empty($lang)){
             foreach ($lang as $key => $value) {
@@ -322,21 +296,6 @@ class Destination extends CI_Controller {
                 }
             }
         }
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
-        $html.=     '<label for="location">'.MultiLang('location').' *</label>';
-        $html.=     '<select id="location" name="location" class="form-control">';
-        $html.=         '<option value="">';
-        $html.=             '-- '.MultiLang('select').' --';
-        $html.=         '</option>';
-        if(!empty($destination_location)){
-            foreach ($destination_location as $key => $value) {
-        $html.=         '<option value="'.$value->id.'" '.($detail->desloc_id == $value->id ? "selected" : "").'>';
-        $html.=             $value->name;
-        $html.=         '</option>';
-            }
-        }
-        $html.=     '</select>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="content">'.MultiLang('content').'</label>';
@@ -378,8 +337,8 @@ class Destination extends CI_Controller {
                             foreach ($detail_images as $key => $value) {
                                 if($value->order == $i){
                                     if(!empty($value->img)){
-                                        $type = pathinfo($path_destination.$value->img, PATHINFO_EXTENSION);
-                                        $base_64_images = base64_encode(file_get_contents($path_destination.$value->img));
+                                        $type = pathinfo($path_travelpost.$value->img, PATHINFO_EXTENSION);
+                                        $base_64_images = base64_encode(file_get_contents($path_travelpost.$value->img));
                                         $base_64_images = 'data:image/' . $type . ';base64,' .$base_64_images;
                                     }else{
                                         $base_64_images = '';
@@ -391,7 +350,7 @@ class Destination extends CI_Controller {
                                 
                                 <input type="file" name="images_'.$i.'" id="images_'.$i.'" style="display:none;" onchange="readURL(this,\''.$i.'\')" accept="image/*"/>
 
-                                <img style="width:180px; height:100px; border:1px dashed #C3C3C3; margin-bottom: 5px; '.(!empty($value->img) ? '' : 'display:none;').'" id="show_images_'.$i.'" '.(!empty($value->img) ? 'src="'.$path_destination.$value->img.'"' : '').' />
+                                <img style="width:180px; height:100px; border:1px dashed #C3C3C3; margin-bottom: 5px; '.(!empty($value->img) ? '' : 'display:none;').'" id="show_images_'.$i.'" '.(!empty($value->img) ? 'src="'.$path_travelpost.$value->img.'"' : '').' />
                                 <br>
                                 <div style="height: 40px;">
                                     <span id="remove_'.$i.'" class="btn btn-warning" onclick="removeImage(\''.$i.'\')" style="cursor: pointer; margin-bottom: 5px; '.(!empty($value->img) ? '' : 'display:none;').'">
@@ -417,14 +376,13 @@ class Destination extends CI_Controller {
 
     public function edit()
     {   
-        $path_destination_upload = $this->config->item('path_destination_upload');
+        $path_travelpost_upload = $this->config->item('path_travelpost_upload');
 
         $id = $this->input->post('id', TRUE);
         $name = $this->input->post('name', TRUE);
         $name_name = $this->input->post('name_name', TRUE);
         $content = $this->input->post('content');
         $content_name = $this->input->post('content_name', TRUE);
-        $location = $this->input->post('location', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');
         $file_image_value_old = $this->input->post('file_image_value_old');
@@ -439,14 +397,9 @@ class Destination extends CI_Controller {
             foreach ($name as $key => $value) {
                 if(empty($value)){
                     $validation = $validation && false;
-                    $validation_text.= '<li>'.MultiLang('name').' '.$name_name[$key].' '.MultiLang('required').'</li>';
+                    $validation_text.= '<li>'.MultiLang('title').' '.$name_name[$key].' '.MultiLang('required').'</li>';
                 }
             }
-        }
-
-        if(empty($location)){
-            $validation = $validation && false;
-            $validation_text.= '<li>'.MultiLang('location').' '.$name_name[$key].' '.MultiLang('required').'</li>';
         }
         
         if(!empty($content)){
@@ -489,7 +442,7 @@ class Destination extends CI_Controller {
             foreach ($file_image_value as $key => $value) {
                 $upload = '';
                 if(!empty($value)){
-                    $upload = $this->data->uploadBase64($value, $path_destination_upload, $max_size, $type_allow);
+                    $upload = $this->data->uploadBase64($value, $path_travelpost_upload, $max_size, $type_allow);
                     if(!$upload['status']){
                         $upload_status = $upload_status && false;
                         $msg_upload.= '<li>'.MultiLang('image').' '.($key+1).': '.$upload['message'].'</li>';
@@ -500,19 +453,18 @@ class Destination extends CI_Controller {
 
             if($upload_status){
                 $data = array(
-                    'destination_desloc_id' => $location,
-                    'destination_status' => $status,
+                    'travelpost_status' => $status,
                     'update_user_id' => $user_id,
                     'update_datetime' => $date
                 );
-                $results = $results && $this->data->updateDestination($data, $id, $name, $content, $images_name);
+                $results = $results && $this->data->updateTravelpost($data, $id, $name, $content, $images_name);
             
                 if ($results) {
                     $result["status"] = TRUE;
                     $result["message"] = MultiLang('msg_update_success');
                     if(!empty($file_image_value) AND !empty($file_image_value_old)){
                         foreach ($file_image_value as $key => $value) {
-                            @unlink($path_destination_upload.$file_image_value_old[$key]);
+                            @unlink($path_travelpost_upload.$file_image_value_old[$key]);
                         }
                     }
                 } else {
@@ -525,7 +477,7 @@ class Destination extends CI_Controller {
                     $result["message"].= '</div>';
                     foreach ($file_image_value as $key => $value) {
                         if(!empty($value)){
-                            @unlink($path_destination_upload.$value);
+                            @unlink($path_travelpost_upload.$value);
                         }
                     }
                 }
@@ -557,14 +509,14 @@ class Destination extends CI_Controller {
     public function detail($id){
 
         $path_language = $this->config->item('path_language');
-        $path_destination = $this->config->item('path_destination');
-        $detail = $this->data->getDetailDestination($id);
-        $detail_text = $this->data->getDetailDestinationText($id);
-        $detail_images = $this->data->getDetailDestinationImages($id);
+        $path_travelpost = $this->config->item('path_travelpost');
+        $detail = $this->data->getDetailTravelpost($id);
+        $detail_text = $this->data->getDetailTravelpostText($id);
+        $detail_images = $this->data->getDetailTravelpostImages($id);
         $lang = $this->data->getLang();
 
         $html = '<div class="form-group">';
-        $html.=     '<label for="name">'.MultiLang('name').'</label>';
+        $html.=     '<label for="name">'.MultiLang('title').'</label>';
         $html.=     '<br>';
         if(!empty($lang)){
             foreach ($lang as $key => $value) {
@@ -605,7 +557,7 @@ class Destination extends CI_Controller {
                             foreach ($detail_images as $key => $value) {
                                 if($value->order == $i){
         $html.=             '<div class="col" style="text-align: center;">
-                                <img style="width:180px; height:100px; border:1px dashed #C3C3C3; margin-bottom: 5px;" id="show_images_'.$i.'" src="'.(!empty($value->img) ? $path_destination.$value->img : '../assets/images/upload-images.png').'" />
+                                <img style="width:180px; height:100px; border:1px dashed #C3C3C3; margin-bottom: 5px;" id="show_images_'.$i.'" src="'.(!empty($value->img) ? $path_travelpost.$value->img : '../assets/images/upload-images.png').'" />
 
                             </div>';
                                 }
@@ -630,13 +582,13 @@ class Destination extends CI_Controller {
 
     public function delete($id)
     {
-        $path_destination_upload = $this->config->item('path_destination_upload');
-        $detail_images = $this->data->getDetailDestinationImages($id);
-        $delete = $this->data->deleteDestination($id);
+        $path_travelpost_upload = $this->config->item('path_travelpost_upload');
+        $detail_images = $this->data->getDetailTravelpostImages($id);
+        $delete = $this->data->deleteTravelpost($id);
         if($delete){
             if(!empty($detail_images)){
                 foreach ($detail_images as $key => $value) {
-                    @unlink($path_destination_upload.$value->img);
+                    @unlink($path_travelpost_upload.$value->img);
                 }
             }
             $result["status"] = TRUE;
