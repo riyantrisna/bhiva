@@ -101,7 +101,7 @@
 						}
 					}
 					?>
-					<button type="button" class="btn btn-primary"><?php echo MultiLang('other_packages'); ?></button>
+					<a href="<?php echo base_url();?>tourpackages" class="btn btn-primary"><?php echo MultiLang('other_packages'); ?></a>
 				</div>
 			</div>
 

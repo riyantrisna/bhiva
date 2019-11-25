@@ -102,22 +102,6 @@ class Service extends CI_Controller {
         }
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="content">'.MultiLang('content').'</label>';
-        $html.=     '<br>';
-        if(!empty($lang)){
-            foreach ($lang as $key => $value) {
-        $html.=     '<img src="'.$path_language.$value->icon.'" style="max-width:18px;" /> ('.$value->name.')&nbsp;*';
-        $html.=     '<textarea id="content_<?php echo $value->code;?>" name="content['.$value->code.']" class="form-control textarea"></textarea>';
-        $html.=     '<input type="hidden" id="content_name_<?php echo $value->code;?>" name="content_name['.$value->code.']" value="'.$value->name.'" >';
-        $html.=     '<br>';
-            }
-        }
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
-        $html.=     '<label for="order">'.MultiLang('order').' *</label>';
-        $html.=     '<input type="number" id="order" name="order" class="form-control" onkeypress="return isNumber(event)">';
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
         $html.=     '<label for="type">'.MultiLang('type').' *</label>';
         $html.=     '<div class="form-check">
                         <input class="form-check-input" type="radio" name="type" id="type1" value="0" checked>
@@ -143,6 +127,22 @@ class Service extends CI_Controller {
                             '.MultiLang('venue').'
                         </label>
                     </div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group" id="content_div">';
+        $html.=     '<label for="content">'.MultiLang('content').'</label>';
+        $html.=     '<br>';
+        if(!empty($lang)){
+            foreach ($lang as $key => $value) {
+        $html.=     '<img src="'.$path_language.$value->icon.'" style="max-width:18px;" /> ('.$value->name.')&nbsp;*';
+        $html.=     '<textarea id="content_<?php echo $value->code;?>" name="content['.$value->code.']" class="form-control textarea"></textarea>';
+        $html.=     '<input type="hidden" id="content_name_<?php echo $value->code;?>" name="content_name['.$value->code.']" value="'.$value->name.'" >';
+        $html.=     '<br>';
+            }
+        }
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="order">'.MultiLang('order').' *</label>';
+        $html.=     '<input type="number" id="order" name="order" class="form-control" onkeypress="return isNumber(event)">';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="status">'.MultiLang('status').' *</label>';
@@ -199,8 +199,8 @@ class Service extends CI_Controller {
 
         $name = $this->input->post('name', TRUE);
         $name_name = $this->input->post('name_name', TRUE);
-        $content = $this->input->post('content', TRUE);
-        $content_name = $this->input->post('content_name', TRUE);
+        $content = ($this->input->post('type', TRUE) == 0 OR $this->input->post('type', TRUE) == 3) ? $this->input->post('content') : NULL;
+        $content_name = ($this->input->post('type', TRUE) == 0 OR $this->input->post('type', TRUE) == 3) ? $this->input->post('content_name', TRUE) : NULL;
         $order = $this->input->post('order', TRUE);
         $type = $this->input->post('type', TRUE);
         $status = $this->input->post('status', TRUE);
@@ -221,7 +221,7 @@ class Service extends CI_Controller {
             }
         }
         
-        if(!empty($content)){
+        if(!empty($content) AND ($type==0 OR $type==3)){
             foreach ($content as $key => $value) {
                 if(empty($value)){
                     $validation = $validation && false;
@@ -278,7 +278,8 @@ class Service extends CI_Controller {
         }
 
         if($validation){
-            $results = true;
+            $results = true;$content = $this->input->post('content', TRUE);
+            $content_name = $this->input->post('content_name', TRUE);
             $upload_status = true;
             $msg_upload = '';
             $images_name = array();
@@ -375,27 +376,6 @@ class Service extends CI_Controller {
         }
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="content">'.MultiLang('content').'</label>';
-        $html.=     '<br>';
-        if(!empty($lang)){
-            foreach ($lang as $key => $value) {
-                foreach ($detail_text as $k => $v) {
-                    if($value->code == $v->lang){
-        $html.=     '<img src="'.$path_language.$value->icon.'" style="max-width:18px;" /> ('.$value->name.')&nbsp;*';
-        $html.=     '<textarea id="content_<?php echo $value->code;?>" name="content['.$value->code.']" class="form-control textarea">'.$v->text.'</textarea>';
-        $html.=     '<input type="hidden" id="content_name_<?php echo $value->code;?>" name="content_name['.$value->code.']" value="'.$value->name.'" >';
-        $html.=     '<br>';
-                    }
-                }
-            }
-        }
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
-        $html.=     '<label for="order">'.MultiLang('order').' *</label>';
-        $html.=     '<input type="number" id="order" name="order" class="form-control" onkeypress="return isNumber(event)" value="'.$detail->order.'">';
-        $html.=     '<input type="hidden" id="id" name="id" value="'.$detail->id.'">';
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
         $html.=     '<label for="type">'.MultiLang('type').' *</label>';
         $html.=     '<div class="form-check">
                         <input class="form-check-input" type="radio" name="type" id="type1" value="0" '.($detail->type == 0 ? "checked" : "").'>
@@ -421,6 +401,27 @@ class Service extends CI_Controller {
                             '.MultiLang('venue').'
                         </label>
                     </div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group" id="content_div">';
+        $html.=     '<label for="content">'.MultiLang('content').'</label>';
+        $html.=     '<br>';
+        if(!empty($lang)){
+            foreach ($lang as $key => $value) {
+                foreach ($detail_text as $k => $v) {
+                    if($value->code == $v->lang){
+        $html.=     '<img src="'.$path_language.$value->icon.'" style="max-width:18px;" /> ('.$value->name.')&nbsp;*';
+        $html.=     '<textarea id="content_<?php echo $value->code;?>" name="content['.$value->code.']" class="form-control textarea">'.$v->text.'</textarea>';
+        $html.=     '<input type="hidden" id="content_name_<?php echo $value->code;?>" name="content_name['.$value->code.']" value="'.$value->name.'" >';
+        $html.=     '<br>';
+                    }
+                }
+            }
+        }
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="order">'.MultiLang('order').' *</label>';
+        $html.=     '<input type="number" id="order" name="order" class="form-control" onkeypress="return isNumber(event)" value="'.$detail->order.'">';
+        $html.=     '<input type="hidden" id="id" name="id" value="'.$detail->id.'">';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="status">'.MultiLang('status').' *</label>';
@@ -489,8 +490,8 @@ class Service extends CI_Controller {
         $id = $this->input->post('id', TRUE);
         $name = $this->input->post('name', TRUE);
         $name_name = $this->input->post('name_name', TRUE);
-        $content = $this->input->post('content', TRUE);
-        $content_name = $this->input->post('content_name', TRUE);
+        $content = ($this->input->post('type', TRUE) == 0 OR $this->input->post('type', TRUE) == 3) ? $this->input->post('content') : NULL;
+        $content_name = ($this->input->post('type', TRUE) == 0 OR $this->input->post('type', TRUE) == 3) ? $this->input->post('content_name', TRUE) : NULL;
         $order = $this->input->post('order', TRUE);
         $type = $this->input->post('type', TRUE);
         $status = $this->input->post('status', TRUE);
@@ -512,7 +513,7 @@ class Service extends CI_Controller {
             }
         }
         
-        if(!empty($content)){
+        if(!empty($content) AND ($type==0 OR $type==3)){
             foreach ($content as $key => $value) {
                 if(empty($value)){
                     $validation = $validation && false;
@@ -671,6 +672,19 @@ class Service extends CI_Controller {
         }
         $html.= '</div>';
         $html.= '<div class="form-group">';
+        $html.=     '<label for="type">'.MultiLang('type').'</label>';
+                if($detail->type == 0){
+        $html.=     '<div>'.MultiLang('information').'</div>';
+                }elseif($detail->type == 1){
+        $html.=     '<div>'.MultiLang('tour_packages').'</div>';
+                }elseif($detail->type == 2){
+        $html.=     '<div>'.MultiLang('ticket').'</div>';
+                }elseif($detail->type == 3){
+        $html.=     '<div>'.MultiLang('venue').'</div>';
+                }
+        $html.= '</div>';
+        if($detail->type == 0){
+        $html.= '<div class="form-group">';
         $html.=     '<label for="content">'.MultiLang('content').'</label>';
         $html.=     '<br>';
         if(!empty($lang)){
@@ -685,21 +699,10 @@ class Service extends CI_Controller {
             }
         }
         $html.= '</div>';
+        }
         $html.= '<div class="form-group">';
         $html.=     '<label for="order">'.MultiLang('order').'</label>';
         $html.=     '<div>'.$detail->order.'</div>';
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
-        $html.=     '<label for="type">'.MultiLang('type').'</label>';
-                if($detail->type == 0){
-        $html.=     '<div>'.MultiLang('information').'</div>';
-                }elseif($detail->type == 1){
-        $html.=     '<div>'.MultiLang('tour_packages').'</div>';
-                }elseif($detail->type == 2){
-        $html.=     '<div>'.MultiLang('ticket').'</div>';
-                }elseif($detail->type == 3){
-        $html.=     '<div>'.MultiLang('venue').'</div>';
-                }
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="status">'.MultiLang('status').'</label>';

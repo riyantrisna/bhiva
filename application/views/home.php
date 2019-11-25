@@ -26,10 +26,14 @@
 					<div class="carousel-item <?php echo (($key==0) ? 'active' : ''); ?> slides">
 						<div class="slide" style="background-image: url('<?php echo base_url().$value->img;?>')"></div>
 						<div class="hero">
+							<?php
+							if(!empty($value->title)){
+							?>
 							<hgroup>
 								<h1><?php echo $value->title;?></h1>
 							</hgroup>
 							<?php
+							}
 							if(!empty($value->link)){
 							?>
 							<a class="btn btn-hero btn-lg" href="<?php echo $value->link; ?>"><?php echo $value->title_link;?></a>
@@ -53,8 +57,7 @@
 			
 			<div class="container pt-2">
 				<div class="row">
-					<div class="col-md-6 col-sm-12 pb-3 pt-5 text-left">
-						<h5 class="text-center mb-4"><?php echo MultiLang('bhiva'); ?></h5>
+					<div class="col-md-8 col-sm-12 pb-3 pt-5 text-left">
 						<p class="text-justify"><?php echo $greeting->text;?></p>
 						<?php if(!empty($greeting->img)){ ?>
 						<div class="mt-3">
@@ -68,17 +71,21 @@
 						</div>
 						<?php } ?>
 					</div>
-					<div class="col-md-6 col-sm-12 pb-3 pt-5 text-left" style="border-left: 1px solid #C7C7C7">
+					<div class="col-md-1 col-sm-12" style="border-right: 1px solid #C7C7C7;">
+						&nbsp;
+						<br>
+					</div>
+					<div class="col-md-3 col-sm-12 pb-3 pt-5 text-left">
 						<h5 class="text-center mb-4"><?php echo MultiLang('travel_post'); ?></h5>
 
 						<?php
 						if(!empty($travel_post)){
 							foreach ($travel_post as $key => $value) {
 						?>
-						<a class="text-decoration-none" href="<?php echo base_url();?>travelpost/read/<?php echo $value->id.'/'.(str_replace(' ','-',$value->name));?>">
+						<a class="text-decoration-none" href="<?php echo base_url();?>travelpost/read/<?php echo $value->id.'/'.(preg_replace("/\W|_/","-",$value->name));?>">
 							<div class="mt-3 row">
-								<img class="col-md-6 col-sm-12 d-block h100" src="<?php echo base_url().$value->img;?>" alt="">
-								<p class="col-md-6 col-sm-12" style="color: #212529;">
+								<img class="col-sm-12 d-block h100" src="<?php echo base_url().$value->img;?>" alt="">
+								<p class="col-sm-12" style="color: #212529;">
 									<?php echo $value->name; ?>
 									<br>
 									<span class="font-italic text-black-50" style="font-size: 14px;"><?php echo $value->creator;?>, <?php echo $value->date;?></span>
@@ -89,13 +96,18 @@
 							}
 						}
 						?>
+						<div style="text-align: right;">
+							<a class="text-decoration-none" style="color: #0C74A8;" href="<?php echo base_url();?>travelpost">
+								<?php echo MultiLang('more_travel_post'); ?>...
+							</a>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<hr class="mt-4 mb-5">
 
-			<div class="col-sm-12 mt-5 mb-5">
+			<div class="col-sm-12 mt-5 mb-4">
 				<div style="text-align: center;">
 					<h5><?php echo MultiLang('destination'); ?></h5>
 					<p class="text-grey-theme mt-1" style="font-size: 16px; color: #8f8f8f !important;"><?php echo MultiLang('text_home_destination'); ?></p>
@@ -103,7 +115,7 @@
 			</div>
 			
 			<?php 
-			if(!empty($destination_location_home)){ 
+			if(!empty($destination_location_home)){ 				
 				foreach ($destination_location_home as $k => $val) {
 			?>
 			<div class="col-sm-12 mt-3 mb-3">
@@ -114,12 +126,12 @@
 			<div class="container mb-3">
 				<div class="row text-center text-lg-left justify-content-center">
 					<?php
+					$destination = $this->CI->load_destination($val->id, 0, 4);
 					if(!empty($destination)){
 						foreach ($destination as $key => $value) {
-							if($value->desloc_id == $val->id){
 					?>
 						<div class="col-lg-3 col-md-6 col-sm-12">
-							<a href="#" class="d-block mb-4 h-100">
+							<a href="<?php echo base_url();?>destination/view/<?php echo $value->id.'/'.(preg_replace("/\W|_/","-",$value->name));?>" class="d-block mb-4 h-100">
 								<div class=" img-hover-zoom img-hover-zoom--brightness">
 									<img class="img-fluid" src="<?php echo base_url().$value->img;?>" alt="">
 									<span class="centered-text-img"><?php echo $value->name;?></span>
@@ -127,7 +139,6 @@
 							</a>
 						</div>
 					<?php
-							}
 						}
 					}
 					?>
@@ -140,7 +151,7 @@
 
 			<div class="container mb-5">
 				<div class="row text-center text-lg-left justify-content-center">
-					<button type="button" class="btn btn-primary"><?php echo MultiLang('other_destination'); ?></button>
+					<a href="<?php echo base_url();?>destination" class="btn btn-primary"><?php echo MultiLang('other_destination'); ?></a>
 				</div>
 			</div>
 					
@@ -171,7 +182,7 @@
 						}
 					}
 					?>
-					<button type="button" class="btn btn-primary"><?php echo MultiLang('other_packages'); ?></button>
+					<a href="<?php echo base_url();?>tourpackages" class="btn btn-primary"><?php echo MultiLang('other_packages'); ?></a>
 				</div>
 			</div>
 
@@ -181,10 +192,5 @@
 			$this->load->view('footer');
 		?>
 
-		<script>
-			$(".calendar").datepicker({
-				format: 'yyyy-mm-dd'
-			});
-		</script>
 	</body>
 </html>

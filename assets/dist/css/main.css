@@ -165,8 +165,8 @@ Image credits: unsplash.com
 .centered-text-img {
     position: absolute;
     width: fit-content;
-    max-width: 85%;
-    top: 50%;
+    max-width: 80%;
+    top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: #ffffff;
@@ -175,6 +175,7 @@ Image credits: unsplash.com
     background: rgba(0, 0, 0, .6);
     padding: 5px;
     border-radius: 5px;
+    text-align: center;
 }
 
 /* who we are*/

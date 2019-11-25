@@ -103,6 +103,15 @@ class Tourpackages extends CI_Controller {
         }
         $html.= '</div>';
         $html.= '<div class="form-group">';
+        $html.=     '<label for="total_day">'.MultiLang('total_day').' *</label>';
+        $html.=     '<input type="text" id="total_day" name="total_day" class="form-control" onkeypress="return isNumberText(event)" maxlength="4">';
+        $html.= '</div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="total_night">'.MultiLang('total_night').' *</label>';
+        $html.=     '<input type="text" id="total_night" name="total_night" class="form-control" onkeypress="return isNumberText(event)" maxlength="4">';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
         $html.=     '<label for="destination">'.MultiLang('destination').'</label>';
         $html.=     '<div>';
         $html.=         '<table class="table table-bordered" id="table_destination">
@@ -115,9 +124,6 @@ class Tourpackages extends CI_Controller {
                                 </td>
                                 <td style="width: 140px; text-align: center;">
                                     '.MultiLang('order').'/'.MultiLang('day').'
-                                </td>
-                                <td style="width: 50px; text-align: center;">
-                                    '.MultiLang('is_night').'?
                                 </td>
                                 <td style="text-align: center;">
                                     '.MultiLang('action').'
@@ -143,11 +149,6 @@ class Tourpackages extends CI_Controller {
                                 </td>
                                 <td>
                                     <input type="number" name="order[]" class="form-control" onkeypress="return isNumber(event)">
-                                </td>
-                                <td style="text-align: center;">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="1" name="is_night[]">
-                                    </div>
                                 </td>
                                 <td style="text-align: center;">
                                     <button type="button" class="btn btn-success" onclick="add_destination()"><i class="fas fa-plus"></i></button>
@@ -275,6 +276,8 @@ class Tourpackages extends CI_Controller {
 
         $path_tourpackages_upload = $this->config->item('path_tourpackages_upload');
 
+        $total_day = $this->input->post('total_day', TRUE);
+        $total_night = $this->input->post('total_night', TRUE);
         $name = $this->input->post('name', TRUE);
         $name_name = $this->input->post('name_name', TRUE);
         $content = $this->input->post('content');
@@ -299,12 +302,10 @@ class Tourpackages extends CI_Controller {
         $destination = $this->input->post('destination', TRUE);
         $day = $this->input->post('day', TRUE);
         $order = $this->input->post('order', TRUE);
-        $is_night = $this->input->post('is_night', TRUE);
         $destination = array(
             'destination' => $destination,
             'day' => $day,
-            'order' => $order,
-            'is_night' => $is_night
+            'order' => $order
         );
 
         $date = date('Y-m-d H:i:s');
@@ -329,6 +330,21 @@ class Tourpackages extends CI_Controller {
                     $validation_text.= '<li>'.MultiLang('content').' '.$content_name[$key].' '.MultiLang('required').'</li>';
                 }
             }
+        }
+
+        if(empty($total_day)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('total_day').' '.MultiLang('required').'</li>';
+        }
+        
+        if(empty($total_night)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('total_night').' '.MultiLang('required').'</li>';
+        }
+
+        if(!empty($total_day) AND !empty($total_night) AND $total_night > $total_day){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('total_night_total_day_text').'</li>';
         }
 
         if(empty($base_price_local)){
@@ -390,9 +406,11 @@ class Tourpackages extends CI_Controller {
                 }
                 $images_name[$key+1] = (!empty($upload['file'])) ? $upload['file'] : NULL;
             }
-
+            
             if($upload_status){
                 $data = array(
+                    'tourpackages_total_day' => $total_day,
+                    'tourpackages_total_night' => $total_night,
                     'tourpackages_base_price_local' => str_replace('.','',$base_price_local),
                     'tourpackages_base_price_foreign' => str_replace('.','',$base_price_foreign),
                     'tourpackages_is_rating_manual' => isset($is_rating_manual) ? 1 : 0,
@@ -491,6 +509,15 @@ class Tourpackages extends CI_Controller {
         }
         $html.= '</div>';
         $html.= '<div class="form-group">';
+        $html.=     '<label for="total_day">'.MultiLang('total_day').' *</label>';
+        $html.=     '<input type="text" id="total_day" name="total_day" class="form-control" onkeypress="return isNumberText(event)" maxlength="4" value="'.$detail->total_day.'">';
+        $html.= '</div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="total_night">'.MultiLang('total_night').' *</label>';
+        $html.=     '<input type="text" id="total_night" name="total_night" class="form-control" onkeypress="return isNumberText(event)" maxlength="4" value="'.$detail->total_day.'">';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
         $html.=     '<label for="destination">'.MultiLang('destination').'</label>';
         $html.=     '<div>';
         $html.=         '<table class="table table-bordered" id="table_destination">
@@ -503,9 +530,6 @@ class Tourpackages extends CI_Controller {
                                 </td>
                                 <td style="width: 140px; text-align: center;">
                                     '.MultiLang('order').'/'.MultiLang('day').'
-                                </td>
-                                <td style="width: 50px; text-align: center;">
-                                    '.MultiLang('is_night').'?
                                 </td>
                                 <td style="text-align: center;">
                                     '.MultiLang('action').'
@@ -541,11 +565,6 @@ class Tourpackages extends CI_Controller {
                                         <input type="number" name="order[]" class="form-control" onkeypress="return isNumber(event)" value="'.$value->order.'">
                                     </td>
                                     <td style="text-align: center;">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="1" name="is_night[]" '.($value->is_night == 1 ? "checked" : "").'>
-                                        </div>
-                                    </td>
-                                    <td style="text-align: center;">
                                         '.$action.'
                                     </td>
                                 </tr>';
@@ -572,11 +591,6 @@ class Tourpackages extends CI_Controller {
                                 </td>
                                 <td>
                                     <input type="number" name="order[]" class="form-control" onkeypress="return isNumber(event)">
-                                </td>
-                                <td style="text-align: center;">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="1" name="is_night[]">
-                                    </div>
                                 </td>
                                 <td style="text-align: center;">
                                     <button type="button" class="btn btn-success" onclick="add_destination()"><i class="fas fa-plus"></i></button>
@@ -745,6 +759,8 @@ class Tourpackages extends CI_Controller {
         $path_tourpackages_upload = $this->config->item('path_tourpackages_upload');
 
         $id = $this->input->post('id', TRUE);
+        $total_day = $this->input->post('total_day', TRUE);
+        $total_night = $this->input->post('total_night', TRUE);
         $name = $this->input->post('name', TRUE);
         $name_name = $this->input->post('name_name', TRUE);
         $content = $this->input->post('content');
@@ -770,12 +786,10 @@ class Tourpackages extends CI_Controller {
         $destination = $this->input->post('destination', TRUE);
         $day = $this->input->post('day', TRUE);
         $order = $this->input->post('order', TRUE);
-        $is_night = $this->input->post('is_night', TRUE);
         $destination = array(
             'destination' => $destination,
             'day' => $day,
-            'order' => $order,
-            'is_night' => $is_night
+            'order' => $order
         );
 
         $date = date('Y-m-d H:i:s');
@@ -800,6 +814,21 @@ class Tourpackages extends CI_Controller {
                     $validation_text.= '<li>'.MultiLang('content').' '.$content_name[$key].' '.MultiLang('required').'</li>';
                 }
             }
+        }
+
+        if(empty($total_day)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('total_day').' '.MultiLang('required').'</li>';
+        }
+        
+        if(empty($total_night)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('total_night').' '.MultiLang('required').'</li>';
+        }
+
+        if(!empty($total_day) AND !empty($total_night) AND $total_night > $total_day){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('total_night_total_day_text').'</li>';
         }
 
         if(empty($base_price_local)){
@@ -863,6 +892,8 @@ class Tourpackages extends CI_Controller {
 
             if($upload_status){
                 $data = array(
+                    'tourpackages_total_day' => $total_day,
+                    'tourpackages_total_night' => $total_night,
                     'tourpackages_base_price_local' => str_replace('.','',$base_price_local),
                     'tourpackages_base_price_foreign' => str_replace('.','',$base_price_foreign),
                     'tourpackages_is_rating_manual' => isset($is_rating_manual) ? 1 : 0,
@@ -964,6 +995,14 @@ class Tourpackages extends CI_Controller {
         }
         $html.= '</div>';
         $html.= '<div class="form-group">';
+        $html.=     '<label for="total_day">'.MultiLang('total_day').'</label>';
+        $html.=     '<div>'.$detail->total_day.'</div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="total_night">'.MultiLang('total_night').'</label>';
+        $html.=     '<div>'.$detail->total_night.'</div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
         $html.=     '<label for="destination">'.MultiLang('destination').'</label>';
         $html.=     '<div>';
         $html.=         '<table class="table table-bordered" id="table_destination">
@@ -977,9 +1016,6 @@ class Tourpackages extends CI_Controller {
                                 <td style="width: 140px; text-align: center;">
                                     '.MultiLang('order').'/'.MultiLang('day').'
                                 </td>
-                                <td style="width: 100px; text-align: center;">
-                                    '.MultiLang('is_night').'?
-                                </td>
                             </tr>';
         if(!empty($detail_destination)){
             foreach ($detail_destination as $key => $value) {
@@ -992,9 +1028,6 @@ class Tourpackages extends CI_Controller {
                                     </td>
                                     <td style="text-align: center;">
                                         '.$value->order.'
-                                    </td>
-                                    <td style="text-align: center;">
-                                        '.($value->is_night == 1 ? MultiLang('yes') : MultiLang('no')).'
                                     </td>
                                 </tr>';
                 

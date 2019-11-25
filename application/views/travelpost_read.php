@@ -70,7 +70,7 @@
 						if(!empty($travelpost_latest)){
 							foreach ($travelpost_latest as $key => $value) {
 						?>
-						<a class="text-decoration-none" href="<?php echo base_url();?>travelpost/read/<?php echo $value->id.'/'.(str_replace(' ','-',$value->name));?>">
+						<a class="text-decoration-none" href="<?php echo base_url();?>travelpost/read/<?php echo $value->id.'/'.(preg_replace("/\W|_/","-",$value->name));?>">
 							<div class="mt-3 row">
 								<img class="col-sm-12 d-block h100" src="<?php echo base_url().$value->img;?>" alt="">
 								<p class="col-sm-12" style="color: #212529;">
@@ -115,7 +115,7 @@
 					}
 				}
 				?>
-				<button type="button" class="btn btn-primary"><?php echo MultiLang('other_packages'); ?></button>
+				<a href="<?php echo base_url();?>tourpackages" class="btn btn-primary"><?php echo MultiLang('other_packages'); ?></a>
 			</div>
 		</div>
 		
@@ -137,11 +137,5 @@
 				background-repeat: no-repeat;
 			}
 		</style>
-
-		<script>
-			$(".calendar").datepicker({
-				format: 'yyyy-mm-dd'
-			});
-		</script>
 	</body>
 </html>

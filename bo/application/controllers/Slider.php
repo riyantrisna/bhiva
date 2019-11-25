@@ -83,7 +83,7 @@ class Slider extends CI_Controller {
         $html.=     '<br>';
         if(!empty($lang)){
             foreach ($lang as $key => $value) {
-        $html.=     '<img src="'.$path_language.$value->icon.'" style="max-width:18px;" /> ('.$value->name.')&nbsp;*';
+        $html.=     '<img src="'.$path_language.$value->icon.'" style="max-width:18px;" /> ('.$value->name.')&nbsp;';
         $html.=     '<input type="text" id="title_<?php echo $value->code;?>" name="title['.$value->code.']" class="form-control">';
         $html.=     '<input type="hidden" id="title_name_<?php echo $value->code;?>" name="title_name['.$value->code.']" value="'.$value->name.'" >';
         $html.=     '<br>';
@@ -188,14 +188,14 @@ class Slider extends CI_Controller {
         $validation = true;
         $validation_text = '';
         
-        if(!empty($title)){
-            foreach ($title as $key => $value) {
-                if(empty($value)){
-                    $validation = $validation && false;
-                    $validation_text.= '<li>'.MultiLang('title').' '.$title_name[$key].' '.MultiLang('required').'</li>';
-                }
-            }
-        }
+        // if(!empty($title)){
+        //     foreach ($title as $key => $value) {
+        //         if(empty($value)){
+        //             $validation = $validation && false;
+        //             $validation_text.= '<li>'.MultiLang('title').' '.$title_name[$key].' '.MultiLang('required').'</li>';
+        //         }
+        //     }
+        // }
 
         if(empty($order)){
             $validation = $validation && false;
@@ -285,7 +285,7 @@ class Slider extends CI_Controller {
             foreach ($lang as $key => $value) {
                 foreach ($detail_text as $k => $v) {
                     if($value->code == $v->lang){
-        $html.=     '<img src="'.$path_language.$value->icon.'" style="max-width:18px;" /> ('.$value->name.')&nbsp;*';
+        $html.=     '<img src="'.$path_language.$value->icon.'" style="max-width:18px;" /> ('.$value->name.')&nbsp;';
         $html.=     '<input type="text" id="title_<?php echo $value->code;?>" name="title['.$value->code.']" class="form-control" value="'.$v->title.'">';
         $html.=     '<input type="hidden" id="title_name_<?php echo $value->code;?>" name="title_name['.$value->code.']" value="'.$value->name.'" >';
         $html.=     '<br>';
@@ -411,14 +411,14 @@ class Slider extends CI_Controller {
         $validation = true;
         $validation_text = '';
         
-        if(!empty($title)){
-            foreach ($title as $key => $value) {
-                if(empty($value)){
-                    $validation = $validation && false;
-                    $validation_text.= '<li>'.MultiLang('title').' '.$title_name[$key].' '.MultiLang('required').'</li>';
-                }
-            }
-        }
+        // if(!empty($title)){
+        //     foreach ($title as $key => $value) {
+        //         if(empty($value)){
+        //             $validation = $validation && false;
+        //             $validation_text.= '<li>'.MultiLang('title').' '.$title_name[$key].' '.MultiLang('required').'</li>';
+        //         }
+        //     }
+        // }
 
         if(empty($order)){
             $validation = $validation && false;

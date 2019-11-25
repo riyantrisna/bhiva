@@ -49,11 +49,31 @@
                         <?php
                         if(!empty($service)){
                             foreach ($service as $key => $value) {
+                                if($value->type == 1){
+                        ?>
+                        <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
+                            <a href="<?php echo base_url();?>tourpackages"><?php echo $value->name?></a>
+                        </li>
+                        <?php
+                                }elseif($value->type == 2){
+                        ?>
+                        <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
+                            <a href="<?php echo base_url();?>templeticket"><?php echo $value->name?></a>
+                        </li>
+                        <?php
+                                }elseif($value->type == 3){
+                        ?>
+                        <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
+                            <a href="<?php echo base_url();?>venue"><?php echo $value->name?></a>
+                        </li>
+                        <?php
+                                }else{
                         ?>
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
                             <a href="<?php echo base_url();?>service/view/<?php echo $value->id.'/'.(str_replace(' ','-',$value->name));?>"><?php echo $value->name?></a>
                         </li>
                         <?php
+                                }
                             }
                         }
                         ?>
@@ -67,7 +87,7 @@
                             foreach ($destination_location as $key => $value) {
                         ?>
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                            <a href="#"><?php echo $value->name?></a>
+                            <a href="<?php echo base_url();?>destination?section=<?php echo (preg_replace("/\W|_/","-",$value->name));?>"><?php echo $value->name?></a>
                         </li>
                         <?php
                             }
@@ -151,7 +171,10 @@
 <script src="<?php echo base_url();?>assets/dist/js/ekko-lightbox.min.js"></script>
 <!-- Social Share Kit JS -->
 <script src="<?php echo base_url();?>assets/dist/js/social-share-kit.js"></script>
-
+<!-- InputMask -->
+<script src="assets/dist/js/jquery.mask.min.js"></script>
+<!-- overlayScrollbars -->
+<script src="assets/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <script>
 $(document).ready(function() {
 	$(".dates").datepicker({

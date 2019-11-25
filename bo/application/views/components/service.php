@@ -134,7 +134,21 @@ $(document).ready(function() {
             { "targets": 5, "width": '120px' }
         ],
     });
+
+    $('input[type=radio][name=type]').change(function() {
+        showhide_content();
+    });
+
+    showhide_content();
 });
+
+function showhide_content(){
+    if($('#type1').is(':checked') || $('#type4').is(':checked')){
+        $('#content_div').show();
+    }else{
+        $('#content_div').hide();
+    }
+}
 
 function reload_table()
 {
@@ -219,6 +233,12 @@ async function add()
                         [ 'view', [ 'fullscreen', 'codeview' ] ]
                     ]
                 });
+
+                $('input[type=radio][name=type]').change(function() {
+                    showhide_content();
+                });
+
+                showhide_content();
             }else{
                 toastr.error(xhr.statusText);
             }
@@ -259,6 +279,12 @@ async function edit(id)
                         [ 'view', [ 'fullscreen', 'codeview' ] ]
                     ]
                 });
+
+                $('input[type=radio][name=type]').change(function() {
+                    showhide_content();
+                });
+                
+                showhide_content();
             }else{
                 toastr.error(xhr.statusText);
             }

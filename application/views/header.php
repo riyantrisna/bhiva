@@ -18,6 +18,8 @@
 	<link rel="stylesheet" href="<?php echo base_url();?>assets/dist/css/ekko-lightbox.css">
 	<!-- Social Share Kit CSS -->
 	<link rel="stylesheet" href="<?php echo base_url();?>assets/dist/css/social-share-kit.css" type="text/css">
+	<!-- overlayScrollbars -->
+	<link rel="stylesheet" href="assets/overlayScrollbars/css/OverlayScrollbars.min.css">
 </head>
 <body>
 <!-- Navbar -->
@@ -40,9 +42,23 @@
 					<?php
 					if(!empty($service)){
 						foreach ($service as $key => $value) {
+							if($value->type == 1){
 					?>
-					<a class="dropdown-item font-navbar" href="<?php echo base_url();?>service/view/<?php echo $value->id.'/'.(str_replace(' ','-',$value->name));?>"><?php echo $value->name?></a>
+					<a class="dropdown-item font-navbar" href="<?php echo base_url();?>tourpackages"><?php echo $value->name?></a>
 					<?php
+							}elseif($value->type == 2){
+					?>
+					<a class="dropdown-item font-navbar" href="<?php echo base_url();?>templeticket"><?php echo $value->name?></a>
+					<?php
+							}elseif($value->type == 3){
+					?>
+					<a class="dropdown-item font-navbar" href="<?php echo base_url();?>venue"><?php echo $value->name?></a>
+					<?php
+							}else{
+					?>
+					<a class="dropdown-item font-navbar" href="<?php echo base_url();?>service/view/<?php echo $value->id.'/'.(preg_replace("/\W|_/","-",$value->name));?>"><?php echo $value->name?></a>
+					<?php
+							}
 						}
 					}
 					?>

@@ -2,10 +2,13 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Home extends CI_Controller {
+	
+	public $CI = NULL;
 
 	function __construct()
 	{
 		parent::__construct();
+		$this->CI = & get_instance();
 
 		$this->load->model('data');
 	}
@@ -30,11 +33,17 @@ class Home extends CI_Controller {
 		$data['ticket'] = $this->data->getTicket();
 		$data['tourpackages'] = $this->data->getTourpackages();
 		$data['destination_location_home'] = $this->data->getDestinationLocationHome();
-		$data['destination'] = $this->data->getDestination();
 
 		$this->load->view('home', $data);
 
 	}
+
+	public function load_destination($id, $page, $limit)
+	{
+		$data = $this->data->getDestinationPagingById($id, $page, $limit);
+
+		return $data;
+	}	
 
 	public function changelanguage($lang)
 	{

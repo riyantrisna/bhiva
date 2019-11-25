@@ -147,6 +147,14 @@ $(document).ready(function() {
     });
 });
 
+function cek_total_night(){
+    $('#total_night').on('keyup', function(){
+        if($('#total_night').val() > $('#total_day').val()){
+            
+        }
+    });
+}
+
 function reload_table()
 {
     table.ajax.reload(null,false); //reload datatable ajax 
@@ -444,11 +452,6 @@ async function add_destination(){
     str+= '</td>';
     str+= '<td>';
     str+= '    <input type="number" name="order[]" class="form-control" onkeypress="return isNumber(event)">';
-    str+= '</td>';
-    str+= '<td style="text-align: center;">';
-    str+= '    <div class="form-check">';
-    str+= '         <input class="form-check-input" type="checkbox" value="1" name="is_night[]">';
-    str+= '    </div>';
     str+= '</td>';
     str+= '<td style="text-align: center;">';
     str+= '    <button type="button" class="btn btn-danger" onclick="delete_destination(this)"><i class="fas fa-trash-alt"></i></button>';

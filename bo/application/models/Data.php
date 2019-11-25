@@ -589,7 +589,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(a.`user_real_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(a.`user_real_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`user_email`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`user_phone`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -631,7 +631,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(a.`user_real_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(a.`user_real_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`user_email`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`user_phone`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -735,7 +735,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`slidertext_title`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`slidertext_title`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`slidertext_text`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`slidertext_title_link`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`slider_link`) LIKE LOWER('%$keyword%') ";
@@ -774,7 +774,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`slidertext_title`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`slidertext_title`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`slidertext_text`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`slidertext_title_link`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`slider_link`) LIKE LOWER('%$keyword%') ";
@@ -921,7 +921,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`servicetext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`servicetext_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`servicetext_text`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`slider_order`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -956,7 +956,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`servicetext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`servicetext_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`servicetext_text`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`slider_order`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -1477,7 +1477,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`gallerytext_title`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`gallerytext_title`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`gallery_order`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`gallery_status`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -1512,7 +1512,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`gallerytext_title`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`gallerytext_title`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`gallery_order`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`gallery_status`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -1651,7 +1651,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`gallerytext_title`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`gallerytext_title`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`gallery_order`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`gallery_status`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -1687,7 +1687,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`gallerytext_title`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`gallerytext_title`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`gallery_order`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`gallery_status`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -1846,9 +1846,8 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`destinationtext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`destinationtext_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`destinationtext_text`) LIKE LOWER('%$keyword%') ";
-            $str .= " OR LOWER(a.`destination_order`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(c.`desloc_name`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
         }
@@ -1883,9 +1882,8 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`destinationtext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`destinationtext_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`destinationtext_text`) LIKE LOWER('%$keyword%') ";
-            $str .= " OR LOWER(a.`destination_order`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(c.`desloc_name`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
         }
@@ -2090,7 +2088,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`venuetext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`venuetext_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`venuetext_text`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`venue_order`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -2123,7 +2121,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`venuetext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`venuetext_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`venuetext_text`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`venue_order`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -2310,7 +2308,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`tickettext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`tickettext_name`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
         }
 
@@ -2341,7 +2339,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`tickettext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`tickettext_name`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
         }
 
@@ -2825,6 +2823,8 @@ class Data extends CI_Model {
         $query = "
                 SELECT
                     a.`tourpackages_id` AS `id`,
+                    a.`tourpackages_total_day` AS `total_day`,
+                    a.`tourpackages_total_night` AS `total_night`,
                     a.`tourpackages_base_price_local` AS `base_price_local`,
                     a.`tourpackages_base_price_foreign` AS `base_price_foreign`,
                     a.`tourpackages_is_rating_manual` AS `is_rating_manual`,
@@ -2905,8 +2905,7 @@ class Data extends CI_Model {
                     a.`tourpackagesdest_destination_id` AS `destination_id`,
                     b.`destinationtext_name` AS `destination_name`,
                     a.`tourpackagesdest_day` AS `day`,
-                    a.`tourpackagesdest_order` AS `order`,
-                    a.`tourpackagesdest_is_night` AS `is_night`
+                    a.`tourpackagesdest_order` AS `order`
                 FROM
                     `mst_tourpackages_destination` a
                     LEFT JOIN mst_destination_text b ON b.destinationtext_destination_id = a.`tourpackagesdest_destination_id` AND b.`destinationtext_lang` = '".$this->user_lang."'
@@ -2968,8 +2967,7 @@ class Data extends CI_Model {
                         'tourpackagesdest_tourpackages_id' => $tourpackages_id,
                         'tourpackagesdest_destination_id' => $destination['destination'][$key],
                         'tourpackagesdest_day' => $destination['day'][$key],
-                        'tourpackagesdest_order' => $destination['order'][$key],
-                        'tourpackagesdest_is_night' => ((isset($destination['is_night'][$key]) AND $destination['is_night'][$key] == 1) ? 1 : 0)
+                        'tourpackagesdest_order' => $destination['order'][$key]
                     );
                     $this->default->insert('mst_tourpackages_destination',$data);
                 }
@@ -3046,8 +3044,7 @@ class Data extends CI_Model {
                         'tourpackagesdest_tourpackages_id' => $id,
                         'tourpackagesdest_destination_id' => $destination['destination'][$key],
                         'tourpackagesdest_day' => $destination['day'][$key],
-                        'tourpackagesdest_order' => $destination['order'][$key],
-                        'tourpackagesdest_is_night' => ((isset($destination['is_night'][$key]) AND $destination['is_night'][$key] == 1) ? 1 : 0)
+                        'tourpackagesdest_order' => $destination['order'][$key]
                     );
                     $this->default->insert('mst_tourpackages_destination',$data);
                 }
@@ -3268,7 +3265,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(a.`desloc_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(a.`desloc_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`desloc_order`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`desloc_is_show_home`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -3300,7 +3297,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(a.`desloc_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(a.`desloc_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`desloc_order`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`desloc_is_show_home`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -3379,7 +3376,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`travelposttext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`travelposttext_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`travelposttext_text`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`travelpost_order`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";
@@ -3412,7 +3409,7 @@ class Data extends CI_Model {
 
         if(!empty($keyword)){
             $str .= " AND ( ";
-            $str .= " OR LOWER(b.`travelposttext_name`) LIKE LOWER('%$keyword%') ";
+            $str .= " LOWER(b.`travelposttext_name`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(b.`travelposttext_text`) LIKE LOWER('%$keyword%') ";
             $str .= " OR LOWER(a.`travelpost_order`) LIKE LOWER('%$keyword%') ";
             $str .= " ) ";

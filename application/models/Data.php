@@ -54,6 +54,63 @@ class Data extends CI_Model {
         $result = $this->default->query($query);
         return $result->result();
     }
+
+    public function getTourpackagesBegin(){
+        $path_tourpackages_upload = $this->config->item('path_tourpackages_upload');
+        $query = "
+            SELECT
+                a.`tourpackages_id` AS id,
+                a.`tourpackages_total_day` AS total_day,
+                a.`tourpackages_total_night` AS total_night,
+                IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) AS `price_local`,
+                IFNULL(d.`tourpackagesprice_price_foreign`, a.`tourpackages_base_price_foreign`) AS `price_foreign`,
+                b.`tourpackagestext_name` AS 'name',
+                CONCAT('".$path_tourpackages_upload."',c.`tourpackagesimg_img`) AS 'img'
+            FROM 
+                `mst_tourpackages` a
+                LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_tourpackages_img` c ON c.`tourpackagesimg_tourpackages_id` = a.`tourpackages_id` AND c.`tourpackagesimg_order` = 1
+                LEFT JOIN `mst_tourpackages_price` d ON d.tourpackagesprice_tourpackages_id = a.`tourpackages_id` AND CURDATE() BETWEEN d.`tourpackagesprice_start` AND d.`tourpackagesprice_end`
+            WHERE 
+                a.`tourpackages_status` = 1
+            ORDER BY 
+                (SELECT COUNT(trx.`transactiontourpackages_transaction_id`) FROM `trx_transaction_tourpackages` trx WHERE trx.transactiontourpackages_tourpackages_id = a.`tourpackages_id`) DESC
+            LIMIT 15
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getTimeDayNight(){
+        $query = "
+            SELECT
+                MAX(a.`tourpackages_total_day`) AS 'day',
+                MAX(a.`tourpackages_total_night`) AS 'night'
+            FROM
+                `mst_tourpackages` a
+            WHERE
+                a.`tourpackages_status` = 1
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDestinationAll(){
+        $query = "
+            SELECT
+                a.`destination_id` AS id,
+                b.`destinationtext_name` AS 'name'
+            FROM 
+                `mst_destination` a
+                LEFT JOIN `mst_destination_text` b ON b.`destinationtext_destination_id` = a.`destination_id` AND b.`destinationtext_lang` = '".$this->user_lang."'
+            WHERE 
+                a.`destination_status` = 1
+            ORDER BY 
+                b.`destinationtext_name`
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
     
     public function getDestinationLocation(){
         $query = "
@@ -62,6 +119,8 @@ class Data extends CI_Model {
                 a.`desloc_name` AS `name`
             FROM
                 `ref_destination_location` a
+            WHERE
+            a.`desloc_id` IN (SELECT des.`destination_desloc_id` FROM `mst_destination` des WHERE des.`destination_status` = 1)
             ORDER BY
                 a.`desloc_order` ASC
         ";
@@ -88,7 +147,117 @@ class Data extends CI_Model {
         return $result->result();
     }
 
-    public function getDestination(){
+    public function getTotalDestinationById($id){
+        $query = "
+            SELECT
+                a.`destination_id` AS id
+            FROM 
+                `mst_destination` a
+                LEFT JOIN `mst_destination_text` b ON b.`destinationtext_destination_id` = a.`destination_id` AND b.`destinationtext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_destination_img` c ON c.`destinationimg_destination_id` = a.`destination_id` AND c.`destinationimg_order` = 1
+            WHERE 
+                a.`destination_status` = 1
+                AND a.`destination_desloc_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->num_rows();
+    }
+
+    public function getDestinationDetail($id){
+        $path_destination_upload = $this->config->item('path_destination_upload');
+        $query = "
+            SELECT
+                a.`destination_id` AS id,
+                a.`destination_desloc_id` AS desloc_id,
+                b.`destinationtext_name` AS 'name',
+                b.`destinationtext_text` AS 'text'
+            FROM 
+                `mst_destination` a
+                LEFT JOIN `mst_destination_text` b ON b.`destinationtext_destination_id` = a.`destination_id` AND b.`destinationtext_lang` = '".$this->user_lang."'
+            WHERE 
+                a.`destination_status` = 1
+                AND  a.`destination_id` = '".$id."'
+            ORDER BY 
+                b.`destinationtext_name` DESC
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDestinationDetailImage($id){
+        $path_destination_upload = $this->config->item('path_destination_upload');
+        $query = "
+            SELECT
+                CONCAT('".$path_destination_upload."',a.`destinationimg_img`) AS 'img'
+            FROM
+                `mst_destination_img` a
+            WHERE
+                a.`destinationimg_destination_id` = '".$id."'
+                AND a.`destinationimg_img` IS NOT NULL
+            ORDER BY 
+                a.`destinationimg_order`
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getDestinationTourpackages($id){
+        $path_tourpackages_upload = $this->config->item('path_tourpackages_upload');
+        $query = "
+            SELECT
+                a.`tourpackages_id` AS id,
+                a.`tourpackages_base_price_local` AS `base_price_local`,
+                b.`tourpackagestext_name` AS 'name',
+                CONCAT('".$path_tourpackages_upload."',c.`tourpackagesimg_img`) AS 'img'
+            FROM 
+                `mst_tourpackages` a
+                LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_tourpackages_img` c ON c.`tourpackagesimg_tourpackages_id` = a.`tourpackages_id` AND c.`tourpackagesimg_order` = 1
+                LEFT JOIN `mst_tourpackages_destination` d ON d.tourpackagesdest_tourpackages_id = a.tourpackages_id
+            WHERE 
+                a.`tourpackages_status` = 1
+                AND d.`tourpackagesdest_destination_id` = '".$id."'
+            ORDER BY 
+                (SELECT COUNT(trx.`transactiontourpackages_transaction_id`) FROM `trx_transaction_tourpackages` trx WHERE trx.transactiontourpackages_tourpackages_id = a.`tourpackages_id`) DESC
+            LIMIT 5
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getAllDestinationLocation(){
+        $query = "
+            SELECT
+                a.`desloc_id` AS `id`,
+                a.`desloc_name` AS `name`
+            FROM
+                `ref_destination_location` a
+            WHERE
+                a.`desloc_id` IN (SELECT des.`destination_desloc_id` FROM `mst_destination` des WHERE des.`destination_status` = 1)
+            ORDER BY
+                a.`desloc_order` ASC
+        ";
+        
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getDestinationLocationById($id){
+        $query = "
+            SELECT
+                a.`desloc_id` AS `id`,
+                a.`desloc_name` AS `name`
+            FROM
+                `ref_destination_location` a
+            WHERE
+                a.`desloc_id` = '".$id."'
+        ";
+        
+        $result = $this->db->query($query);
+        return $result->row();
+    }
+
+    public function getDestinationPaging($page, $limit){
         $path_destination_upload = $this->config->item('path_destination_upload');
         $query = "
             SELECT
@@ -104,7 +273,30 @@ class Data extends CI_Model {
                 a.`destination_status` = 1
             ORDER BY 
                 b.`destinationtext_name` DESC
-            LIMIT 4
+            LIMIT $page, $limit
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+    
+    public function getDestinationPagingById($id, $page, $limit){
+        $path_destination_upload = $this->config->item('path_destination_upload');
+        $query = "
+            SELECT
+                a.`destination_id` AS id,
+                a.`destination_desloc_id` AS desloc_id,
+                b.`destinationtext_name` AS 'name',
+                CONCAT('".$path_destination_upload."',c.`destinationimg_img`) AS 'img'
+            FROM 
+                `mst_destination` a
+                LEFT JOIN `mst_destination_text` b ON b.`destinationtext_destination_id` = a.`destination_id` AND b.`destinationtext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_destination_img` c ON c.`destinationimg_destination_id` = a.`destination_id` AND c.`destinationimg_order` = 1
+            WHERE 
+                a.`destination_status` = 1
+                AND a.`destination_desloc_id` = '".$id."'
+            ORDER BY 
+                b.`destinationtext_name` DESC
+            LIMIT $page, $limit
         ";
         $result = $this->default->query($query);
         return $result->result();
@@ -117,6 +309,7 @@ class Data extends CI_Model {
                 a.`service_id` AS `id`,
                 a.`service_order` AS 'order',
                 a.`service_status` AS 'status',
+                a.`service_type` AS 'type',
                 CONCAT('".$path_service_upload."',c.`serviceimg_img`) AS img,
                 b.`servicetext_name` AS 'name',
                 b.`servicetext_text` AS 'text'
@@ -139,6 +332,7 @@ class Data extends CI_Model {
                 a.`service_id` AS `id`,
                 a.`service_order` AS 'order',
                 a.`service_status` AS 'status',
+                a.`service_type` AS 'type',
                 b.`servicetext_name` AS 'name',
                 b.`servicetext_text` AS 'text'
             FROM
