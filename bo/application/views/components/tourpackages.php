@@ -241,7 +241,8 @@ async function add()
                 await $(".calendar").datepicker({
                     format: 'yyyy-mm-dd'
                 });
-                $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
+                $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
+                $(".ratting").mask('0,0', {reverse: true});
             }else{
                 toastr.error(xhr.statusText);
             }
@@ -285,7 +286,8 @@ async function edit(id)
                 await $(".calendar").datepicker({
                     format: 'yyyy-mm-dd'
                 });
-                $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
+                $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
+                $(".ratting").mask('0,0', {reverse: true});
             }else{
                 toastr.error(xhr.statusText);
             }
@@ -419,7 +421,7 @@ async function add_price(){
     str+= '</tr>';
     
     await $('#table_price').append(str);
-    await $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
+    await $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
     await $(".calendar").datepicker({
         format: 'yyyy-mm-dd'
     });

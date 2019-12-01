@@ -66,7 +66,7 @@ class Destination extends CI_Controller {
 			}
 
 			if(count($destination) >= 4 ){
-				$html.= '<div class="col-sm-12 text-center justify-content-center">
+				$html.= '<div id="btn-load-more-div-'.$id.'" class="col-sm-12 text-center justify-content-center">
 							<button type="button" class="btn btn-primary btn-load-more-'.$id.'" onclick="load_more('.$id.', '.($page+4).', 4)">'.MultiLang('load_more').' '.$destination_location->name.'</button>
 						</div>';
 			}

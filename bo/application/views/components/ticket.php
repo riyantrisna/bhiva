@@ -177,7 +177,7 @@ function add()
         {
             if(xhr.status == '200'){
                 await $('#form_ticket').html(data.html);
-                $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
+                $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
                 await $(".calendar").datepicker({
                     format: 'yyyy-mm-dd'
                 });
@@ -212,7 +212,7 @@ function edit(id)
         {
             if(xhr.status == '200'){
                 await $('#form_ticket').html(data.html);
-                $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
+                $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
                 await $(".calendar").datepicker({
                     format: 'yyyy-mm-dd'
                 });
@@ -371,7 +371,7 @@ async function add_price(){
     str+= '</tr>';
     
     await $('#table_price').append(str);
-    await $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
+    await $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
     await $(".calendar").datepicker({
         format: 'yyyy-mm-dd'
     });
@@ -413,7 +413,7 @@ async function add_price_not_visitor_type(){
     str+= '</tr>';
     
     await $('#table_price').append(str);
-    await $(".curr").mask('00.000.000.000.000.000.000,00', {reverse: true});
+    await $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
     await $(".calendar").datepicker({
         format: 'yyyy-mm-dd'
     });

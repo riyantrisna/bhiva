@@ -216,13 +216,13 @@ class Tourpackages extends CI_Controller {
                     </div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="rating_manual">'.MultiLang('rating_manual_value').' *</label>';
-        $html.=     '<input type="text" id="rating_manual" name="rating_manual" class="form-control" onkeypress="return isNumberText(event)" maxlength="4">';
+        $html.=     '<label for="rating_manual">'.MultiLang('rating_manual_value').' (1-5) *</label>';
+        $html.=     '<input type="text" id="rating_manual" name="rating_manual" class="form-control ratting" maxlength="4">';
         $html.= '</div>';
-        $html.= '<div class="form-group">';
-        $html.=     '<label for="total_rater_manual">'.MultiLang('total_rater_manual').' *</label>';
-        $html.=     '<input type="text" id="total_rater_manual" name="total_rater_manual" class="form-control" onkeypress="return isNumber(event)">';
-        $html.= '</div>';
+        // $html.= '<div class="form-group">';
+        // $html.=     '<label for="total_rater_manual">'.MultiLang('total_rater_manual').' *</label>';
+        // $html.=     '<input type="text" id="total_rater_manual" name="total_rater_manual" class="form-control" onkeypress="return isNumber(event)">';
+        // $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="status">'.MultiLang('status').' *</label>';
         $html.=     '<div class="form-check">
@@ -286,7 +286,7 @@ class Tourpackages extends CI_Controller {
         $base_price_foreign = $this->input->post('base_price_foreign', TRUE);
         $is_rating_manual = $this->input->post('is_rating_manual', TRUE);
         $rating_manual = $this->input->post('rating_manual', TRUE);
-        $total_rater_manual = $this->input->post('total_rater_manual', TRUE);
+        // $total_rater_manual = $this->input->post('total_rater_manual', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');
         $start = $this->input->post('start', TRUE);
@@ -359,13 +359,20 @@ class Tourpackages extends CI_Controller {
 
         if(empty($rating_manual)){
             $validation = $validation && false;
-            $validation_text.= '<li>'.MultiLang('rating_manual').' '.MultiLang('required').'</li>';
+            $validation_text.= '<li>'.MultiLang('rating_manual_value').' '.MultiLang('required').'</li>';
+        }
+
+        $cek_rating_manual = (float) str_replace(',','.',$rating_manual);
+
+        if(!empty($cek_rating_manual) AND $cek_rating_manual > 5){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('maximum').' '.MultiLang('rating_manual_value').' 5</li>';
         }
         
-        if(empty($total_rater_manual)){
-            $validation = $validation && false;
-            $validation_text.= '<li>'.MultiLang('total_rater_manual').' '.MultiLang('required').'</li>';
-        }
+        // if(empty($total_rater_manual)){
+        //     $validation = $validation && false;
+        //     $validation_text.= '<li>'.MultiLang('total_rater_manual').' '.MultiLang('required').'</li>';
+        // }
 
         if(!isset($status) AND $status == ''){
             $validation = $validation && false;
@@ -414,8 +421,8 @@ class Tourpackages extends CI_Controller {
                     'tourpackages_base_price_local' => str_replace('.','',$base_price_local),
                     'tourpackages_base_price_foreign' => str_replace('.','',$base_price_foreign),
                     'tourpackages_is_rating_manual' => isset($is_rating_manual) ? 1 : 0,
-                    'tourpackages_rating_manual' => $rating_manual,
-                    'tourpackages_total_rater_manual' => $total_rater_manual,
+                    'tourpackages_rating_manual' => str_replace(',','.',$rating_manual),
+                    // 'tourpackages_total_rater_manual' => $total_rater_manual,
                     'tourpackages_status' => $status,
                     'insert_user_id' => $user_id,
                     'insert_datetime' => $date
@@ -687,13 +694,13 @@ class Tourpackages extends CI_Controller {
                     </div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="rating_manual">'.MultiLang('rating_manual_value').' *</label>';
-        $html.=     '<input type="text" id="rating_manual" name="rating_manual" class="form-control" onkeypress="return isNumberText(event)" value="'.$detail->rating_manual.'" maxlength="4">';
+        $html.=     '<label for="rating_manual">'.MultiLang('rating_manual_value').' (1-5) *</label>';
+        $html.=     '<input type="text" id="rating_manual" name="rating_manual" class="form-control ratting" value="'.number_format($detail->rating_manual, 1, ',', '.').'" maxlength="4">';
         $html.= '</div>';
-        $html.= '<div class="form-group">';
-        $html.=     '<label for="total_rater_manual">'.MultiLang('total_rater_manual').' *</label>';
-        $html.=     '<input type="text" id="total_rater_manual" name="total_rater_manual" class="form-control" onkeypress="return isNumber(event)" value="'.$detail->total_rater_manual.'">';
-        $html.= '</div>';
+        // $html.= '<div class="form-group">';
+        // $html.=     '<label for="total_rater_manual">'.MultiLang('total_rater_manual').' *</label>';
+        // $html.=     '<input type="text" id="total_rater_manual" name="total_rater_manual" class="form-control" onkeypress="return isNumber(event)" value="'.$detail->total_rater_manual.'">';
+        // $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="status">'.MultiLang('status').' *</label>';
         $html.=     '<div class="form-check">
@@ -769,7 +776,7 @@ class Tourpackages extends CI_Controller {
         $base_price_foreign = $this->input->post('base_price_foreign', TRUE);
         $is_rating_manual = $this->input->post('is_rating_manual', TRUE);
         $rating_manual = $this->input->post('rating_manual', TRUE);
-        $total_rater_manual = $this->input->post('total_rater_manual', TRUE);
+        // $total_rater_manual = $this->input->post('total_rater_manual', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');
         $file_image_value_old = $this->input->post('file_image_value_old');
@@ -843,13 +850,20 @@ class Tourpackages extends CI_Controller {
 
         if(empty($rating_manual)){
             $validation = $validation && false;
-            $validation_text.= '<li>'.MultiLang('rating_manual').' '.MultiLang('required').'</li>';
+            $validation_text.= '<li>'.MultiLang('rating_manual_value').' '.MultiLang('required').'</li>';
+        }
+
+        $cek_rating_manual = (float) str_replace(',','.',$rating_manual);
+
+        if(!empty($cek_rating_manual) AND $cek_rating_manual > 5){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('maximum').' '.MultiLang('rating_manual_value').' 5</li>';
         }
         
-        if(empty($total_rater_manual)){
-            $validation = $validation && false;
-            $validation_text.= '<li>'.MultiLang('total_rater_manual').' '.MultiLang('required').'</li>';
-        }
+        // if(empty($total_rater_manual)){
+        //     $validation = $validation && false;
+        //     $validation_text.= '<li>'.MultiLang('total_rater_manual').' '.MultiLang('required').'</li>';
+        // }
         if(!isset($status) AND $status == ''){
             $validation = $validation && false;
             $validation_text.= '<li>'.MultiLang('status').' '.MultiLang('required').'</li>';
@@ -897,8 +911,8 @@ class Tourpackages extends CI_Controller {
                     'tourpackages_base_price_local' => str_replace('.','',$base_price_local),
                     'tourpackages_base_price_foreign' => str_replace('.','',$base_price_foreign),
                     'tourpackages_is_rating_manual' => isset($is_rating_manual) ? 1 : 0,
-                    'tourpackages_rating_manual' => $rating_manual,
-                    'tourpackages_total_rater_manual' => $total_rater_manual,
+                    'tourpackages_rating_manual' => str_replace(',','.',$rating_manual),
+                    // 'tourpackages_total_rater_manual' => $total_rater_manual,
                     'tourpackages_status' => $status,
                     'update_user_id' => $user_id,
                     'update_datetime' => $date
@@ -1106,14 +1120,14 @@ class Tourpackages extends CI_Controller {
         $html.=     '<div>'.($detail->is_rating_manual == 1 ? MultiLang('yes') : MultiLang('no')).'</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="rating_manual">'.MultiLang('rating_manual_value').'</label>';
+        $html.=     '<label for="rating_manual">'.MultiLang('rating_manual_value').' (1-5)</label>';
         $html.=     '<div>'.$detail->rating_manual.'</div>';
         $html.= '</div>';
         $html.= '</div>';
-        $html.= '<div class="form-group">';
-        $html.=     '<label for="total_rater_manual">'.MultiLang('total_rater_manual').'</label>';
-        $html.=     '<div>'.$detail->total_rater_manual.'</div>';
-        $html.= '</div>';
+        // $html.= '<div class="form-group">';
+        // $html.=     '<label for="total_rater_manual">'.MultiLang('total_rater_manual').'</label>';
+        // $html.=     '<div>'.$detail->total_rater_manual.'</div>';
+        // $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="status">'.MultiLang('status').'</label>';
         $html.=     '<div>'.($detail->status == 1 ? MultiLang('active') : MultiLang('not_active')).'</div>';

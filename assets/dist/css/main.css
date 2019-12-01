@@ -166,7 +166,7 @@ Image credits: unsplash.com
     position: absolute;
     width: fit-content;
     max-width: 80%;
-    top: 45%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: #ffffff;
@@ -176,6 +176,13 @@ Image credits: unsplash.com
     padding: 5px;
     border-radius: 5px;
     text-align: center;
+}
+
+.centered-text-img-packages {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    color: #212529;
 }
 
 /* who we are*/

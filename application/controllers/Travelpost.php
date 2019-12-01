@@ -64,7 +64,7 @@ class Travelpost extends CI_Controller {
 			}
 
 			if(count($travelpost_list) >= 12 ){
-				$html.= '<div class="col-sm-12 mt-3 text-center justify-content-center">
+				$html.= '<div id="btn-load-more-div" class="col-sm-12 mt-3 text-center justify-content-center">
 							<button type="button" class="btn btn-primary btn-load-more" onclick="load_more('.($page+12).', 12)">'.MultiLang('load_more').'</button>
 						</div>';
 			}

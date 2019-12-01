@@ -38,23 +38,58 @@ class Data extends CI_Model {
         $query = "
             SELECT
                 a.`tourpackages_id` AS id,
-                a.`tourpackages_base_price_local` AS `base_price_local`,
+                a.`tourpackages_total_day` AS total_day,
+                a.`tourpackages_total_night` AS total_night,
+                IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) AS `price_local`,
+                IFNULL(d.`tourpackagesprice_price_foreign`, a.`tourpackages_base_price_foreign`) AS `price_foreign`,
                 b.`tourpackagestext_name` AS 'name',
-                CONCAT('".$path_tourpackages_upload."',c.`tourpackagesimg_img`) AS 'img'
+                CONCAT('".$path_tourpackages_upload."',c.`tourpackagesimg_img`) AS 'img',
+                IFNULL(
+                CASE
+                    WHEN a.tourpackages_is_rating_manual = 1 THEN
+                        a.tourpackages_rating_manual
+                    ELSE
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                END, 0) AS rating
             FROM 
                 `mst_tourpackages` a
                 LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
                 LEFT JOIN `mst_tourpackages_img` c ON c.`tourpackagesimg_tourpackages_id` = a.`tourpackages_id` AND c.`tourpackagesimg_order` = 1
+                LEFT JOIN `mst_tourpackages_price` d ON d.tourpackagesprice_tourpackages_id = a.`tourpackages_id` AND CURDATE() BETWEEN d.`tourpackagesprice_start` AND d.`tourpackagesprice_end`
             WHERE 
                 a.`tourpackages_status` = 1
             ORDER BY 
-                (SELECT COUNT(trx.`transactiontourpackages_transaction_id`) FROM `trx_transaction_tourpackages` trx WHERE trx.transactiontourpackages_tourpackages_id = a.`tourpackages_id`) DESC
+            (
+                CASE
+                WHEN a.tourpackages_is_rating_manual = 1 THEN
+                    a.tourpackages_rating_manual
+                ELSE
+                    (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                END
+            ) DESC
             LIMIT 4
         ";
         $result = $this->default->query($query);
         return $result->result();
     }
 
+    public function getTotalTourpackagesBegin(){
+        $path_tourpackages_upload = $this->config->item('path_tourpackages_upload');
+        $query = "
+            SELECT
+                a.`tourpackages_id` AS id
+            FROM 
+                `mst_tourpackages` a
+                LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_tourpackages_img` c ON c.`tourpackagesimg_tourpackages_id` = a.`tourpackages_id` AND c.`tourpackagesimg_order` = 1
+                LEFT JOIN `mst_tourpackages_price` d ON d.tourpackagesprice_tourpackages_id = a.`tourpackages_id` AND CURDATE() BETWEEN d.`tourpackagesprice_start` AND d.`tourpackagesprice_end`
+            WHERE 
+                a.`tourpackages_status` = 1
+        ";
+        $result = $this->default->query($query);
+        return $result->num_rows();
+    }
+    
     public function getTourpackagesBegin(){
         $path_tourpackages_upload = $this->config->item('path_tourpackages_upload');
         $query = "
@@ -65,7 +100,14 @@ class Data extends CI_Model {
                 IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) AS `price_local`,
                 IFNULL(d.`tourpackagesprice_price_foreign`, a.`tourpackages_base_price_foreign`) AS `price_foreign`,
                 b.`tourpackagestext_name` AS 'name',
-                CONCAT('".$path_tourpackages_upload."',c.`tourpackagesimg_img`) AS 'img'
+                CONCAT('".$path_tourpackages_upload."',c.`tourpackagesimg_img`) AS 'img',
+                IFNULL(
+                CASE
+                    WHEN a.tourpackages_is_rating_manual = 1 THEN
+                        a.tourpackages_rating_manual
+                    ELSE
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                END, 0) AS rating
             FROM 
                 `mst_tourpackages` a
                 LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
@@ -74,8 +116,224 @@ class Data extends CI_Model {
             WHERE 
                 a.`tourpackages_status` = 1
             ORDER BY 
-                (SELECT COUNT(trx.`transactiontourpackages_transaction_id`) FROM `trx_transaction_tourpackages` trx WHERE trx.transactiontourpackages_tourpackages_id = a.`tourpackages_id`) DESC
+                a.`tourpackages_id` DESC
             LIMIT 15
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getTotalTourpackagesFilter($filter){
+        $path_tourpackages_upload = $this->config->item('path_tourpackages_upload');
+        $str = "";
+
+        if(!empty($filter['orderby']) AND $filter['orderby']=='latest'){
+            $order = " a.`tourpackages_id` DESC ";
+        }elseif(!empty($filter['orderby']) AND $filter['orderby']=='most_popular'){
+            $order = "
+                (
+                    CASE
+                    WHEN a.tourpackages_is_rating_manual = 1 THEN
+                        a.tourpackages_rating_manual
+                    ELSE
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                    END
+                ) DESC
+            ";
+        }elseif(!empty($filter['orderby']) AND $filter['orderby']=='lowest_price'){
+            $order = " IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) ASC ";
+        }elseif(!empty($filter['orderby']) AND $filter['orderby']=='highest_price'){
+            $order = " IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) DESC ";
+        }else{
+            $order = " a.`tourpackages_id` DESC ";
+        }
+
+        if(!empty($filter['destination'])){
+            $i = 1;
+            $str.= " AND (";
+            foreach ($filter['destination'] as $key => $value) {
+                if($i == 1){
+                    $str.= $key." IN (SELECT mtd.tourpackagesdest_destination_id FROM mst_tourpackages_destination mtd WHERE mtd.tourpackagesdest_tourpackages_id = a.`tourpackages_id`) ";
+                }else{
+                    $str.= " OR ".$key." IN (SELECT mtd.tourpackagesdest_destination_id FROM mst_tourpackages_destination mtd WHERE mtd.tourpackagesdest_tourpackages_id = a.`tourpackages_id`) ";
+                }
+                $i++;
+            }
+            $str.= " ) ";
+        }
+
+        if(!empty($filter['price_min'])){
+            $str.= " AND IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) >= ".$filter['price_min'];
+        }
+
+        if(!empty($filter['price_max'])){
+            $str.= " AND IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) <= ".$filter['price_max'];
+        }
+
+        if(!empty($filter['time'])){
+            $time = explode(',', $filter['time']);
+            $str.=" AND (a.`tourpackages_total_day` = $time[0] AND a.`tourpackages_total_night` = $time[1])";
+        }
+
+        if(!empty($filter['rating'])){
+            $i = 1;
+            $str.= " AND (";
+            foreach ($filter['rating'] as $key => $value) {
+                if($i == 1){
+                    $str.= "
+                    (
+                        CASE
+                        WHEN a.tourpackages_is_rating_manual = 1 THEN
+                            a.tourpackages_rating_manual
+                        ELSE
+                            (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                        END
+                    ) BETWEEN ".($value-(0.9))." AND ".$value
+                    ;
+                }else{
+                    $str.= " 
+                    OR (
+                        CASE
+                        WHEN a.tourpackages_is_rating_manual = 1 THEN
+                            a.tourpackages_rating_manual
+                        ELSE
+                            (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                        END
+                    ) BETWEEN ".($value-(0.9))." AND ".$value
+                    ;
+                }
+                $i++;
+            }
+            $str.= " ) ";
+        }
+
+        $query = "
+            SELECT
+                a.`tourpackages_id` AS id
+            FROM 
+                `mst_tourpackages` a
+                LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_tourpackages_img` c ON c.`tourpackagesimg_tourpackages_id` = a.`tourpackages_id` AND c.`tourpackagesimg_order` = 1
+                LEFT JOIN `mst_tourpackages_price` d ON d.tourpackagesprice_tourpackages_id = a.`tourpackages_id` AND CURDATE() BETWEEN d.`tourpackagesprice_start` AND d.`tourpackagesprice_end`
+            WHERE 
+                a.`tourpackages_status` = 1
+                ".$str."
+        ";
+        $result = $this->default->query($query);
+        return $result->num_rows();
+    }
+    
+    public function getTourpackagesFilter($filter, $page, $limit){
+        $path_tourpackages_upload = $this->config->item('path_tourpackages_upload');
+        $str = "";
+
+        if(!empty($filter['orderby']) AND $filter['orderby']=='latest'){
+            $order = " a.`tourpackages_id` DESC ";
+        }elseif(!empty($filter['orderby']) AND $filter['orderby']=='most_popular'){
+            $order = "
+                (
+                    CASE
+                    WHEN a.tourpackages_is_rating_manual = 1 THEN
+                        a.tourpackages_rating_manual
+                    ELSE
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                    END
+                ) DESC
+            ";
+        }elseif(!empty($filter['orderby']) AND $filter['orderby']=='lowest_price'){
+            $order = " IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) ASC ";
+        }elseif(!empty($filter['orderby']) AND $filter['orderby']=='highest_price'){
+            $order = " IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) DESC ";
+        }else{
+            $order = " a.`tourpackages_id` DESC ";
+        }
+
+        if(!empty($filter['destination'])){
+            $i = 1;
+            $str.= " AND (";
+            foreach ($filter['destination'] as $key => $value) {
+                if($i == 1){
+                    $str.= $key." IN (SELECT mtd.tourpackagesdest_destination_id FROM mst_tourpackages_destination mtd WHERE mtd.tourpackagesdest_tourpackages_id = a.`tourpackages_id`) ";
+                }else{
+                    $str.= " OR ".$key." IN (SELECT mtd.tourpackagesdest_destination_id FROM mst_tourpackages_destination mtd WHERE mtd.tourpackagesdest_tourpackages_id = a.`tourpackages_id`) ";
+                }
+                $i++;
+            }
+            $str.= " ) ";
+        }
+
+        if(!empty($filter['price_min'])){
+            $str.= " AND IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) >= ".$filter['price_min'];
+        }
+
+        if(!empty($filter['price_max'])){
+            $str.= " AND IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) <= ".$filter['price_max'];
+        }
+
+        if(!empty($filter['time'])){
+            $time = explode(',', $filter['time']);
+            $str.=" AND (a.`tourpackages_total_day` = $time[0] AND a.`tourpackages_total_night` = $time[1])";
+        }
+
+        if(!empty($filter['rating'])){
+            $i = 1;
+            $str.= " AND (";
+            foreach ($filter['rating'] as $key => $value) {
+                if($i == 1){
+                    $str.= "
+                    (
+                        CASE
+                        WHEN a.tourpackages_is_rating_manual = 1 THEN
+                            a.tourpackages_rating_manual
+                        ELSE
+                            (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                        END
+                    ) BETWEEN ".($value-(0.9))." AND ".$value
+                    ;
+                }else{
+                    $str.= " 
+                    OR (
+                        CASE
+                        WHEN a.tourpackages_is_rating_manual = 1 THEN
+                            a.tourpackages_rating_manual
+                        ELSE
+                            (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                        END
+                    ) BETWEEN ".($value-(0.9))." AND ".$value
+                    ;
+                }
+                $i++;
+            }
+            $str.= " ) ";
+        }
+
+        $query = "
+            SELECT
+                a.`tourpackages_id` AS id,
+                a.`tourpackages_total_day` AS total_day,
+                a.`tourpackages_total_night` AS total_night,
+                IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) AS `price_local`,
+                IFNULL(d.`tourpackagesprice_price_foreign`, a.`tourpackages_base_price_foreign`) AS `price_foreign`,
+                b.`tourpackagestext_name` AS 'name',
+                CONCAT('".$path_tourpackages_upload."',c.`tourpackagesimg_img`) AS 'img',
+                IFNULL(
+                CASE
+                    WHEN a.tourpackages_is_rating_manual = 1 THEN
+                        a.tourpackages_rating_manual
+                    ELSE
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                END, 0) AS rating
+            FROM 
+                `mst_tourpackages` a
+                LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_tourpackages_img` c ON c.`tourpackagesimg_tourpackages_id` = a.`tourpackages_id` AND c.`tourpackagesimg_order` = 1
+                LEFT JOIN `mst_tourpackages_price` d ON d.tourpackagesprice_tourpackages_id = a.`tourpackages_id` AND CURDATE() BETWEEN d.`tourpackagesprice_start` AND d.`tourpackagesprice_end`
+            WHERE 
+                a.`tourpackages_status` = 1
+                ".$str."
+            ORDER BY 
+                ".$order."
+            LIMIT ".$page." , ".$limit."
         ";
         $result = $this->default->query($query);
         return $result->result();
@@ -355,6 +613,45 @@ class Data extends CI_Model {
                 `cms_service_img` a
             WHERE
                 a.`serviceimg_service_id` = '".$id."'
+                AND a.`serviceimg_img` IS NOT NULL
+            ORDER BY 
+                a.`serviceimg_order`
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getServiceDetailBanner($key){
+        $path_service_upload = $this->config->item('path_service_upload');
+        $query = "
+            SELECT
+                a.`service_id` AS `id`,
+                a.`service_order` AS 'order',
+                a.`service_status` AS 'status',
+                a.`service_type` AS 'type',
+                b.`servicetext_name` AS 'name',
+                b.`servicetext_text` AS 'text'
+            FROM
+                `cms_service` a 
+            LEFT JOIN `cms_service_text` b ON b.`servicetext_service_id` = a.`service_id` AND b.`servicetext_lang` = '".$this->user_lang."'
+            WHERE
+                a.`service_status`= 1
+                AND a.`service_type` = '".$key."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getServiceDetailImageBanner($key){
+        $path_service_upload = $this->config->item('path_service_upload');
+        $query = "
+            SELECT
+                CONCAT('".$path_service_upload."',a.`serviceimg_img`) AS img
+            FROM
+                `cms_service_img` a
+                LEFT JOIN cms_service b ON b.service_id = a.`serviceimg_service_id`
+            WHERE
+                b.`service_type` = '".$key."'
                 AND a.`serviceimg_img` IS NOT NULL
             ORDER BY 
                 a.`serviceimg_order`

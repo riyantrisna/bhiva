@@ -74,11 +74,27 @@
 				if(!empty($tourpackages)){
 					foreach ($tourpackages as $key => $value) {
 				?>
-					<div class="col-lg-3 col-md-6 col-sm-12">
-						<a href="#" class="d-block mb-4 h-100">
-							<div class=" img-hover-zoom img-hover-zoom--brightness">
-								<img class="img-fluid" src="<?php echo base_url().$value->img;?>" alt="">
-								<span class="centered-text-img"><?php echo $value->name;?></span>
+					<div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+						<a href="#" class="" style="text-decoration: none;">
+							<div class="card h-100">
+								<div class="img-hover-zoom img-hover-zoom--brightness card-img-top" style="border-radius: 0;">
+									<img class="img-fluid" src="<?php echo base_url().$value->img;?>" alt="<?php echo $value->name;?>">
+								</div>
+								<div class="card-body">
+									<span class="card-title centered-text-img-packages"><?php echo $value->name;?></span>
+									<p class="card-text" style="color: #212529;">
+										(<?php echo $value->total_day;?> <?php echo MultiLang('day'); ?> <?php echo $value->total_night;?> <?php echo MultiLang('night'); ?>)
+									</p>
+									
+								</div>
+								<div class="card-footer">
+									<span class="card-title mt-auto" style="color: #212529; font-weight: bold;">
+										Rp <?php echo number_format($value->price_local, 0, ',', '.');?>
+									</span>
+									<span class="float-right" style="color: #212529; font-weight: bold;">
+										<i class="fas fa-star"></i> <?php echo number_format($value->rating, 1, ',', '.');?>
+									</span>
+								</div>
 							</div>
 						</a>
 					</div>
