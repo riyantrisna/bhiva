@@ -1138,7 +1138,7 @@ class Data extends CI_Model {
                 `core_user`
             WHERE
                 user_email = '$username'
-                AND user_is_admin = 1
+                AND user_is_admin = 0
                 AND `user_status` = 1
         ";
         $result = $this->default->query($query);

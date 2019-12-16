@@ -176,6 +176,100 @@ class User extends CI_Controller {
 
         echo json_encode($result);
         
-    }
+	}
+	
+	public function changepassword()
+	{
+
+		if(!$this->session->userdata('user_id'))
+		{
+			//jika memang session sudah terdaftar, maka redirect ke halaman dahsboard
+			redirect(base_url());
+		}else{
+
+			$data['lang'] = $this->data->getLang();
+			$data['lang_set'] = $this->data->getLangDetail();
+			$data['path_language'] = $this->config->item('path_language');
+			$data['service'] = $this->data->getService();
+			$data['contact'] = $this->data->getContact();
+			$data['destination_location'] = $this->data->getDestinationLocation();
+
+			//profile
+			$data['user'] = $this->data->getUserByUserId($this->session->userdata('user_id'));
+
+			$data['tourpackages'] = $this->data->getTourpackages();
+			$data['destination_location_home'] = $this->data->getDestinationLocationHome();
+			
+			$this->load->view('changepassword', $data);
+		}
+
+	}
+
+	public function processchangepassword(){
+	    $data = array();
+		$validation = true;
+		$validation_text = '';
+
+		$old_password = $this->input->post("old_password", TRUE);
+		$new_password = $this->input->post('new_password', TRUE);
+		$retype_new_password = $this->input->post('retype_new_password', TRUE);
+
+		if(empty($old_password)){
+			$validation = $validation && false;
+			$validation_text.= '<li>'.MultiLang('old_password_must_fielld').'</li>';
+		}
+
+		if(!empty($old_password)){
+			$data_user = $this->data->getUserByUsername($this->session->userdata('user_email'));
+			if(empty($data_user) OR (!empty($data_user) AND $data_user->password !== MD5($old_password))){
+				$validation = $validation && false;
+				$validation_text.= '<li>'.MultiLang('old_password_wrong').'</li>';
+			}
+		}
+
+		if(empty($new_password)){
+			$validation = $validation && false;
+			$validation_text.= '<li>'.MultiLang('new_password_must_fielld').'</li>';
+		}
+
+		if(empty($retype_new_password)){
+			$validation = $validation && false;
+			$validation_text.= '<li>'.MultiLang('retype_new_password_must_fielld').'</li>';
+		}
+
+		if(!empty($new_password) AND !empty($retype_new_password) AND $new_password !== $retype_new_password){
+			$validation = $validation && false;
+			$validation_text.= '<li>'.MultiLang('new_password_and_retype_new_password_not_match').'</li>';
+		}
+
+		if($validation){
+			$data_update = array(
+				'user_password' => MD5($new_password),
+				'update_user_id' => $this->session->userdata('user_id'),
+				'update_datetime' => date('Y-m-d H:i:s')
+
+			);
+			$result_update_user = $this->data->updateUser($data_update, $this->session->userdata('user_id'));
+
+			if($result_update_user){
+				$data['status'] = true;
+				$data['message'] = MultiLang('success_change_password');
+			}else{
+				$data['status'] = false;
+				$data['message'] = MultiLang('failed_change_password');
+			}
+
+		}else{
+			$data['status'] = $validation;
+			$data['message'] = '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
+			$data['message'].= $validation_text;
+			$data['message'].= '<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>';
+			$data['message'].= '</div>';
+		}
+
+		echo json_encode($data);
+	}
 	
 }

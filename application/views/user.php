@@ -107,7 +107,7 @@
 										</select>
 									</div>
 								</div>
-								<div class="col-md-6 col-sm-12">
+								<div class="col-md-6 col-sm-12" style="text-align: center;">
 									<label for="file_image"><?php echo MultiLang('image'); ?> *</label>
 									<br>
 									<div class="row">
