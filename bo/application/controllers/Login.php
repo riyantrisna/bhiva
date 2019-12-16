@@ -47,14 +47,13 @@ class Login extends CI_Controller {
 					$data_user = $this->data->getUserByUsername($username);
 					$password = MD5($password);
 
-					if(!empty($data_user) AND $password == $data_user->password){
+					if(!empty($data_user) AND $password === $data_user->password){
 
 						$session_data = array(
 							'user_id' => $data_user->id,
 							'user_email' => $data_user->email,
 							'user_real_name' => $data_user->real_name,
 							'user_lang' => $data_user->lang,
-							'user_type' => $data_user->type,
 							'user_photo' => $path_user.(!empty($data_user->photo) ? $data_user->photo : 'default.png'),
 						);
 						//set session userdata

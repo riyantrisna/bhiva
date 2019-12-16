@@ -220,7 +220,8 @@ function add()
             if(xhr.status == '200'){
                 await $('#form_user').html(data.html);
                 await $("#birthday").datepicker({
-                    format: 'yyyy-mm-dd'
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
                 });
                 //image
                 await $('#remove_file').hide();
@@ -252,7 +253,8 @@ function edit(id)
             if(xhr.status == '200'){
                 await $('#form_user').html(data.html);
                 await $("#birthday").datepicker({
-                    format: 'yyyy-mm-dd'
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
                 });
             }else{
                 toastr.error(xhr.statusText);

@@ -239,7 +239,8 @@ async function add()
                     ]
                 });
                 await $(".calendar").datepicker({
-                    format: 'yyyy-mm-dd'
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
                 });
                 $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
                 $(".ratting").mask('0,0', {reverse: true});
@@ -284,7 +285,8 @@ async function edit(id)
                     ]
                 });
                 await $(".calendar").datepicker({
-                    format: 'yyyy-mm-dd'
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
                 });
                 $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
                 $(".ratting").mask('0,0', {reverse: true});
@@ -423,7 +425,8 @@ async function add_price(){
     await $('#table_price').append(str);
     await $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
     await $(".calendar").datepicker({
-        format: 'yyyy-mm-dd'
+        format: 'yyyy-mm-dd',
+        autoclose: true
     });
 }
 

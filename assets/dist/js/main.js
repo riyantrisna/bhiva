@@ -1,3 +1,15 @@
+$(document).ready(function() {
+	$(".dates_register").datepicker({
+		format: 'yyyy-mm-dd',
+		autoclose: true
+    });
+    
+    $(".dates_birthday").datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
+});
+
 function isNumber(evt) {
     evt = (evt) ? evt : window.event;
     var charCode = (evt.which) ? evt.which : evt.keyCode;
@@ -6,3 +18,4 @@ function isNumber(evt) {
     }
     return true;
 }
+

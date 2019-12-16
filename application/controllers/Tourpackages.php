@@ -6,6 +6,7 @@ class Tourpackages extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		$this->CI = & get_instance();
 
 		$this->load->model('data');
 	}
@@ -31,6 +32,36 @@ class Tourpackages extends CI_Controller {
 
 		$this->load->view('tourpackages', $data);
 
+	}	
+
+	public function view()
+	{
+		$data['lang'] = $this->data->getLang();
+		$data['lang_set'] = $this->data->getLangDetail();
+		$data['path_language'] = $this->config->item('path_language');
+		$data['service'] = $this->data->getService();
+		$data['contact'] = $this->data->getContact();
+		$data['destination_location'] = $this->data->getDestinationLocation();
+
+		$data['tourpackages'] = $this->data->getTourpackages();
+
+		$id = $this->uri->segment('3');
+		$data['tourpackages_id'] = $id;
+		$data['tourpackages_detail'] = $this->data->getTourpackagesDetail($id);
+		$data['tourpackages_detail_image'] = $this->data->getTourpackagesDetailImage($id);
+		$data['tourpackages_testimony'] = $this->data->getTourpackagesTestimony($id, 0, 2);
+		$data['tourpackages_testimony_total'] = $this->data->getTourpackagesTestimonyTotal($id);
+		$data['tourpackages_destination_days'] = $this->data->getTourpackagesDestinationDays($id);
+
+		$this->load->view('tourpackages_view', $data);
+
+	}	
+
+	public function getTourpackagesDestination($id, $day)
+	{
+		$data = $this->data->getTourpackagesDestination($id, $day);
+
+		return $data;
 	}	
 
 	public function filter_tourpackages(){
@@ -68,7 +99,7 @@ class Tourpackages extends CI_Controller {
 											Rp'. number_format($value->price_local, 0, ',', '.').'
 										</span>
 										<span class="float-right" style="color: #212529; font-weight: bold;">
-											<i class="fas fa-star"></i> '. number_format($value->rating, 1, ',', '.') .'
+											<i class="fas fa-star" style="color:#FFD31C"></i> '. number_format($value->rating, 1, ',', '.') .'
 										</span>
 									</div>
 								</div>
@@ -82,10 +113,57 @@ class Tourpackages extends CI_Controller {
 							<button type="button" class="btn btn-primary btn-load-more" onclick="load_more('.($page+15).', 15)">'.MultiLang('load_more').'</button>
 						</div>';
 			}
-			$data['datas'] = '1';
+			$data['total_data'] = count($tourpackages);
 		}else{
 			$html.= '<div class="col-12 text-center"><i>-- '.MultiLang('tour_packages_not_found').' --</i></div>';
-			$data['datas'] = '0';
+			$data['total_data'] = 0;
+		}
+
+		$data['html'] = $html;
+        
+        echo json_encode($data);
+	}
+	
+	public function show_price(){
+
+		$filter['id'] = $this->input->post('id', TRUE);
+		$filter['date_tour'] = $this->input->post('date_tour', TRUE);
+		$tourpackages = $this->data->getDetailTourpackagesPrice($filter);
+
+		$data = array(
+			'price_local' => number_format($tourpackages->price_local, 0, ',', '.'),
+			'price_foreign' => number_format($tourpackages->price_foreign, 0, ',', '.')
+		);
+        
+        echo json_encode($data);
+	}
+
+	public function load_more()
+	{
+		$id = $this->input->post('id', TRUE);
+		$page = $this->input->post('page', TRUE);
+		$limit = $this->input->post('limit', TRUE);
+
+		$tourpackages_testimony = $this->data->getTourpackagesTestimony($id, $page, $limit);
+		$html = '';
+		if(!empty($tourpackages_testimony)){
+			foreach ($tourpackages_testimony as $key => $value) {
+				
+				$html.= ' <div class="col-md-6 col-sm-12 mt-3 h-100 text-center">';
+				$html.= ' 	<img class="rounded-circle" style="width: 80px; height: 80px;" src="'.base_url().$value->user_photo.'" alt="'.$value->user_real_name.'">';
+				$html.= '	<div style="font-size: 16px; font-weight: bold;">'.$value->user_real_name.'</div>';
+				$html.= '	<p class="text-center" style="font-size: 14px; color: #8f8f8f !important;">';
+				$html.=  		$value->testimony;
+				$html.= '	</p>';
+				$html.= '</div>';
+			}
+
+			if(count($tourpackages_testimony) >= 2 ){
+				$html.= '<div id="btn-load-more-div" class="col-sm-12 mt-3 text-center justify-content-center">
+							<button type="button" class="btn btn-primary btn-load-more" onclick="load_more('.$id.','.($page+2).', 2)">'.MultiLang('load_more').'</button>
+						</div>';
+			}
+
 		}
 
 		$data['html'] = $html;

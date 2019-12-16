@@ -179,7 +179,8 @@ function add()
                 await $('#form_ticket').html(data.html);
                 $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
                 await $(".calendar").datepicker({
-                    format: 'yyyy-mm-dd'
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
                 });
 
                 await cek_is_type_visitor();
@@ -214,7 +215,8 @@ function edit(id)
                 await $('#form_ticket').html(data.html);
                 $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
                 await $(".calendar").datepicker({
-                    format: 'yyyy-mm-dd'
+                    format: 'yyyy-mm-dd',
+                    autoclose: true
                 });
                 await cek_is_type_visitor();
 
@@ -373,7 +375,8 @@ async function add_price(){
     await $('#table_price').append(str);
     await $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
     await $(".calendar").datepicker({
-        format: 'yyyy-mm-dd'
+        format: 'yyyy-mm-dd',
+        autoclose: true
     });
 }
 
@@ -415,7 +418,8 @@ async function add_price_not_visitor_type(){
     await $('#table_price').append(str);
     await $(".curr").mask('00.000.000.000.000.000.000', {reverse: true});
     await $(".calendar").datepicker({
-        format: 'yyyy-mm-dd'
+        format: 'yyyy-mm-dd',
+        autoclose: true
     });
 }
 

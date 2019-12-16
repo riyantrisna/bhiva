@@ -19,7 +19,6 @@ class Data extends CI_Model {
                 `user_phone` AS phone,
                 `user_gender` AS gender,
                 `user_birthday` AS birthday,
-                `user_address` AS address,
                 `user_is_admin` AS is_admin,
                 `user_lang` AS lang,
                 `user_last_login` AS last_login,
@@ -604,7 +603,6 @@ class Data extends CI_Model {
                 a.`user_phone` AS `phone`,
                 a.`user_gender` AS `gender`,
                 a.`user_birthday` AS `birthday`,
-                a.`user_address` AS `address`,
                 a.`user_is_admin` AS `is_admin`,
                 a.`user_lang` AS `lang`,
                 a.`user_last_login` AS `last_login`,
@@ -660,7 +658,6 @@ class Data extends CI_Model {
                 a.`user_phone` AS `phone`,
                 a.`user_gender` AS `gender`,
                 a.`user_birthday` AS `birthday`,
-                a.`user_address` AS `address`,
                 a.`user_is_admin` AS `is_admin`,
                 a.`user_lang` AS `lang`,
                 b.lang_name AS lang_name,
@@ -1223,61 +1220,61 @@ class Data extends CI_Model {
         }
     }
 
-    //whoweare
-    public function getDetailWhoweare($id){
+    //aboutus
+    public function getDetailAboutus($id){
 
         $query = "
                 SELECT
-                    a.`whoweare_id` AS `id`,
-                    a.`whoweare_img` AS `img`,
+                    a.`aboutus_id` AS `id`,
+                    a.`aboutus_img` AS `img`,
                     c.user_real_name AS insert_user,
                     a.insert_datetime,
                     d.user_real_name AS update_user,
                     a.update_datetime
                 FROM
-                    `cms_whoweare` a
+                    `cms_aboutus` a
                     LEFT JOIN core_user c ON c.user_id = a.insert_user_id
                     LEFT JOIN core_user d ON d.user_id = a.update_user_id
                 WHERE 1 = 1
-                AND a.`whoweare_id` = '".$id."'
+                AND a.`aboutus_id` = '".$id."'
         ";
         $result = $this->default->query($query);
         return $result->row();
     }
 
-    public function getDetailWhoweareText($id){
+    public function getDetailAboutusText($id){
 
         $query = "
                 SELECT
-                    a.`whowearetext_whoweare_id` AS `whoweare_id`,
-                    a.`whowearetext_lang` AS `lang`,
-                    a.`whowearetext_text` AS `text`
+                    a.`aboutustext_aboutus_id` AS `aboutus_id`,
+                    a.`aboutustext_lang` AS `lang`,
+                    a.`aboutustext_text` AS `text`
                 FROM
-                    `cms_whoweare_text` a
+                    `cms_aboutus_text` a
                 WHERE 1 = 1
-                AND a.`whowearetext_whoweare_id` = '".$id."'
+                AND a.`aboutustext_aboutus_id` = '".$id."'
         ";
         $result = $this->default->query($query);
         return $result->result();
     }
 
-    public function updateWhoweare($data, $id, $content){
+    public function updateAboutus($data, $id, $content){
         $this->default->trans_begin();
 
-        $this->default->where('whoweare_id', $id);
-        $this->default->update('cms_whoweare',$data);
+        $this->default->where('aboutus_id', $id);
+        $this->default->update('cms_aboutus',$data);
 
-        $this->default->where('whowearetext_whoweare_id', $id);
-        $this->default->delete('cms_whoweare_text');
+        $this->default->where('aboutustext_aboutus_id', $id);
+        $this->default->delete('cms_aboutus_text');
 
         if(!empty($content)){
             foreach ($content as $key => $value) {
                 $data = array(
-                    'whowearetext_whoweare_id' => $id,
-                    'whowearetext_lang' => $key,
-                    'whowearetext_text' => $value
+                    'aboutustext_aboutus_id' => $id,
+                    'aboutustext_lang' => $key,
+                    'aboutustext_text' => $value
                 );
-                $this->default->insert('cms_whoweare_text',$data);
+                $this->default->insert('cms_aboutus_text',$data);
             }
         }
         $this->default->trans_complete();
@@ -1714,6 +1711,7 @@ class Data extends CI_Model {
                 SELECT
                     a.`gallery_id` AS `id`,
                     a.`gallery_img` AS `img`,
+                    a.`gallery_link` AS `link`,
                     a.`gallery_order` AS `order`,
                     a.`gallery_status` AS `status`,
                     b.`gallerytext_title` AS `title`
@@ -1733,6 +1731,7 @@ class Data extends CI_Model {
                 SELECT
                     a.`gallery_id` AS `id`,
                     a.`gallery_img` AS `img`,
+                    a.`gallery_link` AS `link`,
                     a.`gallery_order` AS `order`,
                     a.`gallery_status` AS `status`,
                     c.user_real_name AS insert_user,
@@ -2827,6 +2826,8 @@ class Data extends CI_Model {
                     a.`tourpackages_total_night` AS `total_night`,
                     a.`tourpackages_base_price_local` AS `base_price_local`,
                     a.`tourpackages_base_price_foreign` AS `base_price_foreign`,
+                    a.`tourpackages_min_order` AS `min_order`,
+                    a.`tourpackages_max_order` AS `max_order`,
                     a.`tourpackages_is_rating_manual` AS `is_rating_manual`,
                     a.`tourpackages_rating_manual` AS `rating_manual`,
                     a.`tourpackages_total_rater_manual` AS `total_rater_manual`,

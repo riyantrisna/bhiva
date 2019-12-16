@@ -104,12 +104,12 @@ class Tourpackages extends CI_Controller {
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="total_day">'.MultiLang('total_day').' *</label>';
-        $html.=     '<input type="text" id="total_day" name="total_day" class="form-control" onkeypress="return isNumberText(event)" maxlength="4">';
+        $html.=     '<input type="text" id="total_day" name="total_day" class="form-control" onkeypress="return isNumber(event)" maxlength="4">';
         $html.= '</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="total_night">'.MultiLang('total_night').' *</label>';
-        $html.=     '<input type="text" id="total_night" name="total_night" class="form-control" onkeypress="return isNumberText(event)" maxlength="4">';
+        $html.=     '<input type="text" id="total_night" name="total_night" class="form-control" onkeypress="return isNumber(event)" maxlength="4">';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="destination">'.MultiLang('destination').'</label>';
@@ -206,6 +206,15 @@ class Tourpackages extends CI_Controller {
                         </table>';
         $html.=     '</div>';
         $html.= '</div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="min_order">'.MultiLang('min_order').' *</label>';
+        $html.=     '<input type="text" id="min_order" name="min_order" class="form-control" onkeypress="return isNumber(event)">';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="max_order">'.MultiLang('max_order').' *</label>';
+        $html.=     '<input type="text" id="max_order" name="max_order" class="form-control" onkeypress="return isNumber(event)">';
+        $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="is_rating_manual">'.MultiLang('is_rating_manual').'?</label>';
         $html.=     '<div class="form-check">
@@ -284,6 +293,8 @@ class Tourpackages extends CI_Controller {
         $content_name = $this->input->post('content_name', TRUE);
         $base_price_local = $this->input->post('base_price_local', TRUE);
         $base_price_foreign = $this->input->post('base_price_foreign', TRUE);
+        $min_order = $this->input->post('min_order', TRUE);
+        $max_order = $this->input->post('max_order', TRUE);
         $is_rating_manual = $this->input->post('is_rating_manual', TRUE);
         $rating_manual = $this->input->post('rating_manual', TRUE);
         // $total_rater_manual = $this->input->post('total_rater_manual', TRUE);
@@ -357,6 +368,21 @@ class Tourpackages extends CI_Controller {
             $validation_text.= '<li>'.MultiLang('default_price_foreign').' '.MultiLang('required').'</li>';
         }
 
+        if(empty($min_order)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('min_order').' '.MultiLang('required').'</li>';
+        }
+
+        if(empty($max_order)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('max_order').' '.MultiLang('required').'</li>';
+        }
+
+        if(!empty($min_order) AND !empty($max_order) AND $max_order <= $min_order){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('max_order').' '.MultiLang('must_be_more_than').' '.MultiLang('min_order').'</li>';
+        }
+
         if(empty($rating_manual)){
             $validation = $validation && false;
             $validation_text.= '<li>'.MultiLang('rating_manual_value').' '.MultiLang('required').'</li>';
@@ -420,6 +446,8 @@ class Tourpackages extends CI_Controller {
                     'tourpackages_total_night' => $total_night,
                     'tourpackages_base_price_local' => str_replace('.','',$base_price_local),
                     'tourpackages_base_price_foreign' => str_replace('.','',$base_price_foreign),
+                    'tourpackages_min_order' => $min_order,
+                    'tourpackages_max_order' => $max_order,
                     'tourpackages_is_rating_manual' => isset($is_rating_manual) ? 1 : 0,
                     'tourpackages_rating_manual' => str_replace(',','.',$rating_manual),
                     // 'tourpackages_total_rater_manual' => $total_rater_manual,
@@ -517,12 +545,12 @@ class Tourpackages extends CI_Controller {
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="total_day">'.MultiLang('total_day').' *</label>';
-        $html.=     '<input type="text" id="total_day" name="total_day" class="form-control" onkeypress="return isNumberText(event)" maxlength="4" value="'.$detail->total_day.'">';
+        $html.=     '<input type="text" id="total_day" name="total_day" class="form-control" onkeypress="return isNumber(event)" maxlength="4" value="'.$detail->total_day.'">';
         $html.= '</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="total_night">'.MultiLang('total_night').' *</label>';
-        $html.=     '<input type="text" id="total_night" name="total_night" class="form-control" onkeypress="return isNumberText(event)" maxlength="4" value="'.$detail->total_day.'">';
+        $html.=     '<input type="text" id="total_night" name="total_night" class="form-control" onkeypress="return isNumber(event)" maxlength="4" value="'.$detail->total_day.'">';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="destination">'.MultiLang('destination').'</label>';
@@ -609,12 +637,12 @@ class Tourpackages extends CI_Controller {
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="base_price_local">'.MultiLang('default_price_local').' (Rp) *</label>';
-        $html.=     '<input type="text" id="base_price_local" name="base_price_local" class="form-control curr" value="'.$detail->base_price_local.'">';
+        $html.=     '<input type="text" id="base_price_local" name="base_price_local" class="form-control curr" value="'.number_format($detail->base_price_local, 0).'">';
         $html.=     '<input type="hidden" id="id" name="id" value="'.$detail->id.'">';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="base_price_foreign">'.MultiLang('default_price_foreign').' (Rp) *</label>';
-        $html.=     '<input type="text" id="base_price_foreign" name="base_price_foreign" class="form-control curr" value="'.$detail->base_price_foreign.'">';
+        $html.=     '<input type="text" id="base_price_foreign" name="base_price_foreign" class="form-control curr" value="'.number_format($detail->base_price_foreign, 0).'">';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="price_period">'.MultiLang('price_period').'</label>';
@@ -652,10 +680,10 @@ class Tourpackages extends CI_Controller {
                                     <input type="text" name="end[]" class="form-control calendar" placeholder="yyyy-mm-dd" value="'.$value->end.'">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control curr" name="price_local[]" value="'.$value->price_local.'">
+                                    <input type="text" class="form-control curr" name="price_local[]" value="'.number_format($value->price_local,0).'">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control curr" name="price_foreign[]" value="'.$value->price_foreign.'">
+                                    <input type="text" class="form-control curr" name="price_foreign[]" value="'.number_format($value->price_foreign,0).'">
                                 </td>
                                 <td>
                                     '.$action.'
@@ -683,6 +711,14 @@ class Tourpackages extends CI_Controller {
         }
         $html.=         '</table>';
         $html.=     '</div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="min_order">'.MultiLang('min_order').' *</label>';
+        $html.=     '<input type="text" id="min_order" name="min_order" class="form-control" onkeypress="return isNumber(event)" value="'.$detail->min_order.'">';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="max_order">'.MultiLang('max_order').' *</label>';
+        $html.=     '<input type="text" id="max_order" name="max_order" class="form-control" onkeypress="return isNumber(event)" value="'.$detail->max_order.'">';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="is_rating_manual">'.MultiLang('is_rating_manual').'?</label>';
@@ -774,6 +810,8 @@ class Tourpackages extends CI_Controller {
         $content_name = $this->input->post('content_name', TRUE);
         $base_price_local = $this->input->post('base_price_local', TRUE);
         $base_price_foreign = $this->input->post('base_price_foreign', TRUE);
+        $min_order = $this->input->post('min_order', TRUE);
+        $max_order = $this->input->post('max_order', TRUE);
         $is_rating_manual = $this->input->post('is_rating_manual', TRUE);
         $rating_manual = $this->input->post('rating_manual', TRUE);
         // $total_rater_manual = $this->input->post('total_rater_manual', TRUE);
@@ -848,6 +886,21 @@ class Tourpackages extends CI_Controller {
             $validation_text.= '<li>'.MultiLang('default_price_foreign').' '.MultiLang('required').'</li>';
         }
 
+        if(empty($min_order)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('min_order').' '.MultiLang('required').'</li>';
+        }
+
+        if(empty($max_order)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('max_order').' '.MultiLang('required').'</li>';
+        }
+
+        if(!empty($min_order) AND !empty($max_order) AND $max_order <= $min_order){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('max_order').' '.MultiLang('must_be_more_than').' '.MultiLang('min_order').'</li>';
+        }
+
         if(empty($rating_manual)){
             $validation = $validation && false;
             $validation_text.= '<li>'.MultiLang('rating_manual_value').' '.MultiLang('required').'</li>';
@@ -910,6 +963,8 @@ class Tourpackages extends CI_Controller {
                     'tourpackages_total_night' => $total_night,
                     'tourpackages_base_price_local' => str_replace('.','',$base_price_local),
                     'tourpackages_base_price_foreign' => str_replace('.','',$base_price_foreign),
+                    'tourpackages_min_order' => $min_order,
+                    'tourpackages_max_order' => $max_order,
                     'tourpackages_is_rating_manual' => isset($is_rating_manual) ? 1 : 0,
                     'tourpackages_rating_manual' => str_replace(',','.',$rating_manual),
                     // 'tourpackages_total_rater_manual' => $total_rater_manual,
@@ -1058,12 +1113,12 @@ class Tourpackages extends CI_Controller {
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="base_price_local">'.MultiLang('default_price_local').'</label>';
-        $html.=     '<div>Rp '.number_format($detail->base_price_local, 2, ',', '.').'</div>';
+        $html.=     '<div>Rp '.number_format($detail->base_price_local, 0, ',', '.').'</div>';
         $html.= '</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="base_price_foreign">'.MultiLang('default_price_foreign').'</label>';
-        $html.=     '<div>Rp '.number_format($detail->base_price_foreign, 2, ',', '.').'</div>';
+        $html.=     '<div>Rp '.number_format($detail->base_price_foreign, 0, ',', '.').'</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="price_period">'.MultiLang('price_period').'</label>';
@@ -1098,10 +1153,10 @@ class Tourpackages extends CI_Controller {
                                     '.$this->data->getDateIndo($value->end).'
                                 </td>
                                 <td style="text-align: right;">
-                                    '.number_format($value->price_local, 2, ',', '.').'
+                                    '.number_format($value->price_local, 0, ',', '.').'
                                 </td>
                                 <td style="text-align: right;">
-                                    '.number_format($value->price_foreign, 2, ',', '.').'
+                                    '.number_format($value->price_foreign, 0, ',', '.').'
                                 </td>
                             </tr>';
             }
@@ -1114,6 +1169,14 @@ class Tourpackages extends CI_Controller {
         }
         $html.=         '</table>';
         $html.=     '</div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="min_order">'.MultiLang('min_order').'</label>';
+        $html.=     '<div>'.$detail->min_order.'</div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="max_order">'.MultiLang('max_order').'</label>';
+        $html.=     '<div>'.$detail->max_order.'</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="is_rating_manual">'.MultiLang('is_rating_manual').'?</label>';

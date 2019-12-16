@@ -379,7 +379,7 @@ class Ticket extends CI_Controller {
         }
         $html.=     '</div>';
         $html.=     '<div id="div_base_price_local2">';
-        $html.=         '<input type="text" id="base_price_local2" name="base_price_local2" class="form-control curr" value="'.$detail_pricedefault[0]->price_local.'">';
+        $html.=         '<input type="text" id="base_price_local2" name="base_price_local2" class="form-control curr" value="'.number_format($detail_pricedefault[0]->price_local, 0).'">';
         $html.=     '</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
@@ -400,7 +400,7 @@ class Ticket extends CI_Controller {
         }
         $html.=     '</div>';
         $html.=     '<div id="div_base_price_foreign2">';
-        $html.=         '<input type="text" id="base_price_foreign2" name="base_price_foreign2" class="form-control curr" value="'.$detail_pricedefault[0]->price_foreign.'">';
+        $html.=         '<input type="text" id="base_price_foreign2" name="base_price_foreign2" class="form-control curr" value="'.number_format($detail_pricedefault[0]->price_foreign, 0).'">';
         $html.=     '</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
@@ -456,10 +456,10 @@ class Ticket extends CI_Controller {
         $html.=                     '</select>';
         $html.=                 '</td>
                                 <td>
-                                    <input type="text" class="form-control curr" name="price_local[]" value="'.$value->price_local.'">
+                                    <input type="text" class="form-control curr" name="price_local[]" value="'.number_format($value->price_local, 0).'">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control curr" name="price_foreign[]" value="'.$value->price_foreign.'">
+                                    <input type="text" class="form-control curr" name="price_foreign[]" value="'.number_format($value->price_foreign, 0).'">
                                 </td>
                                 <td>
                                     '.$action.'
@@ -676,7 +676,7 @@ class Ticket extends CI_Controller {
                 foreach ($detail_pricedefault as $k => $v) {
                     if($value->id == $v->visitortype_id){
         $html.=     $value->name.' (Rp)';
-        $html.=     '<div style=" border:1px dashed #3e3e3e; padding: 5px; margin: 5px 0;">'.number_format($v->price_local, 2, ',', '.').'</div>';
+        $html.=     '<div style=" border:1px dashed #3e3e3e; padding: 5px; margin: 5px 0;">'.number_format($v->price_local, 0, ',', '.').'</div>';
         $html.=     '<br>';
                     }
                 }
@@ -687,7 +687,7 @@ class Ticket extends CI_Controller {
         $html.= '<div class="form-group">';
         $html.=     '<label for="base_price_local">'.MultiLang('default_price_local').' (Rp)</label>';
         $html.=     '<br>';
-        $html.=     '<div style=" border:1px dashed #3e3e3e; padding: 5px; margin: 5px 0;">'.number_format($detail_pricedefault[0]->price_local, 2, ',', '.').'</div>';
+        $html.=     '<div style=" border:1px dashed #3e3e3e; padding: 5px; margin: 5px 0;">'.number_format($detail_pricedefault[0]->price_local, 0, ',', '.').'</div>';
         $html.= '</div>';
         }
         if($detail->is_type_visitor == 1){
@@ -699,7 +699,7 @@ class Ticket extends CI_Controller {
                 foreach ($detail_pricedefault as $k => $v) {
                     if($value->id == $v->visitortype_id){
         $html.=     $value->name.' (Rp)';
-        $html.=     '<div style=" border:1px dashed #3e3e3e; padding: 5px; margin: 5px 0;">'.number_format($v->price_foreign, 2, ',', '.').'</div>';
+        $html.=     '<div style=" border:1px dashed #3e3e3e; padding: 5px; margin: 5px 0;">'.number_format($v->price_foreign, 0, ',', '.').'</div>';
         $html.=     '<br>';
                     }
                 }
@@ -710,7 +710,7 @@ class Ticket extends CI_Controller {
         $html.= '<div class="form-group">';
         $html.=     '<label for="base_price_local">'.MultiLang('default_price_local').' (Rp)</label>';
         $html.=     '<br>';
-        $html.=     '<div style=" border:1px dashed #3e3e3e; padding: 5px; margin: 5px 0;">'.number_format($detail_pricedefault[0]->price_local, 2, ',', '.').'</div>';
+        $html.=     '<div style=" border:1px dashed #3e3e3e; padding: 5px; margin: 5px 0;">'.number_format($detail_pricedefault[0]->price_foreign, 0, ',', '.').'</div>';
         $html.= '</div>';
         }
         $html.= '<div class="form-group">';
@@ -752,10 +752,10 @@ class Ticket extends CI_Controller {
                                     '.($value->visitortype_name).'
                                 </td>
                                 <td style="text-align: right;">
-                                    '.number_format($value->price_local, 2, ',', '.').'
+                                    '.number_format($value->price_local, 0, ',', '.').'
                                 </td>
                                 <td style="text-align: right;">
-                                    '.number_format($value->price_foreign, 2, ',', '.').'
+                                    '.number_format($value->price_foreign, 0, ',', '.').'
                                 </td>
                             </tr>';
             }

@@ -97,6 +97,10 @@ class Galleryimages extends CI_Controller {
         }
         $html.= '</div>';
         $html.= '<div class="form-group">';
+        $html.=     '<label for="link">'.MultiLang('link').'</label>';
+        $html.=     '<input type="text" id="link" name="link" class="form-control">';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
         $html.=     '<label for="order">'.MultiLang('order').' *</label>';
         $html.=     '<input type="number" id="order" name="order" class="form-control" onkeypress="return isNumber(event)">';
         $html.= '</div>';
@@ -151,6 +155,7 @@ class Galleryimages extends CI_Controller {
 
         $title = $this->input->post('title', TRUE);
         $title_name = $this->input->post('title_name', TRUE);
+        $link = $this->input->post('link', TRUE);
         $order = $this->input->post('order', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');
@@ -200,6 +205,7 @@ class Galleryimages extends CI_Controller {
                     'gallery_parent_id' => $this->session->userdata('gallery_id'),
                     'gallery_type' => 2,
                     'gallery_img' => (!empty($upload['file'])) ? $upload['file'] : NULL,
+                    'gallery_link' => (!empty($link)) ? $link : NULL,
                     'gallery_order' => $order,
                     'gallery_status' => $status,
                     'insert_user_id' => $user_id,
@@ -259,7 +265,7 @@ class Galleryimages extends CI_Controller {
             foreach ($lang as $key => $value) {
                 foreach ($detail_text as $k => $v) {
                     if($value->code == $v->lang){
-        $html.=     '<img src="'.$path_language.$value->icon.'" style="max-width:18px;" /> ('.$value->name.')&nbsp;*';
+        $html.=     '<img src="'.$path_language.$value->icon.'" style="max-width:18px;" /> ('.$value->name.')';
         $html.=     '<input type="text" id="title_<?php echo $value->code;?>" name="title['.$value->code.']" class="form-control" value="'.$v->title.'">';
         $html.=     '<input type="hidden" id="title_name_<?php echo $value->code;?>" name="title_name['.$value->code.']" value="'.$value->name.'" >';
         $html.=     '<br>';
@@ -267,6 +273,10 @@ class Galleryimages extends CI_Controller {
                 }
             }
         }
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="link">'.MultiLang('link').'</label>';
+        $html.=     '<input type="text" id="link" name="link" class="form-control" value="'.$detail->link.'">';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="order">'.MultiLang('order').' *</label>';
@@ -333,6 +343,7 @@ class Galleryimages extends CI_Controller {
         $id = $this->input->post('id', TRUE);
         $title = $this->input->post('title', TRUE);
         $title_name = $this->input->post('title_name', TRUE);
+        $link = $this->input->post('link', TRUE);
         $order = $this->input->post('order', TRUE);
         $status = $this->input->post('status', TRUE);
         $file_image_value = $this->input->post('file_image_value');
@@ -382,6 +393,7 @@ class Galleryimages extends CI_Controller {
                 if(!empty($file_image_value)){
                     $data = array(
                         'gallery_img' => (!empty($upload['file'])) ? $upload['file'] : NULL,
+                        'gallery_link' => (!empty($link)) ? $link : NULL,
                         'gallery_order' => $order,
                         'gallery_status' => $status,
                         'update_user_id' => $user_id,
@@ -460,6 +472,10 @@ class Galleryimages extends CI_Controller {
                 }
             }
         }
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="link">'.MultiLang('link').'</label>';
+        $html.=     '<div id="link">'.$detail->link.'</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="order">'.MultiLang('order').'</label>';

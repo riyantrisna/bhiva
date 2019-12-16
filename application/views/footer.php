@@ -102,7 +102,7 @@
                             <a href="<?php echo base_url();?>gallery"><?php echo MultiLang('gallery'); ?></a>
                         </li>
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                            <a href="<?php echo base_url();?>whoweare"><?php echo MultiLang('who_we_are');?></a>
+                            <a href="<?php echo base_url();?>aboutus"><?php echo MultiLang('about_us');?></a>
                         </li>
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
                             <a href="<?php echo base_url();?>contact"><?php echo MultiLang('contact'); ?></a>
@@ -165,21 +165,15 @@
 <script src="<?php echo base_url();?>assets/dist/js/bootstrap.min.js"></script>
 <!-- Datepicker -->
 <script src="<?php echo base_url();?>assets/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
-<!-- Main -->
-<script src="<?php echo base_url();?>assets/dist/js/main.js"></script>
 <!-- lightbox -->
 <script src="<?php echo base_url();?>assets/dist/js/ekko-lightbox.min.js"></script>
 <!-- Social Share Kit JS -->
 <script src="<?php echo base_url();?>assets/dist/js/social-share-kit.js"></script>
 <!-- InputMask -->
-<script src="assets/dist/js/jquery.mask.min.js"></script>
+<script src="<?php echo base_url();?>assets/dist/js/jquery.mask.min.js"></script>
 <!-- overlayScrollbars -->
-<script src="assets/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
-<script>
-$(document).ready(function() {
-	$(".dates").datepicker({
-		format: 'yyyy-mm-dd'
-	});
-});
-
-</script>
+<script src="<?php echo base_url();?>assets/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<!-- Toastr -->
+<script src="<?php echo base_url();?>assets/toastr/toastr.min.js"></script>
+<!-- Main -->
+<script src="<?php echo base_url();?>assets/dist/js/main.js"></script>

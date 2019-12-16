@@ -109,10 +109,6 @@ class User extends CI_Controller {
         $html.=     '<input type="text" id="birthday" name="birthday" class="form-control" placeholder="yyyy-mm-dd">';
         $html.= '</div>';
         $html.= '<div class="form-group">';
-        $html.=     '<label for="address">'.MultiLang('address').'</label>';
-        $html.=     '<textarea id="address" name="address" class="form-control"></textarea>';
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
         $html.=     '<label for="is_admin">'.MultiLang('is_admin').'?</label>';
         $html.=     '<div class="form-check">
                         <input class="form-check-input" type="checkbox" value="1" name="is_admin" id="is_admin">
@@ -200,7 +196,6 @@ class User extends CI_Controller {
         $phone = $this->input->post('phone', TRUE);
         $gender = $this->input->post('gender', TRUE);
         $birthday = $this->input->post('birthday', TRUE);
-        $address = $this->input->post('address', TRUE);
         $is_admin = $this->input->post('is_admin', TRUE);
         $lang = $this->input->post('lang', TRUE);
         $status = $this->input->post('status', TRUE);
@@ -283,7 +278,6 @@ class User extends CI_Controller {
                     'user_phone' => $phone,
                     'user_gender' => $gender,
                     'user_birthday' => $birthday,
-                    'user_address' => $address,
                     'user_is_admin' => isset($is_admin) ? 1 : 0,
                     'user_lang' => $lang,
                     'user_status' => $status,
@@ -369,10 +363,6 @@ class User extends CI_Controller {
         $html.= '<div class="form-group">';
         $html.=     '<label for="birthday">'.MultiLang('birthday').' *</label>';
         $html.=     '<input type="text" id="birthday" name="birthday" class="form-control" placeholder="yyyy-mm-dd" value='.$detail->birthday.'>';
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
-        $html.=     '<label for="address">'.MultiLang('address').'</label>';
-        $html.=     '<textarea id="address" name="address" class="form-control">'.$detail->address.'</textarea>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="is_admin">'.MultiLang('is_admin').'?</label>';
@@ -470,7 +460,6 @@ class User extends CI_Controller {
         $phone = $this->input->post('phone', TRUE);
         $gender = $this->input->post('gender', TRUE);
         $birthday = $this->input->post('birthday', TRUE);
-        $address = $this->input->post('address', TRUE);
         $is_admin = $this->input->post('is_admin', TRUE);
         $lang = $this->input->post('lang', TRUE);
         $status = $this->input->post('status', TRUE);
@@ -544,7 +533,6 @@ class User extends CI_Controller {
                             'user_phone' => $phone,
                             'user_gender' => $gender,
                             'user_birthday' => $birthday,
-                            'user_address' => $address,
                             'user_is_admin' => isset($is_admin) ? 1 : 0,
                             'user_lang' => $lang,
                             'user_status' => $status,
@@ -560,7 +548,6 @@ class User extends CI_Controller {
                             'user_phone' => $phone,
                             'user_gender' => $gender,
                             'user_birthday' => $birthday,
-                            'user_address' => $address,
                             'user_is_admin' => isset($is_admin) ? 1 : 0,
                             'user_lang' => $lang,
                             'user_status' => $status,
@@ -577,7 +564,6 @@ class User extends CI_Controller {
                             'user_phone' => $phone,
                             'user_gender' => $gender,
                             'user_birthday' => $birthday,
-                            'user_address' => $address,
                             'user_is_admin' => isset($is_admin) ? 1 : 0,
                             'user_lang' => $lang,
                             'user_status' => $status,
@@ -593,7 +579,6 @@ class User extends CI_Controller {
                             'user_phone' => $phone,
                             'user_gender' => $gender,
                             'user_birthday' => $birthday,
-                            'user_address' => $address,
                             'user_is_admin' => isset($is_admin) ? 1 : 0,
                             'user_lang' => $lang,
                             'user_status' => $status,
@@ -677,10 +662,6 @@ class User extends CI_Controller {
         $html.= '<div class="form-group">';
         $html.=     '<label for="birthday">'.MultiLang('birthday').'</label>';
         $html.=     '<div id="birthday">'.($this->data->getDateIndo($detail->birthday)).'</div>';
-        $html.= '</div>';
-        $html.= '<div class="form-group">';
-        $html.=     '<label for="address">'.MultiLang('address').'</label>';
-        $html.=     '<div id="address">'.$detail->address.'</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="is_admin">'.MultiLang('is_admin').'?</label>';

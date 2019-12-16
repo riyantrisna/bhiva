@@ -56,7 +56,7 @@
 						foreach ($gallery_photo_first as $key => $value) {
 					?>
 					<div class="col-12 col-sm-6 col-md-4 col-lg-3 text-center">
-						<a href="<?php echo base_url().$value->img;?>" class="d-block mb-4 h-100 text-decoration-none" data-toggle="lightbox" data-gallery="gallery" <?php if(!empty($value->title)){?> data-title="<?php echo $value->title;?>" <?php } ?>>
+						<a href="<?php echo base_url().(!empty($value->link) ? $value->link : $value->img);?>" class="d-block mb-4 h-100 text-decoration-none" data-toggle="lightbox" data-gallery="gallery" <?php if(!empty($value->title)){?> data-title="<?php echo $value->title;?>" <?php } ?> data-width="1280">
 							<img class="img-fluid img-thumbnail" src="<?php echo base_url().$value->img;?>" alt="<?php echo $value->title;?>" style="height: 180px;">
 						<?php if(!empty($value->title)){?> <div class="text-center" style="font-size: 16px; color: #212529;"><?php echo $value->title;?></div><?php } ?>
 						</a>
@@ -84,13 +84,13 @@
 			</div>
 
 			<div class="container mb-5">
-				<div class="row text-center text-lg-left justify-content-center">
+				<div class="row">
 					<?php
 					if(!empty($tourpackages)){
 						foreach ($tourpackages as $key => $value) {
 					?>
 						<div class="col-lg-3 col-md-6 col-sm-12 mb-4">
-							<a href="#" class="" style="text-decoration: none;">
+							<a href="<?php echo base_url();?>tourpackages/view/<?php echo $value->id.'/'.(preg_replace("/\W|_/","-",$value->name));?>" class="" style="text-decoration: none;">
 								<div class="card h-100">
 									<div class="img-hover-zoom img-hover-zoom--brightness card-img-top" style="border-radius: 0;">
 										<img class="img-fluid" src="<?php echo base_url().$value->img;?>" alt="<?php echo $value->name;?>">
@@ -107,7 +107,7 @@
 											Rp <?php echo number_format($value->price_local, 0, ',', '.');?>
 										</span>
 										<span class="float-right" style="color: #212529; font-weight: bold;">
-											<i class="fas fa-star"></i> <?php echo number_format($value->rating, 1, ',', '.');?>
+											<i class="fas fa-star" style="color:#FFD31C"></i> <?php echo number_format($value->rating, 1, ',', '.');?>
 										</span>
 									</div>
 								</div>
@@ -117,7 +117,9 @@
 						}
 					}
 					?>
-					<a href="<?php echo base_url();?>tourpackages" class="btn btn-primary"><?php echo MultiLang('other_packages'); ?></a>
+					<div style="text-align: center; width:100%;">
+						<a href="<?php echo base_url();?>tourpackages" class="btn btn-primary"><?php echo MultiLang('other_packages'); ?></a>
+					</div>
 				</div>
 			</div>
 

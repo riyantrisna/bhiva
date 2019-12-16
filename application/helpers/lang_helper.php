@@ -8,7 +8,7 @@ if (! function_exists('MultiLang')) {
         $ci->load->database();
         $user_lang = $ci->session->userdata('user_lang');
         if(empty($user_lang)){
-            $user_lang = 'en';
+            $user_lang = 'id';
         }
     
         $sql = "

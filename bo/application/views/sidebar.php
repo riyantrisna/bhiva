@@ -65,9 +65,9 @@
                         </li>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url();?>whoweare" class="nav-link <?php echo ($active_menu == 'whoweare' ? 'active' : ''); ?>">
+                            <a href="<?php echo base_url();?>aboutus" class="nav-link <?php echo ($active_menu == 'aboutus' ? 'active' : ''); ?>">
                                 <i class="fas fa-users nav-icon ml-4"></i>
-                                <p><?php echo MultiLang('who_we_are'); ?></p>
+                                <p><?php echo MultiLang('about_us'); ?></p>
                             </a>
                         </li>
                         <li class="nav-item">

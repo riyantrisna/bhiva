@@ -6,7 +6,21 @@ class Data extends CI_Model {
     public function __construct(){
         parent::__construct();
         $this->default = $this->load->database('default', TRUE);
-        $this->user_lang = !empty($this->session->userdata('user_lang')) ? $this->session->userdata('user_lang') : 'en';
+        $this->user_lang = !empty($this->session->userdata('user_lang')) ? $this->session->userdata('user_lang') : 'id';
+    }
+
+    public function getExistEmail($id){
+
+        $query = "
+            SELECT
+                a.`user_email` AS email
+            FROM
+                `core_user` a
+            WHERE 1 = 1
+            AND a.`user_email` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
     }
 
     public function getSlider(){
@@ -334,6 +348,148 @@ class Data extends CI_Model {
             ORDER BY 
                 ".$order."
             LIMIT ".$page." , ".$limit."
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getTourpackagesDetail($id){
+        $query = "
+            SELECT
+                a.`tourpackages_id` AS id,
+                a.`tourpackages_total_day` AS total_day,
+                a.`tourpackages_total_night` AS total_night,
+                IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) AS `price_local`,
+                IFNULL(d.`tourpackagesprice_price_foreign`, a.`tourpackages_base_price_foreign`) AS `price_foreign`,
+                a.`tourpackages_min_order` AS min_order,
+                a.`tourpackages_max_order` AS max_order,
+                b.`tourpackagestext_name` AS 'name',
+                b.`tourpackagestext_text` AS 'text',
+                IFNULL(
+                CASE
+                    WHEN a.tourpackages_is_rating_manual = 1 THEN
+                        a.tourpackages_rating_manual
+                    ELSE
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                END, 0) AS rating
+            FROM 
+                `mst_tourpackages` a
+                LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_tourpackages_price` d ON d.tourpackagesprice_tourpackages_id = a.`tourpackages_id` AND CURDATE() BETWEEN d.`tourpackagesprice_start` AND d.`tourpackagesprice_end`
+            WHERE 
+                a.`tourpackages_status` = 1
+                AND a.`tourpackages_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getTourpackagesDetailImage($id){
+        $path_tourpackages_upload = $this->config->item('path_tourpackages_upload');
+        $query = "
+            SELECT
+                CONCAT('".$path_tourpackages_upload."',a.`tourpackagesimg_img`) AS 'img'
+            FROM
+                `mst_tourpackages_img` a
+            WHERE
+                a.`tourpackagesimg_tourpackages_id` = '".$id."'
+                AND a.`tourpackagesimg_img` IS NOT NULL
+            ORDER BY 
+                a.`tourpackagesimg_order`
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+    
+    public function getDetailTourpackagesPrice($filter){
+        $query = "
+            SELECT
+                a.`tourpackages_id` AS id,
+                IFNULL(b.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) AS `price_local`,
+                IFNULL(b.`tourpackagesprice_price_foreign`, a.`tourpackages_base_price_foreign`) AS `price_foreign`
+            FROM 
+                `mst_tourpackages` a
+                LEFT JOIN `mst_tourpackages_price` b ON b.tourpackagesprice_tourpackages_id = a.`tourpackages_id` AND '".$filter['date_tour']."' BETWEEN b.`tourpackagesprice_start` AND b.`tourpackagesprice_end`
+            WHERE 
+                a.`tourpackages_status` = 1
+                AND a.`tourpackages_id` = '".$filter['id']."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+    
+    public function getTourpackagesTestimony($id, $page, $limit){
+        $path_user_upload = $this->config->item('path_user_upload');
+        $query = "
+            SELECT
+                a.tourpackagestesti_user_real_name AS user_real_name,
+                a.tourpackagestesti_date AS date,
+                a.tourpackagestesti_testimony AS testimony,
+                a.tourpackagestesti_rating AS rating,
+                CONCAT('".$path_user_upload."',b.`user_photo`) AS 'user_photo'
+            FROM
+                `mst_tourpackages_testimony` a
+                LEFT JOIN core_user b ON b.user_id = a.tourpackagestesti_user_id
+            WHERE
+                a.`tourpackagestesti_tourpackages_id` = '".$id."'
+                AND a.tourpackagestesti_is_publish = 1
+            ORDER BY 
+                a.`tourpackagestesti_date` DESC
+            LIMIT ".$page." , ".$limit."
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+    
+    public function getTourpackagesTestimonyTotal($id){
+        $query = "
+            SELECT
+                a.`tourpackagestesti_tourpackages_id`
+            FROM
+                `mst_tourpackages_testimony` a
+                LEFT JOIN core_user b ON b.user_id = a.tourpackagestesti_user_id
+            WHERE
+                a.`tourpackagestesti_tourpackages_id` = '".$id."'
+                AND a.tourpackagestesti_is_publish = 1
+        ";
+        $result = $this->default->query($query);
+        return $result->num_rows();
+    }
+
+    public function getTourpackagesDestinationDays($id){
+        $query = "
+            SELECT
+                MAX(a.tourpackagesdest_day) AS day
+            FROM
+                `mst_tourpackages_destination` a
+                LEFT JOIN mst_destination_img b ON b.destinationimg_destination_id = a.tourpackagesdest_destination_id AND b.destinationimg_order = 1
+            WHERE
+                a.`tourpackagesdest_tourpackages_id` = '".$id."'
+                AND b.`destinationimg_img` IS NOT NULL
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getTourpackagesDestination($id, $day){
+        $path_destination_upload = $this->config->item('path_destination_upload');
+        $query = "
+            SELECT
+                a.tourpackagesdest_destination_id AS destination_id,
+                c.destinationtext_name AS destination_name,
+                CONCAT('".$path_destination_upload."',b.`destinationimg_img`) AS 'img',
+                a.tourpackagesdest_day AS day,
+                a.tourpackagesdest_order AS 'order'
+            FROM
+                `mst_tourpackages_destination` a
+                LEFT JOIN mst_destination_img b ON b.destinationimg_destination_id = a.tourpackagesdest_destination_id AND b.destinationimg_order = 1
+                LEFT JOIN mst_destination_text c ON c.destinationtext_destination_id = a.tourpackagesdest_destination_id AND c.`destinationtext_lang` = '".$this->user_lang."'
+            WHERE
+                a.`tourpackagesdest_tourpackages_id` = '".$id."'
+                AND a.tourpackagesdest_day = '".$day."'
+                AND b.`destinationimg_img` IS NOT NULL
+            ORDER BY 
+                a.tourpackagesdest_order
         ";
         $result = $this->default->query($query);
         return $result->result();
@@ -845,16 +1001,16 @@ class Data extends CI_Model {
         return $result->result();
     }
 
-    public function getWhoweare(){
-        $path_whoweare_upload = $this->config->item('path_whoweare_upload');
+    public function getAboutus(){
+        $path_aboutus_upload = $this->config->item('path_aboutus_upload');
         $query = "
             SELECT
-                a.`whoweare_id`  AS `id`,
-                CONCAT('".$path_whoweare_upload."', a.`whoweare_img`) AS img,
-                b.`whowearetext_text` AS 'text'
+                a.`aboutus_id`  AS `id`,
+                CONCAT('".$path_aboutus_upload."', a.`aboutus_img`) AS img,
+                b.`aboutustext_text` AS 'text'
             FROM
-                `cms_whoweare` a 
-            LEFT JOIN `cms_whoweare_text` b ON b.`whowearetext_whoweare_id` = a.`whoweare_id` AND b.`whowearetext_lang` = '".$this->user_lang."'
+                `cms_aboutus` a 
+            LEFT JOIN `cms_aboutus_text` b ON b.`aboutustext_aboutus_id` = a.`aboutus_id` AND b.`aboutustext_lang` = '".$this->user_lang."'
         
         ";
         $result = $this->default->query($query);
@@ -869,6 +1025,7 @@ class Data extends CI_Model {
                 a.`gallery_parent_id` AS parent_id,
                 a.`gallery_type` AS type,
                 CONCAT('".$path_gallery_upload."',a.`gallery_img`) AS img,
+                a.`gallery_link` AS link,
                 b.`gallerytext_title` AS title
             FROM
                 `cms_gallery` a 
@@ -891,6 +1048,7 @@ class Data extends CI_Model {
                 a.`gallery_parent_id` AS parent_id,
                 a.`gallery_type` AS type,
                 CONCAT('".$path_gallery_upload."',a.`gallery_img`) AS img,
+                a.`gallery_link` AS link,
                 b.`gallerytext_title` AS title
             FROM
                 `cms_gallery` a 
@@ -971,7 +1129,6 @@ class Data extends CI_Model {
                 `user_phone` AS phone,
                 `user_gender` AS gender,
                 `user_birthday` AS birthday,
-                `user_address` AS address,
                 `user_is_admin` AS is_admin,
                 `user_lang` AS lang,
                 `user_last_login` AS last_login,
@@ -1106,5 +1263,130 @@ class Data extends CI_Model {
         return $dates;
     }
 
+    public function addUser($data){
+        $query = $this->default->insert('core_user',$data);
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function updateUser($data, $id){
+        $this->default->where('user_id', $id);
+        $query = $this->default->update('core_user',$data);
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function getUserByUsernameLogin($username){
+        $query = "
+            SELECT 
+                `user_id` AS id,
+                `user_real_name` AS real_name,
+                `user_password` AS password,
+                `user_email` AS email,
+                `user_phone` AS phone,
+                `user_gender` AS gender,
+                `user_birthday` AS birthday,
+                `user_is_admin` AS is_admin,
+                `user_lang` AS lang,
+                `user_last_login` AS last_login,
+                `user_status` AS status,
+                `user_photo` AS photo
+            FROM
+                `core_user`
+            WHERE
+                user_email = '$username'
+                AND user_is_admin = 0
+                AND `user_status` = 1
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getUserByUserId($user_id){
+        $path_user_upload = $this->config->item('path_user_upload');
+        $query = "
+            SELECT 
+                `user_id` AS id,
+                `user_real_name` AS real_name,
+                `user_password` AS password,
+                `user_email` AS email,
+                `user_phone` AS phone,
+                `user_gender` AS gender,
+                `user_birthday` AS birthday,
+                `user_is_admin` AS is_admin,
+                `user_lang` AS lang,
+                `user_last_login` AS last_login,
+                `user_status` AS status,
+                CONCAT('".$path_user_upload."',`user_photo`) AS photo,
+                `user_photo` AS photo_ori
+            FROM
+                `core_user`
+            WHERE
+                user_id = '$user_id'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getBase64ImageSize($base64Image){ //return memory size in B, KB, MB
+        try{
+            $size_in_bytes = (int) (strlen(rtrim($base64Image, '=')) * 3 / 4);
+            $size_in_kb    = $size_in_bytes / 1024;
+            // $size_in_mb    = $size_in_kb / 1024;
+    
+            return $size_in_kb;
+        }
+        catch(Exception $e){
+            return $e;
+        }
+    }
+
+    public function uploadBase64($image, $path, $max_size, $type_allow){
+
+        $file_size = $this->getBase64ImageSize($image);
+
+        if($file_size <= $max_size){
+
+            $image_name = md5(uniqid(rand(), true).date('YmdHis'));
+            $ext = explode(';', $image);
+            $ext = explode('/', $ext[0]);
+            $ext = end($ext);
+            $filename = $image_name.'.'.$ext;
+            $image = explode(',', $image);   
+            $file = $path.$filename;
+
+            if(in_array($ext, explode('|', $type_allow))){
+                $status = file_put_contents($file, base64_decode($image[1]));
+                if($status !== false){
+                    chmod($file,0777);
+                    $result['status'] = true;
+                    $result['file'] = $filename;
+                    $result['message'] = MultiLang('success_upload');
+                }else{
+                    $result['status'] = false;
+                    $result['file'] = '';
+                    $result['message'] = MultiLang('failed_upload');
+                }
+            }else{
+                $result['status'] = false;
+                $result['file'] = '';
+                $result['message'] = MultiLang('allowed_file_is').' ('.(str_replace('|', ', ', $type_allow)).')';
+            }
+
+        }else{
+            $result['status'] = false;
+            $result['file'] = '';
+            $result['message'] = MultiLang('max_file_is').' '.$max_size.'KB';
+        }
+
+        return $result;
+
+    }   
     
 }

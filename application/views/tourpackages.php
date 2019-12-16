@@ -115,51 +115,51 @@
 									<div class="form-check">
 										<input onclick="filter(0,15);" class="form-check-input" type="checkbox" value="5" name="rating[5]" id="rating5">
 										<label class="form-check-label" for="rating5">
-											<i class="fas fa-star"></i> 
-											<i class="fas fa-star"></i> 
-											<i class="fas fa-star"></i> 
-											<i class="fas fa-star"></i> 
-											<i class="fas fa-star"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
 										</label>
 									</div>
 									<div class="form-check">
 										<input onclick="filter(0,15);" class="form-check-input" type="checkbox" value="4" name="rating[4]" id="rating4">
 										<label class="form-check-label" for="rating4">
-											<i class="fas fa-star"></i> 
-											<i class="fas fa-star"></i> 
-											<i class="fas fa-star"></i> 
-											<i class="fas fa-star"></i> 
-											<i class="far fa-star"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="far fa-star" style="color:#FFD31C"></i> 
 										</label>
 									</div>
 									<div class="form-check">
 										<input onclick="filter(0,15);" class="form-check-input" type="checkbox" value="3" name="rating[3]" id="rating3">
 										<label class="form-check-label" for="rating3">
-											<i class="fas fa-star"></i> 
-											<i class="fas fa-star"></i> 
-											<i class="fas fa-star"></i> 
-											<i class="far fa-star"></i> 
-											<i class="far fa-star"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="far fa-star" style="color:#FFD31C"></i> 
+											<i class="far fa-star" style="color:#FFD31C"></i> 
 										</label>
 									</div>
 									<div class="form-check">
-										<input onclick="filter(0,15);" class="form-check-input" type="checkbox" value="2" name="rating2[2]" id="rating2">
+										<input onclick="filter(0,15);" class="form-check-input" type="checkbox" value="2" name="rating[2]" id="rating2">
 										<label class="form-check-label" for="rating2">
-											<i class="fas fa-star"></i> 
-											<i class="fas fa-star"></i> 
-											<i class="far fa-star"></i> 
-											<i class="far fa-star"></i> 
-											<i class="far fa-star"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="far fa-star" style="color:#FFD31C"></i> 
+											<i class="far fa-star" style="color:#FFD31C"></i> 
+											<i class="far fa-star" style="color:#FFD31C"></i> 
 										</label>
 									</div>
 									<div class="form-check">
 										<input onclick="filter(0,15);" class="form-check-input" type="checkbox" value="1" name="rating[1]" id="rating1">
 										<label class="form-check-label" for="rating1">
-											<i class="fas fa-star"></i> 
-											<i class="far fa-star"></i> 
-											<i class="far fa-star"></i> 
-											<i class="far fa-star"></i> 
-											<i class="far fa-star"></i> 
+											<i class="fas fa-star" style="color:#FFD31C"></i> 
+											<i class="far fa-star" style="color:#FFD31C"></i> 
+											<i class="far fa-star" style="color:#FFD31C"></i> 
+											<i class="far fa-star" style="color:#FFD31C"></i> 
+											<i class="far fa-star" style="color:#FFD31C"></i> 
 										</label>
 									</div>
 								</div>
@@ -174,7 +174,7 @@
 							<div class="card-body">
 								<div class="row">
 									<div class="col-md-8 col-sm-12 pt-2">
-										<span><?php echo MultiLang('show'); ?> <span id="total_data" style="font-weight: bold;">10</span> <?php echo MultiLang('data'); ?></span>
+										<span><?php echo MultiLang('show'); ?> <span id="total_data" style="font-weight: bold;">0</span> <?php echo MultiLang('data'); ?></span>
 									</div>
 									<div class="col-md-4 col-sm-12">
 										<select onchange="filter(0,15);" id="orderby" name="orderby" class="form-control">
@@ -201,8 +201,8 @@
 						if(!empty($tourpackages_begin)){
 							foreach ($tourpackages_begin as $key => $value) {
 						?>
-							<div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-								<a href="#" class="" style="text-decoration: none;">
+							<div class="col-lg-4 col-md-6 col-sm-12 mb-4 div-cover-item">
+								<a href="<?php echo base_url();?>tourpackages/view/<?php echo $value->id.'/'.(preg_replace("/\W|_/","-",$value->name));?>" class="" style="text-decoration: none;">
 									<div class="card h-100">
 										<div class="img-hover-zoom img-hover-zoom--brightness card-img-top" style="border-radius: 0;">
 											<img class="img-fluid" src="<?php echo base_url().$value->img;?>" alt="<?php echo $value->name;?>">
@@ -219,7 +219,7 @@
 												Rp <?php echo number_format($value->price_local, 0, ',', '.');?>
 											</span>
 											<span class="float-right" style="color: #212529; font-weight: bold;">
-												<i class="fas fa-star"></i> <?php echo number_format($value->rating, 1, ',', '.');?>
+												<i class="fas fa-star" style="color:#FFD31C"></i> <?php echo number_format($value->rating, 1, ',', '.');?>
 											</span>
 										</div>
 									</div>
@@ -252,7 +252,14 @@
 						"visibility": "auto"
 					}
 				});
+
+				count_data();
 			});
+
+			function count_data(){
+				var numItems = $('.div-cover-item').length;
+				$('#total_data').html(numItems);
+			}
 
 			async function filter(page, limit){
 				await $('#loaders').modal('show');
@@ -261,7 +268,7 @@
 				var filter_packages = $("#filter_packages").serialize();
 				data = filter_packages_sort+'&'+filter_packages+'&page='+page+'&limit='+limit;
 
-				jQuery.ajax({
+				await jQuery.ajax({
 					url : "<?php echo site_url('tourpackages/filter_tourpackages/')?>",
 					type: "POST",
 					data: data,
@@ -270,6 +277,8 @@
 					{
 						if(xhr.status == '200'){
 							await $("#packages_div").html(data.html).fadeOut().fadeIn();
+
+							await $('#total_data').html(data.total_data);
 
 							await $('#loaders').on('shown.bs.modal', function (e) {
 								$('#loaders').modal('hide');
@@ -282,6 +291,8 @@
 							await $('#loaders').on('shown.bs.modal', function (e) {
 								$('#loaders').modal('hide');
 							})
+
+							await $('#total_data').html(0);
 						}
 
 					}
@@ -301,7 +312,7 @@
 				var filter_packages = $("#filter_packages").serialize();
 				data = filter_packages_sort+'&'+filter_packages+'&page='+page+'&limit='+limit;
 
-				jQuery.ajax({
+				await jQuery.ajax({
 					url : "<?php echo site_url('tourpackages/filter_tourpackages/')?>",
 					type: "POST",
 					data: data,
@@ -317,6 +328,8 @@
 
 					}
 				});
+
+				await count_data();
 
 				await $('#loaders').on('shown.bs.modal', function (e) {
 					$('#loaders').modal('hide');
