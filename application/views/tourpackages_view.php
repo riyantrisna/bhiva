@@ -139,7 +139,7 @@
 								<?php echo MultiLang('travel_date'); ?>
 							</div>
 							<div class="form-group">
-								<input type="text" id="date_tour" name="date_tour" class="form-control dates" placeholder="yyyy-mm-dd" autocomplete="nope" style="width: 120px !important;" value="<?php echo date('Y-m-d');?>">
+								<input type="text" id="date_tour" name="date_tour" class="form-control dates" placeholder="yyyy-mm-dd" autocomplete="nope" style="width: 120px !important;" value="<?php echo date('Y-m-d', strtotime(date('Y-m-d').' + 1 day'));?>">
 								<input type="hidden" id="div_id" value="<?php echo $tourpackages_detail->id;?>">
 							</div>
 							<hr>
@@ -185,7 +185,8 @@
 							</div>
 							<hr>
 							<div class="form-group">
-								<button type="button" class="btn btn-warning" style="width: 100%; font-weight: bold; padding: 10px;"><?php echo MultiLang('book_tour_package'); ?></button>
+								<div id="msg_btn_login" style="color: red; margin: 5px;"></div>
+								<button type="button" class="btn btn-warning" style="width: 100%; font-weight: bold; padding: 10px;" onclick="book();"><?php echo MultiLang('book_tour_package'); ?></button>
 							</div>
 						</div>
 					</div>
@@ -266,9 +267,13 @@
 					}
 				});
 
+				var tomorrow = new Date();
+				tomorrow.setDate(tomorrow.getDate() + 1);
+
 				$(".dates").datepicker({
 					format: 'yyyy-mm-dd',
-					autoclose: true
+					autoclose: true,
+					startDate: tomorrow
 				}).on('changeDate', function (ev) {
 					date_tour = $('#date_tour').val();
 					id = $('#div_id').val();
@@ -336,6 +341,22 @@
 				})
 				
 				$('#btn-load-more-div, .btn-load-more').hide();
+				
+			}
+
+			function book(){
+
+				date = $('#date_tour').val();
+				local_tourists = $('#local_tourists').val();
+				foreign_tourists = $('#foreign_tourists').val();
+
+				$.post("<?php echo site_url('user/get_session_login');?>", function(data) {
+					if(data == '1'){
+						window.location.href = "<?php echo base_url(); ?>tourpackages/add/<?php echo $tourpackages_id.'/'.(preg_replace("/\W|_/","-",$tourpackages_detail->name));?>/"+date+"/"+local_tourists+"/"+foreign_tourists;
+					}else{
+						$('#msg_btn_login').fadeOut().fadeIn().html('<?php echo MultiLang('please_login'); ?>');
+					}
+				});
 				
 			}
 

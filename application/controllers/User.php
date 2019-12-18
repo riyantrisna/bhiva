@@ -271,5 +271,13 @@ class User extends CI_Controller {
 
 		echo json_encode($data);
 	}
+
+	public function get_session_login(){
+		if($this->session->userdata('user_id')){
+			echo 1;
+		}else{
+			echo 0;
+		}
+	}
 	
 }

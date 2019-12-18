@@ -384,6 +384,37 @@ class Data extends CI_Model {
         return $result->row();
     }
 
+    public function getTourpackagesDetailByDate($id, $date){
+        $query = "
+            SELECT
+                a.`tourpackages_id` AS id,
+                a.`tourpackages_total_day` AS total_day,
+                a.`tourpackages_total_night` AS total_night,
+                IFNULL(d.`tourpackagesprice_price_local`, a.`tourpackages_base_price_local`) AS `price_local`,
+                IFNULL(d.`tourpackagesprice_price_foreign`, a.`tourpackages_base_price_foreign`) AS `price_foreign`,
+                a.`tourpackages_min_order` AS min_order,
+                a.`tourpackages_max_order` AS max_order,
+                b.`tourpackagestext_name` AS 'name',
+                b.`tourpackagestext_text` AS 'text',
+                IFNULL(
+                CASE
+                    WHEN a.tourpackages_is_rating_manual = 1 THEN
+                        a.tourpackages_rating_manual
+                    ELSE
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                END, 0) AS rating
+            FROM 
+                `mst_tourpackages` a
+                LEFT JOIN `mst_tourpackages_text` b ON b.`tourpackagestext_tourpackages_id` = a.`tourpackages_id` AND b.`tourpackagestext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_tourpackages_price` d ON d.tourpackagesprice_tourpackages_id = a.`tourpackages_id` AND '".$date."' BETWEEN d.`tourpackagesprice_start` AND d.`tourpackagesprice_end`
+            WHERE 
+                a.`tourpackages_status` = 1
+                AND a.`tourpackages_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
     public function getTourpackagesDetailImage($id){
         $path_tourpackages_upload = $this->config->item('path_tourpackages_upload');
         $query = "

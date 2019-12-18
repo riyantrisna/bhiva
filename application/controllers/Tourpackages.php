@@ -47,7 +47,7 @@ class Tourpackages extends CI_Controller {
 
 		$id = $this->uri->segment('3');
 		$data['tourpackages_id'] = $id;
-		$data['tourpackages_detail'] = $this->data->getTourpackagesDetail($id);
+		$data['tourpackages_detail'] = $this->data->getTourpackagesDetailByDate($id, date('Y-m-d', strtotime(date('Y-m-d').' + 1 day')));
 		$data['tourpackages_detail_image'] = $this->data->getTourpackagesDetailImage($id);
 		$data['tourpackages_testimony'] = $this->data->getTourpackagesTestimony($id, 0, 2);
 		$data['tourpackages_testimony_total'] = $this->data->getTourpackagesTestimonyTotal($id);
@@ -56,6 +56,35 @@ class Tourpackages extends CI_Controller {
 		$this->load->view('tourpackages_view', $data);
 
 	}	
+
+	public function add()
+	{
+		$data['lang'] = $this->data->getLang();
+		$data['lang_set'] = $this->data->getLangDetail();
+		$data['path_language'] = $this->config->item('path_language');
+		$data['service'] = $this->data->getService();
+		$data['contact'] = $this->data->getContact();
+		$data['destination_location'] = $this->data->getDestinationLocation();
+
+		$data['tourpackages'] = $this->data->getTourpackages();
+
+		$id = $this->uri->segment('3');
+		$date_tour = $this->uri->segment('5');
+		$total_local = $this->uri->segment('6');
+		$total_foreign = $this->uri->segment('7');
+		$data['tourpackages_id'] = $id;
+		$data['tourpackages_detail'] = $this->data->getTourpackagesDetailByDate($id, $date_tour);
+		$data['tourpackages_detail_image'] = $this->data->getTourpackagesDetailImage($id);
+		if(!empty($date_tour)){
+			$data['tourpackages_detail']->date_tour = $date_tour;
+			$data['tourpackages_detail']->date_tour_formated = $this->data->getDateIndo($date_tour);
+		}
+		$data['tourpackages_detail']->total_local = $total_local;
+		$data['tourpackages_detail']->total_foreign = $total_foreign;
+
+		$this->load->view('tourpackages_add', $data);
+
+	}
 
 	public function getTourpackagesDestination($id, $day)
 	{
