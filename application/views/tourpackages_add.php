@@ -6,8 +6,94 @@
 		<div class="container mt-5">
 			<div class="row">
 				<div class="col-md-7 col-sm-12">
-					
-					
+					<div class="card mb-5">
+						<div class="card-body">
+							<div class="form-group">
+								<h5 style="color: #212529; font-weight: bold;"><?php echo MultiLang('contact_information'); ?></h5>
+							</div>
+							<div class="form-group">
+							   <label for="desc"><?php echo MultiLang('contact_name'); ?></label>
+							   <input type="text" id="contact_name" name="contact_name" class="form-control" value="<?php echo $user->real_name; ?>">
+							   <span style="color: #8f8f8f; font-weight: normal; font-style: italic; font-size: 14px;">
+									<?php echo MultiLang('contact_name_info'); ?>
+								</span>
+							</div>
+							<div class="form-group">
+							   <label for="desc"><?php echo MultiLang('contact_email'); ?></label>
+							   <input type="email" id="contact_email" name="contact_email" class="form-control" value="<?php echo $user->email; ?>">
+							</div>
+							<div class="form-group">
+							   <label for="desc"><?php echo MultiLang('contact_phone'); ?></label>
+							   <input type="number" id="contact_phone" name="contact_phone" class="form-control" value="<?php echo $user->phone; ?>" onkeypress="return isNumber(event)">
+
+							</div>
+						</div>
+					</div>
+					<div class="card">
+						<div class="card-body">
+							<div class="form-group">
+								<h5 style="color: #212529; font-weight: bold;"><?php echo MultiLang('tourist_details'); ?></h5>
+							</div>
+							<?php
+							if(!empty($tourpackages_detail->total_local)){
+								for($i = 1; $i <= $tourpackages_detail->total_local; $i++){
+							?>
+							<div class="form-group">
+								<b><?php echo MultiLang('local_tourists'); ?> <?php echo $i;?></b>
+							</div>
+							<div class="form-group">
+								<label for="desc"><?php echo MultiLang('name'); ?></label>
+								<input type="text" id="local_tourists_name" name="local_tourists_name[]" class="form-control" value="">
+								<span style="color: #8f8f8f; font-weight: normal; font-style: italic; font-size: 14px;">
+									<?php echo MultiLang('contact_name_info'); ?>
+								</span>
+							</div>
+							<div class="form-group">
+								<label for="desc"><?php echo MultiLang('id_card_number'); ?></label>
+								<input type="text" id="local_tourists_identity" name="local_tourists_identity[]" class="form-control" value="">
+								<span style="color: #8f8f8f; font-weight: normal; font-style: italic; font-size: 14px;">
+									<?php echo MultiLang('identity_info'); ?>
+								</span>
+							</div>
+							<hr>
+							<?php
+								}
+							}
+							?>
+
+							<?php
+							if(!empty($tourpackages_detail->total_foreign)){
+								for($i = 1; $i <= $tourpackages_detail->total_foreign; $i++){
+							?>
+							<div class="form-group">
+								<b><?php echo MultiLang('foreign_tourists'); ?> <?php echo $i;?></b>
+							</div>
+							<div class="form-group">
+								<label for="desc"><?php echo MultiLang('name'); ?></label>
+								<input type="text" id="foreign_tourists_name" name="foreign_tourists_name[]" class="form-control" value="">
+								<span style="color: #8f8f8f; font-weight: normal; font-style: italic; font-size: 14px;">
+									<?php echo MultiLang('contact_name_info'); ?>
+								</span>
+							</div>
+							<div class="form-group">
+								<label for="desc"><?php echo MultiLang('id_card_number'); ?></label>
+								<input type="text" id="foreign_tourists_identity" name="foreign_tourists_identity[]" class="form-control" value="">
+								<span style="color: #8f8f8f; font-weight: normal; font-style: italic; font-size: 14px;">
+									<?php echo MultiLang('identity_info'); ?>
+								</span>
+							</div>
+							<hr>
+							<?php
+								}
+							}
+							?>
+
+							<div class="form-group">
+								<div id="msg_btn_login" style="color: red; margin: 5px;"></div>
+								<button type="button" class="btn btn-warning" style="width: 100%; font-weight: bold; padding: 10px;" onclick="book();"><?php echo MultiLang('continue_to_payment'); ?></button>
+							</div>
+						</div>
+					</div>
 				</div>
 				<div class="col-md-5 col-sm-12">
 					<div class="card">
@@ -155,13 +241,8 @@
 			}
 		</style>
 		<script>
-			$(document).ready(function() {
-				var tomorrow = new Date('<?php echo date('Y-m-d', strtotime(date('Y-m-d').' + 1 day'));?>');
-				var date_tour = new Date('<?php echo $tourpackages_detail->date_tour;?>');
-				if(date_tour.getTime() < tomorrow.getTime()){
-					window.location.href = "<?php echo base_url(); ?>tourpackages/view/<?php echo $tourpackages_id.'/'.(preg_replace("/\W|_/","-",$tourpackages_detail->name));?>";
-				}
-			});
+			// $(document).ready(function() {
+			// });
 
 			function book(){
 

@@ -73,6 +73,7 @@ class Tourpackages extends CI_Controller {
 		$total_local = $this->uri->segment('6');
 		$total_foreign = $this->uri->segment('7');
 		$data['tourpackages_id'] = $id;
+
 		$data['tourpackages_detail'] = $this->data->getTourpackagesDetailByDate($id, $date_tour);
 		$data['tourpackages_detail_image'] = $this->data->getTourpackagesDetailImage($id);
 		if(!empty($date_tour)){
@@ -81,6 +82,13 @@ class Tourpackages extends CI_Controller {
 		}
 		$data['tourpackages_detail']->total_local = $total_local;
 		$data['tourpackages_detail']->total_foreign = $total_foreign;
+
+		//profile
+		$data['user'] = $this->data->getUserByUserId($this->session->userdata('user_id'));
+
+		if(strtotime($date_tour) < strtotime(date('Y-m-d').' + 1 days ')){
+			header('Location: '. base_url().'tourpackages/view/'.$id.'/'.(preg_replace("/\W|_/","-",$data['tourpackages_detail']->name)));
+		}
 
 		$this->load->view('tourpackages_add', $data);
 
