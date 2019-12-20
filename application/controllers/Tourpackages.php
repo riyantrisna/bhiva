@@ -86,7 +86,7 @@ class Tourpackages extends CI_Controller {
 		//profile
 		$data['user'] = $this->data->getUserByUserId($this->session->userdata('user_id'));
 
-		if(strtotime($date_tour) < strtotime(date('Y-m-d').' + 1 days ')){
+		if(strtotime($date_tour) < strtotime(date('Y-m-d').' + 1 days ') OR !$this->session->userdata('user_id')){
 			header('Location: '. base_url().'tourpackages/view/'.$id.'/'.(preg_replace("/\W|_/","-",$data['tourpackages_detail']->name)));
 		}
 
