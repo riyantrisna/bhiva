@@ -63,7 +63,7 @@ class Data extends CI_Model {
                     WHEN a.tourpackages_is_rating_manual = 1 THEN
                         a.tourpackages_rating_manual
                     ELSE
-                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id` AND mtt.`tourpackagestesti_is_publish` = 1)
                 END, 0) AS rating
             FROM 
                 `mst_tourpackages` a
@@ -78,7 +78,7 @@ class Data extends CI_Model {
                 WHEN a.tourpackages_is_rating_manual = 1 THEN
                     a.tourpackages_rating_manual
                 ELSE
-                    (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                    (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id` AND mtt.`tourpackagestesti_is_publish` = 1)
                 END
             ) DESC
             LIMIT 4
@@ -120,7 +120,7 @@ class Data extends CI_Model {
                     WHEN a.tourpackages_is_rating_manual = 1 THEN
                         a.tourpackages_rating_manual
                     ELSE
-                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id` AND mtt.`tourpackagestesti_is_publish` = 1)
                 END, 0) AS rating
             FROM 
                 `mst_tourpackages` a
@@ -150,7 +150,7 @@ class Data extends CI_Model {
                     WHEN a.tourpackages_is_rating_manual = 1 THEN
                         a.tourpackages_rating_manual
                     ELSE
-                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id` AND mtt.`tourpackagestesti_is_publish` = 1)
                     END
                 ) DESC
             ";
@@ -200,7 +200,7 @@ class Data extends CI_Model {
                         WHEN a.tourpackages_is_rating_manual = 1 THEN
                             a.tourpackages_rating_manual
                         ELSE
-                            (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                            (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id` AND mtt.`tourpackagestesti_is_publish` = 1)
                         END
                     ) BETWEEN ".($value-(0.9))." AND ".$value
                     ;
@@ -211,7 +211,7 @@ class Data extends CI_Model {
                         WHEN a.tourpackages_is_rating_manual = 1 THEN
                             a.tourpackages_rating_manual
                         ELSE
-                            (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                            (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id` AND mtt.`tourpackagestesti_is_publish` = 1)
                         END
                     ) BETWEEN ".($value-(0.9))." AND ".$value
                     ;
@@ -250,7 +250,7 @@ class Data extends CI_Model {
                     WHEN a.tourpackages_is_rating_manual = 1 THEN
                         a.tourpackages_rating_manual
                     ELSE
-                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id` AND mtt.`tourpackagestesti_is_publish` = 1)
                     END
                 ) DESC
             ";
@@ -300,7 +300,7 @@ class Data extends CI_Model {
                         WHEN a.tourpackages_is_rating_manual = 1 THEN
                             a.tourpackages_rating_manual
                         ELSE
-                            (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                            (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id` AND mtt.`tourpackagestesti_is_publish` = 1)
                         END
                     ) BETWEEN ".($value-(0.9))." AND ".$value
                     ;
@@ -311,7 +311,7 @@ class Data extends CI_Model {
                         WHEN a.tourpackages_is_rating_manual = 1 THEN
                             a.tourpackages_rating_manual
                         ELSE
-                            (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                            (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id` AND mtt.`tourpackagestesti_is_publish` = 1)
                         END
                     ) BETWEEN ".($value-(0.9))." AND ".$value
                     ;
@@ -335,7 +335,7 @@ class Data extends CI_Model {
                     WHEN a.tourpackages_is_rating_manual = 1 THEN
                         a.tourpackages_rating_manual
                     ELSE
-                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id` AND mtt.`tourpackagestesti_is_publish` = 1)
                 END, 0) AS rating
             FROM 
                 `mst_tourpackages` a
@@ -370,7 +370,7 @@ class Data extends CI_Model {
                     WHEN a.tourpackages_is_rating_manual = 1 THEN
                         a.tourpackages_rating_manual
                     ELSE
-                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id` AND mtt.`tourpackagestesti_is_publish` = 1)
                 END, 0) AS rating
             FROM 
                 `mst_tourpackages` a
@@ -401,7 +401,7 @@ class Data extends CI_Model {
                     WHEN a.tourpackages_is_rating_manual = 1 THEN
                         a.tourpackages_rating_manual
                     ELSE
-                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`)
+                        (SELECT SUM(tourpackagestesti_rating) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id`) / (SELECT COUNT(*) FROM mst_tourpackages_testimony mtt WHERE mtt.tourpackagestesti_tourpackages_id = a.`tourpackages_id` AND mtt.`tourpackagestesti_is_publish` = 1)
                 END, 0) AS rating
             FROM 
                 `mst_tourpackages` a
@@ -1419,5 +1419,376 @@ class Data extends CI_Model {
         return $result;
 
     }   
+
+    // public function generateCode($text){
+    //     $query = "
+    //         SELECT
+    //             a.`transaction_date` AS `date`
+    //         FROM
+    //             `trx_transaction` a
+    //         WHERE 
+    //             DATE_FORMAT(a.`transaction_date`,'%Y-%m-%d') = '".date('Y-m-d')."'
+    //     ";
+        
+    //     $result = $this->db->query($query);
+    //     $total = $result->num_rows();
+
+    //     if($total > 0){
+    //         $numbers = sprintf("%'.06d\n", ($total+1));
+    //     }else{
+    //         $numbers = sprintf("%'.06d\n", 1);
+    //     }
     
+    //     return 'TRX-'.$text.date('Ymd').$numbers;
+
+    // }
+
+    public function createTransactionTourpackages($data, $detail){
+        $this->default->trans_begin();
+
+        $query = "
+            SELECT
+                a.`transaction_date` AS `date`
+            FROM
+                `trx_transaction` a
+            WHERE 
+                DATE_FORMAT(a.`transaction_date`,'%Y-%m-%d') = '".date('Y-m-d')."'
+        ";
+        
+        $result = $this->db->query($query);
+        $total = $result->num_rows();
+
+        if($total > 0){
+            $numbers = sprintf("%'.06d", ($total+1));
+        }else{
+            $numbers = sprintf("%'.06d", 1);
+        }
+    
+        $number = 'TRX-PW'.date('Ymd').$numbers;
+
+        if(isset($data['transaction_code'])){
+            $data['transaction_code'] = $number;
+        }
+
+        $this->default->insert('trx_transaction',$data);
+        $transaction_id = $this->default->insert_id();
+
+        $data_tourpackages = array(
+            'transactiontourpackages_transaction_id' => $transaction_id,
+            'transactiontourpackages_contact_name' => $detail['detail_tourpackages']['contact_name'],
+            'transactiontourpackages_contact_email' => $detail['detail_tourpackages']['contact_email'],
+            'transactiontourpackages_contact_phone' => $detail['detail_tourpackages']['contact_phone'],
+            'transactiontourpackages_tourpackages_id' => $detail['detail_tourpackages']['tourpackages_id'],
+            'transactiontourpackages_total_day' => $detail['detail_tourpackages']['total_day'],
+            'transactiontourpackages_total_night' => $detail['detail_tourpackages']['total_night'],
+            'transactiontourpackages_date_tour' => $detail['detail_tourpackages']['date_tour'],
+            'transactiontourpackages_qty_local_tourists' => $detail['detail_tourpackages']['total_local'],
+            'transactiontourpackages_qty_foreign_tourists' => $detail['detail_tourpackages']['total_foreign'],
+            'transactiontourpackages_price_local_tourists' => $detail['detail_tourpackages']['price_local_tourists'],
+            'transactiontourpackages_price_foreign_tourists' => $detail['detail_tourpackages']['price_foreign_tourists'],
+            'transactiontourpackages_total_local_tourists' => $detail['detail_tourpackages']['total_local_tourists'],
+            'transactiontourpackages_total_foreign_tourists' => $detail['detail_tourpackages']['total_foreign_tourists']
+        );
+        $this->default->insert('trx_transaction_tourpackages', $data_tourpackages);
+
+        if(!empty($detail['detail_tourpackages_local_tourist'])){
+            foreach ($detail['detail_tourpackages_local_tourist'] as $key => $value) {
+                $data = array(
+                    'transactiontourtourist_transaction_id' => $transaction_id,
+                    'transactiontourtourist_name' => $value['name'],
+                    'transactiontourtourist_id_number' => $value['id_number'],
+                    'transactiontourtourist_type' => $value['type']
+                );
+                $this->default->insert('trx_transaction_tourist',$data);
+            }
+        }
+
+        if(!empty($detail['detail_tourpackages_foreign_tourist'])){
+            foreach ($detail['detail_tourpackages_foreign_tourist'] as $key => $value) {
+                $data = array(
+                    'transactiontourtourist_transaction_id' => $transaction_id,
+                    'transactiontourtourist_name' => $value['name'],
+                    'transactiontourtourist_id_number' => $value['id_number'],
+                    'transactiontourtourist_type' => $value['type']
+                );
+                $this->default->insert('trx_transaction_tourist',$data);
+            }
+        }
+
+        $data_tourpackages_testimony = array(
+            'tourpackagestesti_tourpackages_id' =>  $detail['detail_tourpackages_testimony']['tourpackages_id'],
+            'tourpackagestesti_transaction_id' =>  $transaction_id,
+            'tourpackagestesti_user_id' => $detail['detail_tourpackages_testimony']['user_id'],
+            'tourpackagestesti_user_real_name' => $detail['detail_tourpackages_testimony']['user_real_name'],
+            'tourpackagestesti_date' => $detail['detail_tourpackages_testimony']['date'],
+            'tourpackagestesti_testimony' => $detail['detail_tourpackages_testimony']['testimony'],
+            'tourpackagestesti_rating' => $detail['detail_tourpackages_testimony']['rating'],
+            'tourpackagestesti_token' => $detail['detail_tourpackages_testimony']['token'],
+            'tourpackagestesti_is_process' => $detail['detail_tourpackages_testimony']['is_process'],
+            'tourpackagestesti_is_publish' => $detail['detail_tourpackages_testimony']['is_publish'],
+            'insert_user_id' => $detail['detail_tourpackages_testimony']['insert_user_id'],
+            'insert_datetime' => $detail['detail_tourpackages_testimony']['insert_datetime']
+        );
+        $this->default->insert('mst_tourpackages_testimony', $data_tourpackages_testimony);
+
+        $transaction['transaction_id'] = $transaction_id;
+        $transaction['transaction_code'] = $number;
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return 0;
+        }else{
+            $this->default->trans_commit();
+            return $transaction;
+        }
+    }
+
+    public function updateTransaction($data, $id){
+        $this->default->where('transaction_id', $id);
+        $query = $this->default->update('trx_transaction',$data);
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+    
+    public function updateTransactionByCode($data, $code){
+        $this->default->where('transaction_code', $code);
+        $query = $this->default->update('trx_transaction',$data);
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function getTransactionTourpackages($code){
+        $query = "
+            SELECT
+                a.`transaction_id` AS id,
+                a.`transaction_midtrans_snap_token` AS midtrans_snap_token,
+                b.`transactiontourpackages_tourpackages_id` AS tourpackages_id,
+                c.`tourpackagestext_name` AS tourpackages_name,
+                b.`transactiontourpackages_total_day` AS total_day,
+                b.`transactiontourpackages_total_night` AS total_night,
+                b.`transactiontourpackages_date_tour` AS date_tour,
+                b.`transactiontourpackages_price_foreign_tourists` AS price_foreign_tourists,
+                b.`transactiontourpackages_price_local_tourists` AS price_local_tourists,
+                b.`transactiontourpackages_qty_foreign_tourists` AS qty_foreign_tourists,
+                b.`transactiontourpackages_qty_local_tourists` AS qty_local_tourists,
+                b.`transactiontourpackages_total_foreign_tourists` AS total_foreign_tourists,
+                b.`transactiontourpackages_total_local_tourists` AS total_local_tourists,
+                a.`transaction_total` AS total
+            FROM
+                `trx_transaction` a 
+            LEFT JOIN `trx_transaction_tourpackages` b ON b.`transactiontourpackages_transaction_id` = a.`transaction_id`
+            LEFT JOIN `mst_tourpackages_text` c ON c.`tourpackagestext_tourpackages_id` = b.`transactiontourpackages_tourpackages_id` AND c.`tourpackagestext_lang` = '".$this->user_lang."'
+            WHERE
+                a.`transaction_type` = 1
+                AND a.`transaction_status` = 1
+                AND a.`transaction_code` = '".$code."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+    
+    // public function getTransactionByUserId($user_id){
+    //     $query = "
+    //         SELECT
+    //             a.`transaction_id` AS id,
+    //             a.`transaction_midtrans_snap_token` AS midtrans_snap_token,
+    //             b.`transactiontourpackages_tourpackages_id` AS tourpackages_id,
+    //             c.`tourpackagestext_name` AS tourpackages_name,
+    //             b.`transactiontourpackages_total_day` AS total_day,
+    //             b.`transactiontourpackages_total_night` AS total_night,
+    //             b.`transactiontourpackages_date_tour` AS date_tour,
+    //             b.`transactiontourpackages_price_foreign_tourists` AS price_foreign_tourists,
+    //             b.`transactiontourpackages_price_local_tourists` AS price_local_tourists,
+    //             b.`transactiontourpackages_qty_foreign_tourists` AS qty_foreign_tourists,
+    //             b.`transactiontourpackages_qty_local_tourists` AS qty_local_tourists,
+    //             b.`transactiontourpackages_total_foreign_tourists` AS total_foreign_tourists,
+    //             b.`transactiontourpackages_total_local_tourists` AS total_local_tourists,
+    //             a.`transaction_total` AS total
+    //         FROM
+    //             `trx_transaction` a 
+    //         LEFT JOIN `trx_transaction_tourpackages` b ON b.`transactiontourpackages_transaction_id` = a.`transaction_id`
+    //         LEFT JOIN `mst_tourpackages_text` c ON c.`tourpackagestext_tourpackages_id` = b.`transactiontourpackages_tourpackages_id` AND c.`tourpackagestext_lang` = '".$this->user_lang."'
+    //         WHERE
+    //             a.`transaction_type` = 1
+    //             AND a.`transaction_status` = 1
+    //             AND a.`transaction_code` = '".$code."'
+    //     ";
+    //     $result = $this->default->query($query);
+    //     return $result->row();
+    // }
+
+    public function getAllTransactionByUserId($filter, $user_id, $page, $limit){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($type)){
+            $str.= " AND a.`transaction_type` = '".$type."'";
+        }
+
+        $query = "
+            SELECT
+                a.`transaction_id` AS id,
+                a.`transaction_code` AS code,
+                a.`transaction_date` AS date,
+                a.`transaction_type` AS type,
+                a.`transaction_status` AS status,
+                a.`transaction_total` AS total,
+                CASE
+                    WHEN a.`transaction_type` = 1 
+                    THEN CONCAT(pwt.`tourpackagestext_name`, ' <b>(', b.`transactiontourpackages_total_day`,' ".MultiLang('day')." ', b.`transactiontourpackages_total_night`,' ".MultiLang('night')."',')</b>')
+                END AS name
+            FROM
+                `trx_transaction` a 
+                LEFT JOIN trx_transaction_tourpackages b ON b.`transactiontourpackages_transaction_id` = a.`transaction_id`
+                LEFT JOIN `mst_tourpackages_text` pwt ON pwt.`tourpackagestext_tourpackages_id` = b.transactiontourpackages_tourpackages_id AND pwt.`tourpackagestext_lang` = '".$this->user_lang."'
+            WHERE 
+                1 = 1
+                AND a.`transaction_user_id` = '".$user_id."' 
+                ".$str."
+            ORDER BY
+                a.`transaction_date` DESC
+            LIMIT ".$page." , ".$limit."
+        ";
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllTransactionByUserId($filter, $user_id){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($type)){
+            $str.= " AND a.`transaction_type` = '".$type."'";
+        }
+
+        $query = "
+                SELECT
+                    a.`transaction_id` AS id
+                FROM
+                    `trx_transaction` a 
+                WHERE 1 = 1
+                AND a.`transaction_user_id` = '".$user_id."' 
+                ".$str."
+            ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->num_rows();
+    }
+
+    public function getDetailTransactionTypeById($id){
+
+        $query = "
+            SELECT
+                a.`transaction_type` AS type
+            FROM
+                `trx_transaction` a
+            WHERE
+                1 = 1
+                AND a.`transaction_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        $data = $result->row();
+        if(!empty($data)){
+            return $data->type;
+        }else{
+            return '';
+        }
+    }
+
+    public function getDetailTransactionTourpackagesByUserId($id, $user_id){
+
+        $query = "
+            SELECT
+                a.`transaction_id` AS id,
+                a.`transaction_code` AS code,
+                a.`transaction_date` AS date,
+                a.`transaction_type` AS type,
+                a.`transaction_user_id` AS user_id,
+                a.`transaction_user_real_name` AS user_real_name,
+                a.`transaction_total` AS total,
+                a.`transaction_status` AS status,
+                a.`transaction_midtrans_snap_token` AS midtrans_snap_token,
+                a.`transaction_midtrans_transaction_id` AS midtrans_transaction_id,
+                a.`transaction_midtrans_response` AS midtrans_response,
+                a.`transaction_payment_type` AS payment_type,
+
+                b.`transactiontourpackages_contact_name` AS contact_name,
+                b.`transactiontourpackages_contact_email` AS contact_email,
+                b.`transactiontourpackages_contact_phone` AS contact_phone,
+                b.`transactiontourpackages_tourpackages_id` AS tourpackages_id,
+                CONCAT(c.`tourpackagestext_name`, ' <b>(', b.`transactiontourpackages_total_day`,' ".MultiLang('day')." ', b.`transactiontourpackages_total_night`,' ".MultiLang('night')."',')</b>') AS tourpackages_name,
+                b.`transactiontourpackages_date_tour` AS date_tour,
+                b.`transactiontourpackages_price_foreign_tourists` AS price_foreign_tourists,
+                b.`transactiontourpackages_price_local_tourists` AS price_local_tourists,
+                b.`transactiontourpackages_qty_foreign_tourists` AS qty_foreign_tourists,
+                b.`transactiontourpackages_qty_local_tourists` AS qty_local_tourists,
+                b.`transactiontourpackages_total_foreign_tourists` AS total_foreign_tourists,
+                b.`transactiontourpackages_total_local_tourists` AS total_local_tourists
+                
+            FROM
+                `trx_transaction` a 
+            LEFT JOIN `trx_transaction_tourpackages` b ON b.`transactiontourpackages_transaction_id` = a.`transaction_id`
+            LEFT JOIN `mst_tourpackages_text` c ON c.`tourpackagestext_tourpackages_id` = b.`transactiontourpackages_tourpackages_id` AND c.`tourpackagestext_lang` = '".$this->user_lang."'
+            WHERE
+                1 = 1
+                AND a.`transaction_id` = '".$id."'
+                AND a.`transaction_user_id` = '".$user_id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTransactionTouristById($id){
+        $query = "
+            SELECT
+                a.`transactiontourtourist_transaction_id` AS `transaction_id`,
+                a.`transactiontourtourist_name` AS `name`,
+                a.`transactiontourtourist_id_number` AS `id_number`,
+                a.`transactiontourtourist_type` AS `type`
+            FROM
+                `trx_transaction_tourist` a
+            WHERE
+                a.`transactiontourtourist_transaction_id` = '".$id."'
+        ";
+        
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getDetailDataTransactionByUserId($id, $user_id){
+
+        $query = "
+            SELECT
+                a.`transaction_id` AS id,
+                a.`transaction_code` AS code,
+                a.`transaction_date` AS date,
+                a.`transaction_type` AS type,
+                a.`transaction_user_id` AS user_id,
+                a.`transaction_user_real_name` AS user_real_name,
+                a.`transaction_total` AS total,
+                a.`transaction_status` AS status,
+                a.`transaction_midtrans_snap_token` AS midtrans_snap_token,
+                a.`transaction_midtrans_transaction_id` AS midtrans_transaction_id,
+                a.`transaction_midtrans_response` AS midtrans_response,
+                a.`transaction_payment_type` AS payment_type              
+            FROM
+                `trx_transaction` a 
+            WHERE
+                1 = 1
+                AND a.`transaction_id` = '".$id."'
+                AND a.`transaction_user_id` = '".$user_id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
 }

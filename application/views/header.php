@@ -23,6 +23,9 @@
 	<link rel="stylesheet" href="<?php echo base_url();?>assets/overlayScrollbars/css/OverlayScrollbars.min.css">
 	<!-- Toastr -->
 	<link rel="stylesheet" href="<?php echo base_url();?>assets/toastr/toastr.min.css">
+	<!-- DataTables -->
+	<link rel="stylesheet" href="<?php echo base_url();?>assets/datatables-bs4/css/dataTables.bootstrap4.css">
+	<link rel="stylesheet" href="<?php echo base_url();?>assets/datatables-responsive/css/responsive.bootstrap4.min.css">
 </head>
 <body>
 <?php

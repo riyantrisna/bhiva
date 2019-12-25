@@ -19,7 +19,7 @@
 							<div class="form-group">
 								<label for="desc"><?php echo MultiLang('contact_name'); ?></label>
 								<input type="text" id="contact_name" name="contact_name" class="form-control" value="<?php echo $user->real_name; ?>">
-								<div id="msg_contact_name" style="color: red;"></div>
+								<div id="msg_contact_name" style="color: red;" class="msg_input"></div>
 								<span style="color: #8f8f8f; font-weight: normal; font-style: italic; font-size: 14px;">
 									<?php echo MultiLang('contact_name_info'); ?>
 								</span>
@@ -27,7 +27,7 @@
 							<div class="form-group">
 								<label for="desc"><?php echo MultiLang('contact_email'); ?></label>
 								<input type="email" id="contact_email" name="contact_email" class="form-control" value="<?php echo $user->email; ?>">
-								<div id="msg_contact_email" style="color: red;"></div>
+								<div id="msg_contact_email" style="color: red;" class="msg_input"></div>
 								<span style="color: #8f8f8f; font-weight: normal; font-style: italic; font-size: 14px;">
 									<?php echo MultiLang('email_info'); ?>
 								</span>
@@ -35,7 +35,7 @@
 							<div class="form-group">
 								<label for="desc"><?php echo MultiLang('contact_phone'); ?></label>
 								<input type="number" id="contact_phone" name="contact_phone" class="form-control" value="<?php echo $user->phone; ?>" onkeypress="return isNumber(event)">
-								<div id="msg_contact_phone" style="color: red;"></div>
+								<div id="msg_contact_phone" style="color: red;" class="msg_input"></div>
 								<span style="color: #8f8f8f; font-weight: normal; font-style: italic; font-size: 14px;">
 									<?php echo MultiLang('phone_info'); ?>
 								</span>
@@ -57,7 +57,7 @@
 							<div class="form-group">
 								<label for="desc"><?php echo MultiLang('name'); ?></label>
 								<input type="text" id="local_tourists_name_<?php echo $i;?>" name="local_tourists_name[]" class="form-control" value="">
-								<div id="msg_local_tourists_name_<?php echo $i;?>" style="color: red;"></div>
+								<div id="msg_local_tourists_name_<?php echo $i;?>" style="color: red;" class="msg_input"></div>
 								<span style="color: #8f8f8f; font-weight: normal; font-style: italic; font-size: 14px;">
 									<?php echo MultiLang('contact_name_info'); ?>
 								</span>
@@ -65,7 +65,7 @@
 							<div class="form-group">
 								<label for="desc"><?php echo MultiLang('id_card_number'); ?></label>
 								<input type="text" id="local_tourists_identity_<?php echo $i;?>" name="local_tourists_identity[]" class="form-control" value="">
-								<div id="msg_local_tourists_identity_<?php echo $i;?>" style="color: red;"></div>
+								<div id="msg_local_tourists_identity_<?php echo $i;?>" style="color: red;" class="msg_input"></div>
 								<span style="color: #8f8f8f; font-weight: normal; font-style: italic; font-size: 14px;">
 									<?php echo MultiLang('identity_info'); ?>
 								</span>
@@ -86,7 +86,7 @@
 							<div class="form-group">
 								<label for="desc"><?php echo MultiLang('name'); ?></label>
 								<input type="text" id="foreign_tourists_name_<?php echo $i;?>" name="foreign_tourists_name[]" class="form-control" value="">
-								<div id="msg_foreign_tourists_name_<?php echo $i;?>" style="color: red;"></div>
+								<div id="msg_foreign_tourists_name_<?php echo $i;?>" style="color: red;" class="msg_input"></div>
 								<span style="color: #8f8f8f; font-weight: normal; font-style: italic; font-size: 14px;">
 									<?php echo MultiLang('contact_name_info'); ?>
 								</span>
@@ -94,7 +94,7 @@
 							<div class="form-group">
 								<label for="desc"><?php echo MultiLang('id_card_number'); ?></label>
 								<input type="text" id="foreign_tourists_identity_<?php echo $i;?>" name="foreign_tourists_identity[]" class="form-control" value="">
-								<div id="msg_foreign_tourists_identity_<?php echo $i;?>" style="color: red;"></div>
+								<div id="msg_foreign_tourists_identity_<?php echo $i;?>" style="color: red;" class="msg_input"></div>
 								<span style="color: #8f8f8f; font-weight: normal; font-style: italic; font-size: 14px;">
 									<?php echo MultiLang('identity_info'); ?>
 								</span>
@@ -282,6 +282,8 @@
 
 			function book(){
 
+				$('.msg_input').hide();
+
 				validation = true;
 
 				var i;
@@ -290,7 +292,7 @@
 						$('#msg_foreign_tourists_identity_'+i).fadeOut().fadeIn().html('<?php echo MultiLang('id_card_number'); ?> <?php echo MultiLang('required');?>');
 						validation = validation && false;
 						$('html, body').animate({
-							scrollTop: $("#foreign_tourists_identity_"+i).offset().top - 100
+							scrollTop: $("#foreign_tourists_identity_"+i).offset().top - 110
 						}, 1000);
 					}
 				
@@ -298,7 +300,7 @@
 						$('#msg_foreign_tourists_name_'+i).fadeOut().fadeIn().html('<?php echo MultiLang('name'); ?> <?php echo MultiLang('required');?>');
 						validation = validation && false;
 						$('html, body').animate({
-							scrollTop: $("#foreign_tourists_name_"+i).offset().top - 100
+							scrollTop: $("#foreign_tourists_name_"+i).offset().top - 110
 						}, 1000);
 					}
 				}
@@ -309,7 +311,7 @@
 						$('#msg_local_tourists_identity_'+j).fadeOut().fadeIn().html('<?php echo MultiLang('id_card_number'); ?> <?php echo MultiLang('required');?>');
 						validation = validation && false;
 						$('html, body').animate({
-							scrollTop: $("#local_tourists_identity_"+j).offset().top - 100
+							scrollTop: $("#local_tourists_identity_"+j).offset().top - 110
 						}, 1000);
 					}
 
@@ -317,7 +319,7 @@
 						$('#msg_local_tourists_name_'+j).fadeOut().fadeIn().html('<?php echo MultiLang('name'); ?> <?php echo MultiLang('required');?>');
 						validation = validation && false;
 						$('html, body').animate({
-							scrollTop: $("#local_tourists_name_"+j).offset().top - 100
+							scrollTop: $("#local_tourists_name_"+j).offset().top - 110
 						}, 1000);
 					}
 				}
@@ -326,7 +328,7 @@
 					$('#msg_contact_phone').fadeOut().fadeIn().html('<?php echo MultiLang('contact_phone'); ?> <?php echo MultiLang('required');?>');
 					validation = validation && false;
 					$('html, body').animate({
-						scrollTop: $("#contact_phone").offset().top - 100
+						scrollTop: $("#contact_phone").offset().top - 110
 					}, 1000);
 				}
 				
@@ -334,15 +336,24 @@
 					$('#msg_contact_email').fadeOut().fadeIn().html('<?php echo MultiLang('contact_email'); ?> <?php echo MultiLang('required');?>');
 					validation = validation && false;
 					$('html, body').animate({
-						scrollTop: $("#contact_email").offset().top - 100
+						scrollTop: $("#contact_email").offset().top - 110
 					}, 1000);
+				}else{
+					email_valid = validateEmail($('#contact_email').val());
+					if(!email_valid){
+						$('#msg_contact_email').fadeOut().fadeIn().html('<?php echo MultiLang('contact_email'); ?> <?php echo MultiLang('not_valid');?>');
+						validation = validation && false;
+						$('html, body').animate({
+							scrollTop: $("#contact_email").offset().top - 110
+						}, 1000);
+					}
 				}
 
 				if($('#contact_name').val()==''){
 					$('#msg_contact_name').fadeOut().fadeIn().html('<?php echo MultiLang('contact_name'); ?> <?php echo MultiLang('required');?>');
 					validation = validation && false;
 					$('html, body').animate({
-						scrollTop: $("#contact_name").offset().top - 100
+						scrollTop: $("#contact_name").offset().top - 110
 					}, 1000);
 				}
 
@@ -363,12 +374,20 @@
 				jQuery.ajax({
 					url : "<?php echo site_url('tourpackages/create_tourpackages/')?>",
 					type: "POST",
-					data: $('#form_user').serialize(),
+					data: $('#form_tourist_details').serialize(),
 					dataType: "json",
 					success: async function(data, textStatus, xhr)
 					{
 						if(xhr.status == '200'){
-							window.location.href = "<?php echo base_url(); ?>tourpackages/pay/"+data.transaction_id;
+							if(data.is_session){
+								if(data.transaction_status){
+									window.location.href = "<?php echo base_url(); ?>tourpackages/pay/"+data.transaction_code;
+								}else{
+									window.location.href = "<?php echo base_url(); ?>tourpackages/view/<?php echo $tourpackages_detail->id.'/'.(preg_replace("/\W|_/","-",$tourpackages_detail->name));?>";
+								}
+							}else{
+								window.location.href = "<?php echo base_url(); ?>tourpackages/view/<?php echo $tourpackages_detail->id.'/'.(preg_replace("/\W|_/","-",$tourpackages_detail->name));?>";
+							}
 						}else{
 							$('#modal_book').modal('toggle');
 							toastr.error(xhr.statusText);

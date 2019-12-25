@@ -175,5 +175,12 @@
 <script src="<?php echo base_url();?>assets/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 <!-- Toastr -->
 <script src="<?php echo base_url();?>assets/toastr/toastr.min.js"></script>
+<!-- Midtrans Snap -->
+<script src="<?php echo $this->config->item('snap_js');?>" data-client-key="<?php echo $this->config->item('client_key');?>"></script>
+<!-- DataTables -->
+<script src="<?php echo base_url();?>assets/datatables/jquery.dataTables.js"></script>
+<script src="<?php echo base_url();?>assets/datatables-bs4/js/dataTables.bootstrap4.js"></script>
+<script src="<?php echo base_url();?>assets/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="<?php echo base_url();?>assets/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 <!-- Main -->
 <script src="<?php echo base_url();?>assets/dist/js/main.js"></script>

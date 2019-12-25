@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+require APPPATH . '../vendor/veritrans/veritrans-php/Veritrans.php';
 class Home extends CI_Controller {
 	
 	public $CI = NULL;
@@ -184,6 +184,11 @@ class Home extends CI_Controller {
 
 			if(!empty($data_user) AND $password === $data_user->password){
 
+				$data = array(
+					'user_last_login' => date('Y-m-d H:i:s')
+				);
+				$this->data->updateUser($data, $data_user->id);
+
 				$session_data = array(
 					'user_id' => $data_user->id,
 					'user_email' => $data_user->email,
@@ -217,6 +222,74 @@ class Home extends CI_Controller {
 
 		echo json_encode($result);
 		
+	}
+
+	public function notification($notif){
+
+		//Set Your server key
+		Veritrans_Config::$serverKey = $this->config->item('server_key');
+		// Uncomment for production environment
+		if($this->config->item('is_production')){
+			Veritrans_Config::$isProduction = true;
+		}
+
+		$notif = new Veritrans_Notification();
+
+		$transaction = $notif->transaction_status;
+		$type = $notif->payment_type;
+		$order_id = $notif->order_id;
+		$fraud = $notif->fraud_status;
+
+		if ($transaction == 'capture') {
+			// For credit card transaction, we need to check whether transaction is challenge by FDS or not
+			if ($type == 'credit_card'){
+				if($fraud == 'challenge'){
+					// TODO set payment status in merchant's database to 'Challenge by FDS'
+					// TODO merchant should decide whether this transaction is authorized or not in MAP
+					$status = 4;	// echo "Transaction order_id: " . $order_id ." is challenged by FDS";
+				}else {
+					// TODO set payment status in merchant's database to 'Success'
+					$status = 2;	// echo "Transaction order_id: " . $order_id ." successfully captured using " . $type;
+				}
+			}
+		}
+		else if ($transaction == 'settlement'){
+			// TODO set payment status in merchant's database to 'Settlement'
+			$status = 2;	// echo "Transaction order_id: " . $order_id ." successfully transfered using " . $type;
+		}else if ($transaction == 'success'){
+			// TODO set payment status in merchant's database to 'Success'
+			$status = 2;	// echo "Transaction order_id: " . $order_id ." successfully transfered using " . $type;
+		} 
+		else if($transaction == 'pending'){
+			// TODO set payment status in merchant's database to 'Pending'
+			$status = 1;	// echo "Waiting customer to finish transaction order_id: " . $order_id . " using " . $type;
+		} 
+		else if ($transaction == 'deny') {
+			// TODO set payment status in merchant's database to 'Denied'
+			$status = 1;	// echo "Payment using " . $type . " for transaction order_id: " . $order_id . " is denied.";
+		}
+		else if ($transaction == 'expire') {
+			// TODO set payment status in merchant's database to 'expire'
+			$status = 3;	// echo "Payment using " . $type . " for transaction order_id: " . $order_id . " is expired.";
+		}
+		else if ($transaction == 'cancel') {
+			// TODO set payment status in merchant's database to 'Denied'
+			$status = 3;	// echo "Payment using " . $type . " for transaction order_id: " . $order_id . " is canceled.";
+		}else{
+			$status = 1;
+		}
+
+		$data_update = array(
+			'transaction_midtrans_transaction_id' => $notif->transaction_id,
+			'transaction_midtrans_response' => json_encode($notif),
+			'transaction_payment_type' => $notif->payment_type,
+			'transaction_status' => $status,
+			'update_user_id' => NULL,
+			'update_datetime' => date('Y-m-d H:i:s')
+		);
+		$update_transaction = $this->data->updateTransactionByCode($data_update, $notif->order_id);
+
+		return $update_transaction;
 	}
 	
 }

@@ -234,6 +234,10 @@
 						</div>
 						<?php
 							}
+						}else{
+						?>
+						<div class="col-12 text-center"><i>-- <?php echo MultiLang('tour_packages_not_found');?> --</i></div>
+						<?php
 						}
 						?>
 					</div>
@@ -322,14 +326,14 @@
 						if(xhr.status == '200'){
 							$('#btn-load-more-div, .btn-load-more').hide();
 							$('#packages_div').append(data.html);
+							await $('#total_data').html(data.total_data);
 						}else{
 							$('#btn-load-more-div, .btn-load-more').hide();
+							await $('#total_data').html(0);
 						}
 
 					}
 				});
-
-				await count_data();
 
 				await $('#loaders').on('shown.bs.modal', function (e) {
 					$('#loaders').modal('hide');
