@@ -561,6 +561,7 @@ $config['server_key'] = 'SB-Mid-server-fDbx8sqHzgH26ecU6yljyNe2';
 $config['payment_url'] = 'https://app.sandbox.veritrans.co.id/snap/v2/vtweb/';
 $config['snap_js'] = 'https://app.sandbox.midtrans.com/snap/snap.js';
 $config['api_midtrans'] = 'https://api.sandbox.midtrans.com/';
+$config['qrcode_gopay_url'] = 'https://api.sandbox.veritrans.co.id/v2/gopay/';
 
 //midtrans production
 // $config['is_production'] = TRUE;
@@ -570,6 +571,7 @@ $config['api_midtrans'] = 'https://api.sandbox.midtrans.com/';
 // $config['payment_url'] = 'https://app.veritrans.co.id/snap/v2/vtweb/';
 // $config['snap_js'] = 'https://app.midtrans.com/snap/snap.js';
 // $config['api_midtrans'] = 'https://api.midtrans.com/';
+// $config['qrcode_gopay_url'] = 'https://api.veritrans.co.id/v2/gopay/';
 
 
 $config['base_url_image'] = $config['base_url']; //"http://127.0.0.1/bhiva/";

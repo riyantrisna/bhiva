@@ -178,7 +178,7 @@ if(!$this->session->userdata('user_lang')){
 			</div>
 			<div class="modal-footer font-footer">
 				<button type="button" class="btn btn-primary mr-auto" id="btnLogin" onclick="login()"><?php echo MultiLang('login'); ?></button>
-				<a href="" style="color: #212529 !important;"><?php echo MultiLang('forget_password'); ?>?</a>
+				<a href="<?php echo base_url().'home/forgetpassword'; ?>" style="color: #212529 !important;"><?php echo MultiLang('forget_password'); ?>?</a>
 			</div>
 		</div>
 	</div>

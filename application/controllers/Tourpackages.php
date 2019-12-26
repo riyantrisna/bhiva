@@ -399,11 +399,11 @@ class Tourpackages extends CI_Controller {
 					'customer_details' => $customer_details,
 					'expiry' => $custom_expiry,
 					'credit_card' => $credit_card_option,
-					// 'callbacks' => ['finish' => $this->config->item('host').'api/midtransstatus?order_id='.$order_id],
-					// 'gopay' => [
-					// 	'enable_callback' => true,						
-					// 	'callback_url' => $this->config->item('host').'api/midtransstatus?order_id='.$order_id
-					// ],
+					'callbacks' => ['finish' => $this->config->item('base_url').'user/transaction'],
+					'gopay' => [
+						'enable_callback' => true,						
+						'callback_url' => $this->config->item('base_url').'user/transaction'
+					],
 					'enabled_payments' => $payment_channels
 
 				);
@@ -451,12 +451,12 @@ class Tourpackages extends CI_Controller {
 			$data['transaction_tourpackages']->date_tour_formated = $this->data->getDateIndo($data['transaction_tourpackages']->date_tour);
 		}
 
-		if(empty($data['transaction_tourpackages'])){
-			header('Location: '. base_url());
-		}
-
 		if(!$this->session->userdata('user_id') AND !empty($data['transaction_tourpackages'])){
 			header('Location: '. base_url().'tourpackages/view/'.$data['transaction_tourpackages']->tourpackages_id.'/'.(preg_replace("/\W|_/","-",$data['transaction_tourpackages']->tourpackages_name)));
+		}elseif(!$this->session->userdata('user_id') AND empty($data['transaction_tourpackages'])){
+			header('Location: '. base_url());
+		}elseif($this->session->userdata('user_id') AND empty($data['transaction_tourpackages'])){
+			header('Location: '. base_url().'user/transaction');
 		}
 
 		$this->load->view('tourpackages_pay', $data);

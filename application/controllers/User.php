@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+require APPPATH . '../vendor/autoload.php';
+use \Firebase\JWT\JWT;
 class User extends CI_Controller {
 	
 	public $CI = NULL;
@@ -445,6 +446,14 @@ class User extends CI_Controller {
 							</span>
 						</div>';
 			$html.= '</div><hr>';
+			if(!empty($detail->midtrans_transaction_id) AND $detail->status=='1' AND $detail->payment_type=='gopay'){
+			$html.= '<div class="form-group">';
+			$html.=     '<label style="font-weight: bold;" for="qrcode_gopay">'.MultiLang('qrcode_gopay').'</label>';
+			$html.=     '<div id="qrcode_gopay">
+							<img src="'.$this->config->item('qrcode_gopay_url').$detail->midtrans_transaction_id.'/qr-code" width="200" height="200">
+						</div>';
+			$html.= '</div><hr>';
+			}
 			$html.= '<div class="form-group">';
 			$html.=     '<label style="font-weight: bold;" for="code">'.MultiLang('code').'</label>';
 			$html.=     '<div id="code">'.$detail->code.'</div>';
@@ -567,12 +576,7 @@ class User extends CI_Controller {
 	public function detail_data_transaction($id){
 
 		$detail = $this->data->getDetailDataTransactionByUserId($id, $this->session->userdata('user_id'));
-
-		$midtrans = $this->get_midtrans_transaction($detail->code);
-		$respons_midtrans = json_decode($midtrans);
-
-		$status = $this->get_midtrans_transaction_status($respons_midtrans);
-
+		
 		$data['transaction_code'] = $detail->code;
 
 		if($detail->type == 1){
@@ -585,38 +589,53 @@ class User extends CI_Controller {
 			$data['redirect_page'] = '';
 		}
 
-		if($detail->status != $status){
-
-			if($status=='1'){
-				$status_text = MultiLang('waiting_for_payment');
-				$status_color_class = 'badge badge-pill badge-warning';
-			}elseif($status=='2'){
-				$status_text = MultiLang('payment_successful');
-				$status_color_class = 'badge badge-pill badge-success';
-			}elseif($status=='3'){
-				$status_text = MultiLang('expired_order');
-				$status_color_class = 'badge badge-pill badge-danger';
-			}elseif($status=='4'){
-				$status_text = MultiLang('on_hold');
-				$status_color_class = 'badge badge-pill badge-warning';
-			}
+		if(!empty($detail) AND !empty($detail->midtrans_transaction_id)){
+			$midtrans = $this->get_midtrans_transaction($detail->code);
 			
-			$is_change_text = '<span class="'.$status_color_class.'" style="font-size: 14px;">
-						'.$status_text.'
-					</span>';
+			if(!empty($midtrans)){
+				$respons_midtrans = json_decode($midtrans);
+				$status = $this->get_midtrans_transaction_status($respons_midtrans);
 
-			$data_update = array(
-				'transaction_midtrans_transaction_id' => $respons_midtrans->transaction_id,
-				'transaction_midtrans_response' => $midtrans,
-				'transaction_payment_type' => $respons_midtrans->payment_type,
-				'transaction_status' => $status,
-				'update_user_id' => $this->session->userdata('user_id'),
-				'update_datetime' => date('Y-m-d H:i:s')
-			);
-			$update_transaction_tourpackages = $this->data->updateTransaction($data_update, $id);
+				if($detail->status != $status){
 
-			$data['is_change'] = TRUE;
-			$data['is_change_text'] = $is_change_text.' '.MultiLang('for_your_order_with_transaction_id').' '.$detail->code;
+					if($status=='1'){
+						$status_text = MultiLang('waiting_for_payment');
+						$status_color_class = 'badge badge-pill badge-warning';
+					}elseif($status=='2'){
+						$status_text = MultiLang('payment_successful');
+						$status_color_class = 'badge badge-pill badge-success';
+					}elseif($status=='3'){
+						$status_text = MultiLang('expired_order');
+						$status_color_class = 'badge badge-pill badge-danger';
+					}elseif($status=='4'){
+						$status_text = MultiLang('on_hold');
+						$status_color_class = 'badge badge-pill badge-warning';
+					}
+					
+					$is_change_text = '<span class="'.$status_color_class.'" style="font-size: 14px;">
+								'.$status_text.'
+							</span>';
+
+					$data_update = array(
+						'transaction_midtrans_transaction_id' => $respons_midtrans->transaction_id,
+						'transaction_midtrans_response' => $midtrans,
+						'transaction_payment_type' => $respons_midtrans->payment_type,
+						'transaction_status' => $status,
+						'update_user_id' => $this->session->userdata('user_id'),
+						'update_datetime' => date('Y-m-d H:i:s')
+					);
+					$update_transaction_tourpackages = $this->data->updateTransaction($data_update, $id);
+
+					$data['is_change'] = TRUE;
+					$data['is_change_text'] = $is_change_text.' '.MultiLang('for_your_order_with_transaction_id').' '.$detail->code;
+				}else{
+					$data['is_change'] = FALSE;
+					$data['is_change_text'] = '';
+				}
+			}else{
+				$data['is_change'] = FALSE;
+				$data['is_change_text'] = '';
+			}
 		}else{
 			$data['is_change'] = FALSE;
 			$data['is_change_text'] = '';
@@ -705,6 +724,67 @@ class User extends CI_Controller {
 		}
 
 		return $status;
+	}
+
+	public function testimony()
+	{
+		$data['lang'] = $this->data->getLang();
+		$data['lang_set'] = $this->data->getLangDetail();
+		$data['path_language'] = $this->config->item('path_language');
+		$data['service'] = $this->data->getService();
+		$data['contact'] = $this->data->getContact();
+		$data['destination_location'] = $this->data->getDestinationLocation();
+
+		$data['tourpackages'] = $this->data->getTourpackages();
+
+		$token = $this->uri->segment('3');
+		if(!empty($token)){
+			$decode = JWT::decode($token,$this->config->item('secret_key'),array('HS256'));
+
+			$data['token'] = $token;
+			$data['user_id'] = $decode->user_id;
+			
+			//detail transaction tourpackages
+			$data['transaction_tourpackages'] = $this->data->getTransactionTourpackagesByToken($token, $decode->user_id);
+			if(!empty($data['transaction_tourpackages']->date_tour)){
+				$data['transaction_tourpackages']->date_tour = $data['transaction_tourpackages']->date_tour;
+				$data['transaction_tourpackages']->date_tour_formated = $this->data->getDateIndo($data['transaction_tourpackages']->date_tour);
+			}
+
+			if(empty($data['transaction_tourpackages']) OR (!empty($data['transaction_tourpackages']) AND $data['transaction_tourpackages']->is_process==1)){
+				header('Location: '. base_url());
+			}
+
+			$this->load->view('testimony', $data);
+		}else{
+			header('Location: '. base_url());
+		}
+
+	}
+
+	public function add_testimony(){
+		$rating = $this->input->post('rating', TRUE);
+		$testimony = $this->input->post('testimony', TRUE);
+		$token = $this->input->post('token', TRUE);
+		$user_id = $this->input->post('user_id', TRUE);
+
+		$data_update = array(
+			'tourpackagestesti_date' => date('Y-m-d H:i:s'),
+			'tourpackagestesti_testimony' => $testimony,
+			'tourpackagestesti_rating' => $rating,
+			'tourpackagestesti_is_process' => 1
+		);
+		$result = $this->data->updateTestimony($data_update, $token, $user_id);
+
+		if($result){
+			$data['status'] = TRUE;
+			$data['message'] = MultiLang('msg_testimony_success');
+		}else{
+			$data['status'] = FALSE;
+			$data['message'] = MultiLang('msg_testimony_failed');
+		}
+		
+		echo json_encode($data);
 	}
 	
 }

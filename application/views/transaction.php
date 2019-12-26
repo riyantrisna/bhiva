@@ -140,7 +140,7 @@
 								if($transaction_total > 10){
 								?>
 								<div id="btn-load-more-div" class="col-sm-12 mt-3 text-center justify-content-center">
-									<button type="button" class="btn btn-primary btn-load-more" onclick="load_more(2, 10)"><?php echo MultiLang('load_more'); ?></button>
+									<button type="button" class="btn btn-primary btn-load-more" onclick="load_more(10, 10)"><?php echo MultiLang('load_more'); ?></button>
 								</div>
 								<?php
 									}
@@ -312,7 +312,6 @@
 								await $('#modal_info').modal('show'); // show bootstrap modal
 							}else{
 								if(data.redirect_page != ''){
-									console.log("<?php echo base_url(); ?>"+data.redirect_page+data.transaction_code);
 									window.location.href = "<?php echo base_url(); ?>"+data.redirect_page+data.transaction_code;
 								}else{
 									$('#body_info').modal('toggle');

@@ -224,7 +224,7 @@ class Home extends CI_Controller {
 		
 	}
 
-	public function notification($notif){
+	public function notification(){
 
 		//Set Your server key
 		Veritrans_Config::$serverKey = $this->config->item('server_key');
@@ -281,7 +281,7 @@ class Home extends CI_Controller {
 
 		$data_update = array(
 			'transaction_midtrans_transaction_id' => $notif->transaction_id,
-			'transaction_midtrans_response' => json_encode($notif),
+			'transaction_midtrans_response' => json_encode((array) $notif),
 			'transaction_payment_type' => $notif->payment_type,
 			'transaction_status' => $status,
 			'update_user_id' => NULL,
@@ -289,7 +289,36 @@ class Home extends CI_Controller {
 		);
 		$update_transaction = $this->data->updateTransactionByCode($data_update, $notif->order_id);
 
-		return $update_transaction;
+		if($update_transaction){
+			echo 'ok';
+		}else{
+			echo 'faild';
+		}
+	}
+
+	public function forgetpassword()
+	{
+		$data['lang'] = $this->data->getLang();
+		$data['lang_set'] = $this->data->getLangDetail();
+		$data['path_language'] = $this->config->item('path_language');
+		$data['service'] = $this->data->getService();
+		$data['contact'] = $this->data->getContact();
+		$data['destination_location'] = $this->data->getDestinationLocation();
+
+		$data['slider'] = $this->data->getSlider();
+		$data['greeting'] = $this->data->getGreeting();
+		$data['travel_post'] = $this->data->getTravelPost();
+		if(!empty($data['travel_post'])){
+			foreach ($data['travel_post'] as $key => $value) {
+				$data['travel_post'][$key]->date = $this->data->getDatetimeIndo($value->date);
+			}
+		}
+		$data['ticket'] = $this->data->getTicket();
+		$data['tourpackages'] = $this->data->getTourpackages();
+		$data['destination_location_home'] = $this->data->getDestinationLocationHome();
+		
+		$this->load->view('forgetpassword', $data);
+
 	}
 	
 }
