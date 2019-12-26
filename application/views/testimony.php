@@ -37,7 +37,7 @@
 									</div>
 								</div>
 								<div class="form-group d-flex justify-content-center">
-									<textarea id="testimony" name="testimony" rows="5" class="form-control col-md-6 col-sm-12"></textarea>
+									<textarea placeholder="<?php echo MultiLang('testimony'); ?>" id="testimony" name="testimony" rows="5" class="form-control col-md-6 col-sm-12"></textarea>
 								</div>
 								<div class="form-group d-flex justify-content-center">
 									<div id="msg_testimony" style="color: red;" class="msg_input"></div>
@@ -88,10 +88,12 @@
 
 			function send_testimony()
 			{	
+				$('.msg_input').hide();
 				validation = true;
 
 				if($('#testimony').val()==''){
-					$('#msg_testimony').fadeOut().fadeIn().html('<?php echo MultiLang('testimony'); ?> <?php echo MultiLang('required');?>');
+					// $('#msg_testimony').fadeOut().fadeIn().html('<?php echo MultiLang('testimony'); ?> <?php echo MultiLang('required');?>');
+					toastr.error('<?php echo MultiLang('testimony'); ?> <?php echo MultiLang('required');?>', '', {"positionClass": "toast-top-center"});
 					validation = validation && false;
 					$('html, body').animate({
 						scrollTop: $("#testimony").offset().top - 110

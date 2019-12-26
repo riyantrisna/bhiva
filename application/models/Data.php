@@ -1315,6 +1315,16 @@ class Data extends CI_Model {
         }
     }
 
+    public function updateUserByEmail($data, $email){
+        $this->default->where('user_email', $email);
+        $query = $this->default->update('core_user',$data);
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
     public function getUserByUsernameLogin($username){
         $query = "
             SELECT 

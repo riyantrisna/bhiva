@@ -305,20 +305,44 @@ class Home extends CI_Controller {
 		$data['contact'] = $this->data->getContact();
 		$data['destination_location'] = $this->data->getDestinationLocation();
 
-		$data['slider'] = $this->data->getSlider();
-		$data['greeting'] = $this->data->getGreeting();
-		$data['travel_post'] = $this->data->getTravelPost();
-		if(!empty($data['travel_post'])){
-			foreach ($data['travel_post'] as $key => $value) {
-				$data['travel_post'][$key]->date = $this->data->getDatetimeIndo($value->date);
-			}
-		}
-		$data['ticket'] = $this->data->getTicket();
+
+		
 		$data['tourpackages'] = $this->data->getTourpackages();
 		$data['destination_location_home'] = $this->data->getDestinationLocationHome();
 		
 		$this->load->view('forgetpassword', $data);
 
+	}
+
+	public function reset_password(){
+		$email = $this->input->post('email', TRUE);
+
+		$check_email = $this->data->getExistEmail($email);
+
+		if(!empty($check_email)){
+			$new_pass = substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 6);
+
+			$data_update = array(
+				'user_password' => md5($new_pass)
+			);
+			$result = $this->data->updateUserByEmail($data_update, $email);
+
+			if($result){
+				// kirim email
+
+
+				$data['status'] = TRUE;
+				$data['message'] = MultiLang('msg_reset_password_success');
+			}else{
+				$data['status'] = FALSE;
+				$data['message'] = MultiLang('msg_reset_password_failed');
+			}
+		}else{
+			$data['status'] = FALSE;
+			$data['message'] = MultiLang('email_not_registered');
+		}
+		
+		echo json_encode($data);
 	}
 	
 }
