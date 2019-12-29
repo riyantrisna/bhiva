@@ -193,6 +193,14 @@ class Ticket extends CI_Controller {
         $html.=     '</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
+        $html.=     '<label for="min_order">'.MultiLang('min_order').' *</label>';
+        $html.=     '<input type="text" id="min_order" name="min_order" class="form-control" onkeypress="return isNumber(event)">';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="max_order">'.MultiLang('max_order').' *</label>';
+        $html.=     '<input type="text" id="max_order" name="max_order" class="form-control" onkeypress="return isNumber(event)">';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
         $html.=     '<label for="status">'.MultiLang('status').' *</label>';
         $html.=     '<div class="form-check">
                         <input class="form-check-input" type="radio" name="status" id="status1" value="1" checked>
@@ -237,6 +245,8 @@ class Ticket extends CI_Controller {
             'price_local' => $price_local,
             'price_foreign' => $price_foreign
         );
+        $min_order = $this->input->post('min_order', TRUE);
+        $max_order = $this->input->post('max_order', TRUE);
 
         $date = date('Y-m-d H:i:s');
         $user_id = $this->session->userdata('user_id');
@@ -283,6 +293,16 @@ class Ticket extends CI_Controller {
             }
         }
 
+        if(empty($min_order)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('min_order').' '.MultiLang('required').'</li>';
+        }
+
+        if(empty($max_order)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('max_order').' '.MultiLang('required').'</li>';
+        }
+
         if(!isset($status) AND $status == ''){
             $validation = $validation && false;
             $validation_text.= '<li>'.MultiLang('status').' '.MultiLang('required').'</li>';
@@ -293,6 +313,8 @@ class Ticket extends CI_Controller {
             
             $data = array(
                 'ticket_is_type_visitor' => isset($is_type_visitor) ? 1 : 0,
+                'ticket_min_order' => $min_order,
+                'ticket_max_order' => $max_order,
                 'ticket_status' => $status,
                 'insert_user_id' => $user_id,
                 'insert_datetime' => $date
@@ -367,13 +389,20 @@ class Ticket extends CI_Controller {
         $html.=     '<div id="div_base_price_local1">';
         if(!empty($visitortype)){
             foreach ($visitortype as $key => $value) {
-                foreach ($detail_pricedefault as $k => $v) {
-                    if($value->id == $v->visitortype_id){
+                if(!empty($detail_pricedefault) AND count($detail_pricedefault)>1){
+                    foreach ($detail_pricedefault as $k => $v) {
+                        if($value->id == $v->visitortype_id){
         $html.=     $value->name.' (Rp) *';
-        $html.=     '<input type="text" id="base_price_local_'.$value->id.'" name="base_price_local['.$value->id.']" class="form-control curr" value="'.$v->price_local.'">';
+        $html.=     '<input type="text" id="base_price_local_'.$value->id.'" name="base_price_local['.$value->id.']" class="form-control curr" value="'.number_format($v->price_local, 0).'">';
         $html.=     '<input type="hidden" id="base_price_local_name_'.$value->id.'" name="base_price_local_name['.$value->id.']" value="'.$value->name.'" >';
         $html.=     '<br>';
+                        }
                     }
+                }else{
+        $html.=     $value->name.' (Rp) *';
+        $html.=     '<input type="text" id="base_price_local_'.$value->id.'" name="base_price_local['.$value->id.']" class="form-control curr">';
+        $html.=     '<input type="hidden" id="base_price_local_name_'.$value->id.'" name="base_price_local_name['.$value->id.']" value="'.$value->name.'" >';
+        $html.=     '<br>';
                 }
             }
         }
@@ -388,13 +417,20 @@ class Ticket extends CI_Controller {
         $html.=     '<div id="div_base_price_foreign1">';
         if(!empty($visitortype)){
             foreach ($visitortype as $key => $value) {
-                foreach ($detail_pricedefault as $k => $v) {
-                    if($value->id == $v->visitortype_id){
+                if(!empty($detail_pricedefault) AND count($detail_pricedefault)>1){
+                    foreach ($detail_pricedefault as $k => $v) {
+                        if($value->id == $v->visitortype_id){
         $html.=     $value->name.' (Rp) *';
-        $html.=     '<input type="text" id="base_price_foreign_'.$value->id.'" name="base_price_foreign['.$value->id.']" class="form-control curr" value="'.$v->price_foreign.'">';
+        $html.=     '<input type="text" id="base_price_foreign_'.$value->id.'" name="base_price_foreign['.$value->id.']" class="form-control curr" value="'.number_format($v->price_foreign, 0).'">';
         $html.=     '<input type="hidden" id="base_price_foreign_name_'.$value->id.'" name="base_price_foreign_name['.$value->id.']" value="'.$value->name.'" >';
         $html.=     '<br>';
+                        }
                     }
+                }else{
+        $html.=     $value->name.' (Rp) *';
+        $html.=     '<input type="text" id="base_price_foreign_'.$value->id.'" name="base_price_foreign['.$value->id.']" class="form-control curr">';
+        $html.=     '<input type="hidden" id="base_price_foreign_name_'.$value->id.'" name="base_price_foreign_name['.$value->id.']" value="'.$value->name.'" >';
+        $html.=     '<br>';
                 }
             }
         }
@@ -503,6 +539,14 @@ class Ticket extends CI_Controller {
         $html.=     '</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
+        $html.=     '<label for="min_order">'.MultiLang('min_order').' *</label>';
+        $html.=     '<input type="text" id="min_order" name="min_order" class="form-control" onkeypress="return isNumber(event)" value="'.$detail->min_order.'">';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="max_order">'.MultiLang('max_order').' *</label>';
+        $html.=     '<input type="text" id="max_order" name="max_order" class="form-control" onkeypress="return isNumber(event)" value="'.$detail->max_order.'">';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
         $html.=     '<label for="status">'.MultiLang('status').' *</label>';
         $html.=     '<div class="form-check">
                         <input class="form-check-input" type="radio" name="status" id="status1" value="1" '.($detail->status == 1 ? "checked" : "").'>
@@ -549,6 +593,8 @@ class Ticket extends CI_Controller {
             'price_local' => $price_local,
             'price_foreign' => $price_foreign
         );
+        $min_order = $this->input->post('min_order', TRUE);
+        $max_order = $this->input->post('max_order', TRUE);
 
         $date = date('Y-m-d H:i:s');
         $user_id = $this->session->userdata('user_id');
@@ -595,6 +641,16 @@ class Ticket extends CI_Controller {
             }
         }
 
+        if(empty($min_order)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('min_order').' '.MultiLang('required').'</li>';
+        }
+
+        if(empty($max_order)){
+            $validation = $validation && false;
+            $validation_text.= '<li>'.MultiLang('max_order').' '.MultiLang('required').'</li>';
+        }
+
         if(!isset($status) AND $status == ''){
             $validation = $validation && false;
             $validation_text.= '<li>'.MultiLang('status').' '.MultiLang('required').'</li>';
@@ -605,6 +661,8 @@ class Ticket extends CI_Controller {
 
             $data = array(
                 'ticket_is_type_visitor' => isset($is_type_visitor) ? 1 : 0,
+                'ticket_min_order' => $min_order,
+                'ticket_max_order' => $max_order,
                 'ticket_status' => $status,
                 'update_user_id' => $user_id,
                 'update_datetime' => $date
@@ -768,6 +826,14 @@ class Ticket extends CI_Controller {
         }
         $html.=         '</table>';
         $html.=     '</div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="min_order">'.MultiLang('min_order').'</label>';
+        $html.=     '<div>'.$detail->min_order.'</div>';
+        $html.= '</div>';
+        $html.= '<div class="form-group">';
+        $html.=     '<label for="max_order">'.MultiLang('max_order').'</label>';
+        $html.=     '<div>'.$detail->max_order.'</div>';
         $html.= '</div>';
         $html.= '<div class="form-group">';
         $html.=     '<label for="status">'.MultiLang('status').'</label>';

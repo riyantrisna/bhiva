@@ -17,6 +17,7 @@ class Data extends CI_Model {
             FROM
                 `core_user` a
             WHERE 1 = 1
+            AND a.`user_is_admin` = 0
             AND a.`user_email` = '".$id."'
         ";
         $result = $this->default->query($query);
@@ -810,6 +811,45 @@ class Data extends CI_Model {
         return $result->result();
     }
 
+    public function getServiceDetailTicket(){
+        $path_service_upload = $this->config->item('path_service_upload');
+        $query = "
+            SELECT
+                a.`service_id` AS `id`,
+                a.`service_order` AS 'order',
+                a.`service_status` AS 'status',
+                a.`service_type` AS 'type',
+                b.`servicetext_name` AS 'name',
+                b.`servicetext_text` AS 'text'
+            FROM
+                `cms_service` a 
+            LEFT JOIN `cms_service_text` b ON b.`servicetext_service_id` = a.`service_id` AND b.`servicetext_lang` = '".$this->user_lang."'
+            WHERE
+                a.`service_status`= 1
+                AND a.`service_type` = '2'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getServiceDetailImageTicket(){
+        $path_service_upload = $this->config->item('path_service_upload');
+        $query = "
+            SELECT
+                CONCAT('".$path_service_upload."',a.`serviceimg_img`) AS img
+            FROM
+                `cms_service_img` a
+                LEFT JOIN cms_service b ON b.service_id = a.`serviceimg_service_id`
+            WHERE
+                b.`service_type` = '2'
+                AND a.`serviceimg_img` IS NOT NULL
+            ORDER BY 
+                a.`serviceimg_order`
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
     public function getServiceDetailBanner($key){
         $path_service_upload = $this->config->item('path_service_upload');
         $query = "
@@ -864,6 +904,66 @@ class Data extends CI_Model {
         ";
         $result = $this->default->query($query);
         return $result->result();
+    }
+
+    public function getVisitorType(){
+
+        $query = "
+                SELECT
+                    a.`visitortype_id` AS `id`,
+                    b.`visitortypetext_name` AS `name`
+                FROM
+                    `ref_visitortype` a
+                    LEFT JOIN `ref_visitortype_text` b ON b.visitortypetext_visitortype_id = a.visitortype_id AND b.`visitortypetext_lang` = '".$this->user_lang."' 
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getTicketById($id){
+        $query = "
+            SELECT
+                a.`ticket_id`  AS `id`,
+                a.`ticket_status`AS 'status',
+                b.`tickettext_name` AS 'name',
+                a.`ticket_is_type_visitor` AS is_type,
+                a.`ticket_min_order` AS min_order,
+                a.`ticket_max_order` AS max_order
+            FROM
+                `mst_ticket` a 
+            LEFT JOIN `mst_ticket_text` b ON b.`tickettext_ticket_id` = a.`ticket_id` AND b.`tickettext_lang` = '".$this->user_lang."'
+            WHERE
+                a.`ticket_status`= 1
+                AND a.`ticket_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getSearchTicket($id, $type_id, $date){
+        $query = "
+            SELECT
+                a.`ticket_id` AS `id`,
+                a.`ticket_is_type_visitor` AS is_type,
+                b.`tickettext_name` AS `name`,
+                IF(d.`ticketprice_visitortype_id` IS NOT NULL , d.`ticketprice_visitortype_id`, c.`ticketpricedef_visitortype_id`) AS type_visitor_id,
+                e.`visitortypetext_name` AS type_visitor_name,
+                IF(d.`ticketprice_price_local` IS NOT NULL, d.`ticketprice_price_local`, c.`ticketpricedef_price_local`) AS `price_local`,
+                IF(d.`ticketprice_price_foreign` IS NOT NULL, d.`ticketprice_price_foreign`, c.`ticketpricedef_price_foreign`) AS `price_foreign`
+            FROM
+                `mst_ticket` a
+                LEFT JOIN `mst_ticket_text` b ON b.`tickettext_ticket_id` = a.`ticket_id` AND b.`tickettext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_ticket_pricedefault` c ON c.`ticketpricedef_ticket_id` = a.`ticket_id`
+                LEFT JOIN `mst_ticket_price` d ON d.`ticketprice_ticket_id` = a.`ticket_id` AND '".$date."' BETWEEN d.`ticketprice_start` AND d.`ticketprice_end`
+                LEFT JOIN `ref_visitortype_text` e ON e.`visitortypetext_visitortype_id` = IF(d.`ticketprice_visitortype_id` IS NOT NULL, d.`ticketprice_visitortype_id`, c.`ticketpricedef_visitortype_id`) AND e.`visitortypetext_lang` = '".$this->user_lang."'
+            WHERE
+                a.`ticket_id` = '".$id."'
+                AND IF(a.`ticket_is_type_visitor`=1,(IF(d.`ticketprice_visitortype_id` IS NOT NULL, d.`ticketprice_visitortype_id`, c.`ticketpricedef_visitortype_id`) = '".$type_id."'), 1=1)
+            GROUP BY 
+                IF(d.`ticketprice_visitortype_id` IS NOT NULL , d.`ticketprice_visitortype_id`, c.`ticketpricedef_visitortype_id`) 
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
     }
 
     public function getContact(){
@@ -1317,6 +1417,7 @@ class Data extends CI_Model {
 
     public function updateUserByEmail($data, $email){
         $this->default->where('user_email', $email);
+        $this->default->where('user_is_admin', 0);
         $query = $this->default->update('core_user',$data);
         if ($this->default->affected_rows() > 0){
             return TRUE;

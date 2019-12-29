@@ -219,7 +219,8 @@ class User extends CI_Controller {
             $validation = $validation && false;
             $validation_text.= '<li>'.MultiLang('email').' '.MultiLang('required').'</li>';
         }else{
-            $check_email = $this->data->getExistEmail($email);
+            $is_admin_validation = isset($is_admin) ? 1 : 0;
+            $check_email = $this->data->getExistEmail($email, $is_admin_validation);
             if(!empty($check_email->email)){
                 $validation = $validation && false;
                 $validation_text.= '<li>'.MultiLang('email').' <b>'.$email.'</b> '.MultiLang('existed').'</li>';

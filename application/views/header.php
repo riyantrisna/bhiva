@@ -63,7 +63,7 @@ if(!$this->session->userdata('user_lang')){
 					<?php
 							}elseif($value->type == 2){
 					?>
-					<a class="dropdown-item font-navbar" href="<?php echo base_url();?>templeticket"><?php echo $value->name?></a>
+					<a class="dropdown-item font-navbar" href="<?php echo base_url();?>ticket"><?php echo $value->name?></a>
 					<?php
 							}elseif($value->type == 3){
 					?>

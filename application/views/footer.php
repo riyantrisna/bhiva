@@ -58,7 +58,7 @@
                                 }elseif($value->type == 2){
                         ?>
                         <li class="list-group-item bg-transparent border-0 p-0 mb-2 font-footer">
-                            <a href="<?php echo base_url();?>templeticket"><?php echo $value->name?></a>
+                            <a href="<?php echo base_url();?>ticket"><?php echo $value->name?></a>
                         </li>
                         <?php
                                 }elseif($value->type == 3){

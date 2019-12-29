@@ -163,24 +163,24 @@
 								<?php echo MultiLang('quantity'); ?>
 							</div>
 							<div class="form-group">
-								<span style="color: #8f8f8f; font-weight: normal; font-style: italic; ">
+								<span id="info_max_min_order" style="color: #8f8f8f; font-weight: normal; font-style: italic; ">
 									* <?php echo MultiLang('min_order').' '.$tourpackages_detail->min_order; ?>,  <?php echo MultiLang('max_order').' '.$tourpackages_detail->max_order; ?>
 								</span>
 							</div>
 							<div class="form-group">
 								<?php echo MultiLang('local_tourists'); ?> 
 								<div>
-									<i class="fas fa-minus-circle" style="color: #42B549; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('min', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>', '#local_tourists', '#foreign_tourists')"></i>
-									<input type="text" style="width: 50px !important; border-bottom: 1px solid #E0E0E0 !important; outline: none; " class="border-0 text-center" id="local_tourists" name="local_tourists" value="<?php echo $tourpackages_detail->min_order; ?>" onkeypress="return isNumber(event)" readonly/>
-									<i class="fas fa-plus-circle" style="color: #42B549; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('add', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>', '#local_tourists', '#foreign_tourists')"></i>
+									<i class="fas fa-minus-circle" style="color: #42B549; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('#local_tourists', 'min', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>')"></i>
+									<input type="text" style="width: 50px !important; border-bottom: 1px solid #E0E0E0 !important; outline: none; " class="qty_input border-0 text-center" id="local_tourists" name="local_tourists" value="<?php echo $tourpackages_detail->min_order; ?>" onkeypress="return isNumber(event)" readonly/>
+									<i class="fas fa-plus-circle" style="color: #42B549; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('#local_tourists', 'add', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>')"></i>
 								</div>
 							</div>
 							<div class="form-group">
 								<?php echo MultiLang('foreign_tourists'); ?>
 								<div>
-									<i class="fas fa-minus-circle" style="color: #42B549; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('min', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>', '#foreign_tourists', '#local_tourists')"></i>
-									<input type="text" style="width: 50px !important; border-bottom: 1px solid #E0E0E0 !important; outline: none; " class="border-0 text-center" id="foreign_tourists" name="foreign_tourists" value="<?php echo ((($tourpackages_detail->min_order*2) <= $tourpackages_detail->max_order) ? $tourpackages_detail->min_order : ($tourpackages_detail->max_order-$tourpackages_detail->min_order)); ?>" onkeypress="return isNumber(event)" readonly/>
-									<i class="fas fa-plus-circle" style="color: #42B549; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('add', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>', '#foreign_tourists', '#local_tourists')"></i>
+									<i class="fas fa-minus-circle" style="color: #42B549; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('#foreign_tourists', 'min', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>')"></i>
+									<input type="text" style="width: 50px !important; border-bottom: 1px solid #E0E0E0 !important; outline: none; " class="qty_input border-0 text-center" id="foreign_tourists" name="foreign_tourists" value="0" onkeypress="return isNumber(event)" readonly/>
+									<i class="fas fa-plus-circle" style="color: #42B549; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('#foreign_tourists', 'add', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>')"></i>
 								</div>
 							</div>
 							<hr>
@@ -297,22 +297,58 @@
 				});
 			});
 			
-			function tourists_qty(type, min, max, elm, elm2){
-				if(type=='add'){
-					val_old = parseInt($(elm).val());
-					val_old2 = parseInt($(elm2).val());
-					total_val_old = val_old + val_old2;
-					if(total_val_old < max){
-						$(elm).val(val_old+parseInt(1));
+			function tourists_qty(elm, type, min, max){
+				$('#info_max_min_order').css({'color':'#8f8f8f'});
+				var sum = 0;
+				$('.qty_input').each(function(){
+					sum += parseInt(this.value);
+				});
+				
+				var old_val = $(elm).val();
+
+				if(type == 'add' ){
+					if(sum < max){
+						$(elm).val(parseInt(old_val) + parseInt(1));
+						sum += parseInt(1);
+					}else{
+						$('#info_max_min_order').css({'color':'red'}).fadeOut().fadeIn();
 					}
 				}else{
-					val_old = parseInt($(elm).val());
-					val_old2 = parseInt($(elm2).val());
-					total_val_old = val_old + val_old2;
-					if(total_val_old > min && val_old > 0){
-						$(elm).val(val_old-parseInt(1));
+					if(sum > min && old_val > 0){
+						$(elm).val(parseInt(old_val) - parseInt(1));
+						sum -= parseInt(1);
+					}else if(old_val == 0){
+
+					}else{
+						$('#info_max_min_order').css({'color':'red'}).fadeOut().fadeIn();
 					}
 				}
+
+				if(sum == max){
+					$('.fa-plus-circle').css({'color':'#8f8f8f'});
+					$('.fa-minus-circle').css({'color':'#42B549'});
+				}else if(sum == min){
+					$('.fa-plus-circle').css({'color':'#42B549'});
+					$('.fa-minus-circle').css({'color':'#8f8f8f'});
+				}else{
+					$('.fa-plus-circle').css({'color':'#42B549'});
+					$('.fa-minus-circle').css({'color':'#42B549'});
+				}
+				// if(type=='add'){
+				// 	val_old = parseInt($(elm).val());
+				// 	val_old2 = parseInt($(elm2).val());
+				// 	total_val_old = val_old + val_old2;
+				// 	if(total_val_old < max){
+				// 		$(elm).val(val_old+parseInt(1));
+				// 	}
+				// }else{
+				// 	val_old = parseInt($(elm).val());
+				// 	val_old2 = parseInt($(elm2).val());
+				// 	total_val_old = val_old + val_old2;
+				// 	if(total_val_old > min && val_old > 0){
+				// 		$(elm).val(val_old-parseInt(1));
+				// 	}
+				// }
 			}
 
 			async function load_more(id, page, limit){

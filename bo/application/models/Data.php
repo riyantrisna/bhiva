@@ -681,7 +681,7 @@ class Data extends CI_Model {
         return $result->row();
     }
 
-    public function getExistEmail($id){
+    public function getExistEmail($id, $is_admin){
 
         $query = "
             SELECT
@@ -689,6 +689,7 @@ class Data extends CI_Model {
             FROM
                 `core_user` a
             WHERE 1 = 1
+            AND a.`user_is_admin` = '".$is_admin."'
             AND a.`user_email` = '".$id."'
         ";
         $result = $this->default->query($query);
@@ -2315,6 +2316,8 @@ class Data extends CI_Model {
                 SELECT
                     a.`ticket_id` AS `id`,
                     a.`ticket_is_type_visitor` AS `is_type_visitor`,
+                    a.`ticket_min_order` AS `min_order`,
+                    a.`ticket_max_order` AS `max_order`,
                     a.`ticket_status` AS `status`,
                     b.`tickettext_name` AS `name`
                 FROM
@@ -2361,6 +2364,8 @@ class Data extends CI_Model {
                 SELECT
                     a.`ticket_id` AS `id`,
                     a.`ticket_is_type_visitor` AS `is_type_visitor`,
+                    a.`ticket_min_order` AS `min_order`,
+                    a.`ticket_max_order` AS `max_order`,
                     a.`ticket_status` AS `status`,
                     c.user_real_name AS insert_user,
                     a.insert_datetime,
@@ -2462,6 +2467,22 @@ class Data extends CI_Model {
                     $this->default->insert('mst_ticket_pricedefault',$data);
                 }
             }
+
+            if(!empty($price['start'])){
+                foreach ($price['start'] as $key => $value) {
+                    if(!empty($price['start'][$key]) AND !empty($price['end'][$key]) ANd !empty($price['price_local'][$key]) AND !empty($price['price_foreign'][$key]) AND !empty($price['visitortype'][$key])){
+                        $data = array(
+                            'ticketprice_ticket_id' => $ticket_id,
+                            'ticketprice_visitortype_id' => $price['visitortype'][$key],
+                            'ticketprice_start' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['end'][$key] : $price['start'][$key]),
+                            'ticketprice_end' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['start'][$key] : $price['end'][$key]),
+                            'ticketprice_price_local' => str_replace('.','',$price['price_local'][$key]),
+                            'ticketprice_price_foreign' => str_replace('.','',$price['price_foreign'][$key])
+                        );
+                        $this->default->insert('mst_ticket_price',$data);
+                    }
+                }
+            }
         }else{
             $data = array(
                 'ticketpricedef_ticket_id' => $ticket_id,
@@ -2470,23 +2491,24 @@ class Data extends CI_Model {
                 'ticketpricedef_price_foreign' => str_replace('.','',$base_price_foreign2)
             );
             $this->default->insert('mst_ticket_pricedefault',$data);
-        }
 
-        if(!empty($price['start'])){
-            foreach ($price['start'] as $key => $value) {
-                if(!empty($price['start'][$key]) AND !empty($price['end'][$key]) ANd !empty($price['price_local'][$key]) AND !empty($price['price_foreign'][$key])){
-                    $data = array(
-                        'ticketprice_ticket_id' => $ticket_id,
-                        'ticketprice_visitortype_id' => (isset($is_type_visitor) ? $price['visitortype'][$key] : NULL),
-                        'ticketprice_start' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['end'][$key] : $price['start'][$key]),
-                        'ticketprice_end' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['start'][$key] : $price['end'][$key]),
-                        'ticketprice_price_local' => str_replace('.','',$price['price_local'][$key]),
-                        'ticketprice_price_foreign' => str_replace('.','',$price['price_foreign'][$key])
-                    );
-                    $this->default->insert('mst_ticket_price',$data);
+            if(!empty($price['start'])){
+                foreach ($price['start'] as $key => $value) {
+                    if(!empty($price['start'][$key]) AND !empty($price['end'][$key]) ANd !empty($price['price_local'][$key]) AND !empty($price['price_foreign'][$key])){
+                        $data = array(
+                            'ticketprice_ticket_id' => $ticket_id,
+                            'ticketprice_visitortype_id' => NULL,
+                            'ticketprice_start' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['end'][$key] : $price['start'][$key]),
+                            'ticketprice_end' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['start'][$key] : $price['end'][$key]),
+                            'ticketprice_price_local' => str_replace('.','',$price['price_local'][$key]),
+                            'ticketprice_price_foreign' => str_replace('.','',$price['price_foreign'][$key])
+                        );
+                        $this->default->insert('mst_ticket_price',$data);
+                    }
                 }
             }
         }
+
 
         $this->default->trans_complete();
         if ($this->default->trans_status() === FALSE){
@@ -2536,6 +2558,22 @@ class Data extends CI_Model {
                     $this->default->insert('mst_ticket_pricedefault',$data);
                 }
             }
+
+            if(!empty($price['start'])){
+                foreach ($price['start'] as $key => $value) {
+                    if(!empty($price['start'][$key]) AND !empty($price['end'][$key]) ANd !empty($price['price_local'][$key]) AND !empty($price['price_foreign'][$key]) AND !empty($price['visitortype'][$key] )){
+                        $data = array(
+                            'ticketprice_ticket_id' => $id,
+                            'ticketprice_visitortype_id' => $price['visitortype'][$key],
+                            'ticketprice_start' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['end'][$key] : $price['start'][$key]),
+                            'ticketprice_end' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['start'][$key] : $price['end'][$key]),
+                            'ticketprice_price_local' => str_replace('.','',$price['price_local'][$key]),
+                            'ticketprice_price_foreign' => str_replace('.','',$price['price_foreign'][$key])
+                        );
+                        $this->default->insert('mst_ticket_price',$data);
+                    }
+                }
+            }
         }else{
             $data = array(
                 'ticketpricedef_ticket_id' => $id,
@@ -2544,23 +2582,25 @@ class Data extends CI_Model {
                 'ticketpricedef_price_foreign' => str_replace('.','',$base_price_foreign2)
             );
             $this->default->insert('mst_ticket_pricedefault',$data);
-        }
 
-        if(!empty($price['start'])){
-            foreach ($price['start'] as $key => $value) {
-                if(!empty($price['start'][$key]) AND !empty($price['end'][$key]) ANd !empty($price['price_local'][$key]) AND !empty($price['price_foreign'][$key])){
-                    $data = array(
-                        'ticketprice_ticket_id' => $id,
-                        'ticketprice_visitortype_id' => (isset($is_type_visitor) ? $price['visitortype'][$key] : NULL),
-                        'ticketprice_start' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['end'][$key] : $price['start'][$key]),
-                        'ticketprice_end' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['start'][$key] : $price['end'][$key]),
-                        'ticketprice_price_local' => str_replace('.','',$price['price_local'][$key]),
-                        'ticketprice_price_foreign' => str_replace('.','',$price['price_foreign'][$key])
-                    );
-                    $this->default->insert('mst_ticket_price',$data);
+            if(!empty($price['start'])){
+                foreach ($price['start'] as $key => $value) {
+                    if(!empty($price['start'][$key]) AND !empty($price['end'][$key]) ANd !empty($price['price_local'][$key]) AND !empty($price['price_foreign'][$key])){
+                        $data = array(
+                            'ticketprice_ticket_id' => $id,
+                            'ticketprice_visitortype_id' => NULL,
+                            'ticketprice_start' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['end'][$key] : $price['start'][$key]),
+                            'ticketprice_end' => ((strtotime($price['start'][$key]) > strtotime($price['end'][$key])) ? $price['start'][$key] : $price['end'][$key]),
+                            'ticketprice_price_local' => str_replace('.','',$price['price_local'][$key]),
+                            'ticketprice_price_foreign' => str_replace('.','',$price['price_foreign'][$key])
+                        );
+                        $this->default->insert('mst_ticket_price',$data);
+                    }
                 }
             }
         }
+
+        
         $this->default->trans_complete();
         if ($this->default->trans_status() === FALSE){
             $this->default->trans_rollback();
