@@ -170,7 +170,7 @@
 							<div class="form-group">
 								<?php echo MultiLang('local_tourists'); ?> 
 								<div>
-									<i class="fas fa-minus-circle" style="color: #42B549; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('#local_tourists', 'min', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>')"></i>
+									<i class="fas fa-minus-circle" style="color: #8f8f8f; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('#local_tourists', 'min', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>')"></i>
 									<input type="text" style="width: 50px !important; border-bottom: 1px solid #E0E0E0 !important; outline: none; " class="qty_input border-0 text-center" id="local_tourists" name="local_tourists" value="<?php echo $tourpackages_detail->min_order; ?>" onkeypress="return isNumber(event)" readonly/>
 									<i class="fas fa-plus-circle" style="color: #42B549; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('#local_tourists', 'add', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>')"></i>
 								</div>
@@ -178,7 +178,7 @@
 							<div class="form-group">
 								<?php echo MultiLang('foreign_tourists'); ?>
 								<div>
-									<i class="fas fa-minus-circle" style="color: #42B549; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('#foreign_tourists', 'min', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>')"></i>
+									<i class="fas fa-minus-circle" style="color: #8f8f8f; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('#foreign_tourists', 'min', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>')"></i>
 									<input type="text" style="width: 50px !important; border-bottom: 1px solid #E0E0E0 !important; outline: none; " class="qty_input border-0 text-center" id="foreign_tourists" name="foreign_tourists" value="0" onkeypress="return isNumber(event)" readonly/>
 									<i class="fas fa-plus-circle" style="color: #42B549; font-size: 24px; vertical-align: middle; cursor: pointer;" onclick="tourists_qty('#foreign_tourists', 'add', '<?php echo $tourpackages_detail->min_order; ?>', '<?php echo $tourpackages_detail->max_order; ?>')"></i>
 								</div>

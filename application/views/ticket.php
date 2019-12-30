@@ -61,9 +61,6 @@
 					<div class="form-group col-md-6 col-sm-12">
 						<label for="ticket"><?php echo MultiLang('ticket');?></label>
 						<select id="ticket" name="ticket" class="form-control">
-							<option value="">
-								-- <?php echo MultiLang('choose_ticket'); ?> --
-							</option>
 							<?php
 							if($ticket){
 								foreach ($ticket as $key => $value) {
@@ -88,9 +85,11 @@
 				</div>
 			</div>
 			</form>
+			<form id="form_detail_ticket">
 			<div id="div_ticket_result" class="row mt-4 mb-5 border rounded" style="display: none;">
 				
 			</div>
+			</form>
 		</div>
 		
 		<hr class="mt-4 mb-5">
@@ -142,6 +141,28 @@
 			</div>
 		</div>
 
+
+		<div class="modal fade" id="modal_book" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="title_book"></h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body" id="body_book">
+						
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" id="btnConfirm"><?php echo MultiLang('continue_to_payment'); ?></button>
+						<button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo MultiLang('recheck'); ?></button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
 		<?php 
 			$this->load->view('footer');
 		?>
@@ -171,6 +192,9 @@
 			});
 
 			async function search_ticket(){
+				if($('#visit_date').val() == ''){
+					await $('#visit_date').val('<?php echo date("Y-m-d");?>');
+				}
 				await $('#loaders').modal('show');
 
 				jQuery.ajax({
@@ -203,9 +227,13 @@
 				});
 			}
 
-			function visitor_qty(elm, type, min, max){
+			var sum_local = 0;
+			var sum_foreign = 0;
+
+			async function visitor_qty(elm, type, min, max, nominal, items){
 				$('#info_max_min_order').css({'color':'#8f8f8f'});
 				var sum = 0;
+				
 				$('.qty_input').each(function(){
 					sum += parseInt(this.value);
 				});
@@ -216,6 +244,7 @@
 					if(sum < max){
 						$(elm).val(parseInt(old_val) + parseInt(1));
 						sum += parseInt(1);
+						await $(items).html((parseInt(old_val) + parseInt(1))*nominal);
 					}else{
 						$('#info_max_min_order').css({'color':'red'}).fadeOut().fadeIn();
 					}
@@ -223,12 +252,38 @@
 					if(sum > min && old_val > 0){
 						$(elm).val(parseInt(old_val) - parseInt(1));
 						sum -= parseInt(1);
+						await $(items).html((parseInt(old_val) - parseInt(1))*nominal);
 					}else if(old_val == 0){
-
+						await $(items).html(0);
 					}else{
 						$('#info_max_min_order').css({'color':'red'}).fadeOut().fadeIn();
 					}
 				}
+
+				await $(items).unmask();
+				await $(items).mask('00.000.000.000.000.000.000', {reverse: true});
+
+				var sub_total_local = 0;
+				$('.lable_mask_item_local').each(function(){
+					var nominal_item = String($(this).text());
+					var nominal_item_convert = nominal_item.replace(/[^0-9,-]+/g,"");
+					sub_total_local += parseInt(nominal_item_convert);
+				});
+
+				$('#local_tourists_sub_total').unmask().html(sub_total_local).mask('00.000.000.000.000.000.000', {reverse: true});
+
+				var sub_total_foreign = 0;
+				$('.lable_mask_item_foreign').each(function(){
+					var nominal_item = String($(this).text());
+					var nominal_item_convert = nominal_item.replace(/[^0-9,-]+/g,"");
+					sub_total_foreign += parseInt(nominal_item_convert);
+				});
+
+				$('#foreign_tourists_sub_total').unmask().html(sub_total_foreign).mask('00.000.000.000.000.000.000', {reverse: true});
+
+				var total_all = parseInt(sub_total_local) + parseInt(sub_total_foreign);
+				$('#total_all').unmask().html(total_all).mask('00.000.000.000.000.000.000', {reverse: true});
+
 
 				if(sum == max){
 					$('.fa-plus-circle').css({'color':'#8f8f8f'});
@@ -242,6 +297,47 @@
 				}
 				
 			}
+
+			function book(){
+					$('#modal_book').modal('show'); // show bootstrap modal when complete loaded
+					$('#title_book').text('<?php echo MultiLang('order_confirmation'); ?>'); // Set title to Bootstrap modal title
+					$("#body_book").html('<?php echo MultiLang('order_confirmation_text'); ?> ?');
+					$('#btnConfirm').attr("onclick", "process_book()");
+			}
+
+				function process_book()
+				{
+				$('#btnConfirm').text('<?php echo MultiLang('process'); ?>...'); //change button text
+				$('#btnConfirm').attr('disabled',true); //set button disable 
+
+				jQuery.ajax({
+					url : "<?php echo site_url('ticket/create_ticket/')?>",
+					type: "POST",
+					data: $('#form_detail_ticket').serialize(),
+					dataType: "json",
+					success: async function(data, textStatus, xhr)
+					{
+						if(xhr.status == '200'){
+							if(data.is_session){
+								if(data.transaction_status){
+									window.location.href = "<?php echo base_url(); ?>ticket/pay/"+data.transaction_code;
+								}else{
+									window.location.href = "<?php echo base_url(); ?>ticket";
+								}
+							}else{
+								window.location.href = "<?php echo base_url(); ?>ticket";
+							}
+						}else{
+							$('#modal_book').modal('toggle');
+							toastr.error(xhr.statusText);
+						}
+
+						$('#btnConfirm').text('<?php echo MultiLang('continue_to_payment'); ?>');
+						$('#btnConfirm').attr('disabled',false);
+					}
+				});
+
+				}
 		</script>
 	</body>
 </html>
