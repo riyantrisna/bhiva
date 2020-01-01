@@ -600,3 +600,5 @@ $config['path_greeting'] = $config['base_url_image'].'files/images/greeting/';
 $config['path_greeting_upload'] = 'files/images/greeting/';
 $config['path_travelpost'] = $config['base_url_image'].'files/images/travelpost/';
 $config['path_travelpost_upload'] = 'files/images/travelpost/';
+$config['path_ticket_rilis'] = $config['base_url_image'].'files/ticket/';
+$config['path_ticket_rilis_upload'] = 'files/ticket/';

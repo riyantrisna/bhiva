@@ -299,13 +299,21 @@
 			}
 
 			function book(){
-					$('#modal_book').modal('show'); // show bootstrap modal when complete loaded
-					$('#title_book').text('<?php echo MultiLang('order_confirmation'); ?>'); // Set title to Bootstrap modal title
-					$("#body_book").html('<?php echo MultiLang('order_confirmation_text'); ?> ?');
-					$('#btnConfirm').attr("onclick", "process_book()");
+
+				$.post("<?php echo site_url('user/get_session_login');?>", function(data) {
+					if(data == '1'){
+						$('#modal_book').modal('show'); // show bootstrap modal when complete loaded
+						$('#title_book').text('<?php echo MultiLang('order_confirmation'); ?>'); // Set title to Bootstrap modal title
+						$("#body_book").html('<?php echo MultiLang('order_confirmation_text'); ?> ?');
+						$('#btnConfirm').attr("onclick", "process_book()");
+					}else{
+						$('#msg_btn_login').fadeOut().fadeIn().html('<?php echo MultiLang('please_login'); ?>');
+					}
+				});
+					
 			}
 
-				function process_book()
+			function process_book()
 				{
 				$('#btnConfirm').text('<?php echo MultiLang('process'); ?>...'); //change button text
 				$('#btnConfirm').attr('disabled',true); //set button disable 
@@ -322,7 +330,8 @@
 								if(data.transaction_status){
 									window.location.href = "<?php echo base_url(); ?>ticket/pay/"+data.transaction_code;
 								}else{
-									window.location.href = "<?php echo base_url(); ?>ticket";
+									$('#modal_book').modal('toggle');
+									toastr.error('<?php echo MultiLang('there_is_an_error'); ?>');
 								}
 							}else{
 								window.location.href = "<?php echo base_url(); ?>ticket";
@@ -337,7 +346,7 @@
 					}
 				});
 
-				}
+			}
 		</script>
 	</body>
 </html>

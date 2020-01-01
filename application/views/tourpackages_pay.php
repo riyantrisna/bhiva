@@ -92,7 +92,8 @@
 						window.location.href = "<?php echo base_url(); ?>/user/transaction"
 					},
 					onError: function(result){
-						toastr.error('<?php echo MultiLang('there_is_an_error');?>');
+						window.location.href = "<?php echo base_url(); ?>/user/transaction"
+						// toastr.error('<?php echo MultiLang('there_is_an_error');?>');
 					}
 					// ,
 					// onClose: function(){

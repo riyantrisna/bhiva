@@ -1766,11 +1766,25 @@ class Data extends CI_Model {
                 CASE
                     WHEN a.`transaction_type` = 1 
                     THEN CONCAT(pwt.`tourpackagestext_name`, ' <b>(', b.`transactiontourpackages_total_day`,' ".MultiLang('day')." ', b.`transactiontourpackages_total_night`,' ".MultiLang('night')."',')</b>')
-                END AS name
+                    WHEN a.`transaction_type` = 2
+                    THEN tt.tickettext_name
+                END AS name,
+                CASE
+                    WHEN a.`transaction_type` = 2
+                    THEN c.transactionticket_status
+                    ELSE ''
+                END AS status_ticket,
+                CASE
+                    WHEN a.`transaction_type` = 2
+                    THEN c.transactionticket_file
+                    ELSE ''
+                END AS file
             FROM
                 `trx_transaction` a 
                 LEFT JOIN trx_transaction_tourpackages b ON b.`transactiontourpackages_transaction_id` = a.`transaction_id`
                 LEFT JOIN `mst_tourpackages_text` pwt ON pwt.`tourpackagestext_tourpackages_id` = b.transactiontourpackages_tourpackages_id AND pwt.`tourpackagestext_lang` = '".$this->user_lang."'
+                LEFT JOIN `trx_transaction_ticket` c ON c.transactionticket_transaction_id = a.`transaction_id`
+                LEFT JOIN `mst_ticket_text` tt ON tt.tickettext_ticket_id = c.transactionticket_ticket_id  AND tt.`tickettext_lang` = '".$this->user_lang."'
             WHERE 
                 1 = 1
                 AND a.`transaction_user_id` = '".$user_id."' 
@@ -1922,6 +1936,181 @@ class Data extends CI_Model {
         }else{
             return FALSE;
         }
+    }
+
+    public function createTransactionTicket($data, $detail){
+        $this->default->trans_begin();
+
+        $query = "
+            SELECT
+                a.`transaction_date` AS `date`
+            FROM
+                `trx_transaction` a
+            WHERE 
+                DATE_FORMAT(a.`transaction_date`,'%Y-%m-%d') = '".date('Y-m-d')."'
+        ";
+        
+        $result = $this->db->query($query);
+        $total = $result->num_rows();
+
+        if($total > 0){
+            $numbers = sprintf("%'.06d", ($total+1));
+        }else{
+            $numbers = sprintf("%'.06d", 1);
+        }
+    
+        $number = 'TRX-TIC'.date('Ymd').$numbers;
+
+        if(isset($data['transaction_code'])){
+            $data['transaction_code'] = $number;
+        }
+
+        $this->default->insert('trx_transaction',$data);
+        $transaction_id = $this->default->insert_id();
+
+        $data_ticket = array(
+            'transactionticket_transaction_id' => $transaction_id,
+            'transactionticket_ticket_id' => $detail['detail_ticket']['ticket_id'],
+            'transactionticket_visit_date' => $detail['detail_ticket']['visit_date'],
+            'transactionticket_file' => NULL,
+            'transactionticket_status' => 1
+        );
+        $this->default->insert('trx_transaction_ticket', $data_ticket);
+
+        if(!empty($detail['detail_ticket_local_tourist'])){
+            foreach ($detail['detail_ticket_local_tourist'] as $key => $value) {
+                $data = array(
+                    'transactionticketdet_transaction_id' => $transaction_id,
+                    'transactionticketdet_ticket_id' => $value['ticket_id'],
+                    'transactionticketdet_ticket_is_type' => $value['ticket_is_type'],
+                    'transactionticketdet_visitortype_id' => $value['visitortype_id'],
+                    'transactionticketdet_visitortype_name' => $value['visitortype_name'],
+                    'transactionticketdet_tourists_type' => $value['tourists_type'],
+                    'transactionticketdet_qty' => $value['qty'],
+                    'transactionticketdet_price' => $value['price'],
+                    'transactionticketdet_sub_total' => $value['sub_total']
+                );
+                $this->default->insert('trx_transaction_ticket_detail',$data);
+            }
+        }
+
+        if(!empty($detail['detail_ticket_foreign_tourist'])){
+            foreach ($detail['detail_ticket_foreign_tourist'] as $key => $value) {
+                $data = array(
+                    'transactionticketdet_transaction_id' => $transaction_id,
+                    'transactionticketdet_ticket_id' => $value['ticket_id'],
+                    'transactionticketdet_ticket_is_type' => $value['ticket_is_type'],
+                    'transactionticketdet_visitortype_id' => $value['visitortype_id'],
+                    'transactionticketdet_visitortype_name' => $value['visitortype_name'],
+                    'transactionticketdet_tourists_type' => $value['tourists_type'],
+                    'transactionticketdet_qty' => $value['qty'],
+                    'transactionticketdet_price' => $value['price'],
+                    'transactionticketdet_sub_total' => $value['sub_total']
+                );
+                $this->default->insert('trx_transaction_ticket_detail',$data);
+            }
+        }
+
+        $transaction['transaction_id'] = $transaction_id;
+        $transaction['transaction_code'] = $number;
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return 0;
+        }else{
+            $this->default->trans_commit();
+            return $transaction;
+        }
+    }
+
+    public function getTransactionTicket($code){
+        $query = "
+            SELECT
+                a.`transaction_id` AS id,
+                a.`transaction_midtrans_snap_token` AS midtrans_snap_token,
+                a.`transaction_midtrans_transaction_id` AS midtrans_transaction_id,
+                a.`transaction_payment_type` AS payment_type,
+                a.`transaction_status` AS status,
+                a.`transaction_total` AS total,
+                b.`transactionticket_ticket_id` AS ticket_id,
+                b.`transactionticket_visit_date` AS visit_date,
+                b.`transactionticket_file` AS file,
+                b.`transactionticket_status` AS status_ticket,
+                c.tickettext_name AS ticket_name
+            FROM
+                `trx_transaction` a 
+            LEFT JOIN `trx_transaction_ticket` b ON b.`transactionticket_transaction_id` = a.`transaction_id`
+            LEFT JOIN `mst_ticket_text` c ON c.`tickettext_ticket_id` = b.`transactionticket_ticket_id` AND c.`tickettext_lang` = '".$this->user_lang."'
+            WHERE
+                a.`transaction_type` = 2
+                AND a.`transaction_status` = 1
+                AND a.`transaction_code` = '".$code."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getTransactionTicketDetail($transaction_id, $tourists_type){
+        $query = "
+            SELECT
+                a.`transactionticketdet_ticket_id` AS ticket_id,
+                a.`transactionticketdet_ticket_is_type` AS ticket_is_type,
+                a.`transactionticketdet_visitortype_id` AS visitortype_id,
+                a.`transactionticketdet_visitortype_name` AS visitortype_name,
+                a.`transactionticketdet_tourists_type` AS tourists_type,
+                a.`transactionticketdet_qty` AS qty,
+                a.`transactionticketdet_price` AS price,
+                a.`transactionticketdet_sub_total` AS sub_total
+            FROM
+                `trx_transaction_ticket_detail` a
+            WHERE
+                a.`transactionticketdet_transaction_id` = '".$transaction_id."'
+                AND a.`transactionticketdet_tourists_type` = '".$tourists_type."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getDetailTransactionTicketByUserId($id, $user_id){
+
+        $query = "
+            SELECT
+                a.`transaction_id` AS id,
+                a.`transaction_code` AS code,
+                a.`transaction_date` AS date,
+                a.`transaction_type` AS type,
+                a.`transaction_user_id` AS user_id,
+                a.`transaction_user_real_name` AS user_real_name,
+                a.`transaction_total` AS total,
+                a.`transaction_status` AS status,
+                a.`transaction_midtrans_snap_token` AS midtrans_snap_token,
+                a.`transaction_midtrans_transaction_id` AS midtrans_transaction_id,
+                a.`transaction_midtrans_response` AS midtrans_response,
+                a.`transaction_payment_type` AS payment_type,
+
+                b.`transactionticket_ticket_id` AS ticket_id,
+                b.`transactionticket_visit_date` AS visit_date,
+                b.`transactionticket_file` AS file,
+                b.`transactionticket_status` AS status_ticket,
+                c.tickettext_name AS ticket_name,
+
+                d.user_real_name AS contact_name,
+                d.user_email AS contact_email,
+                d.user_phone AS contact_phone
+                
+            FROM
+                `trx_transaction` a 
+                LEFT JOIN `trx_transaction_ticket` b ON b.`transactionticket_transaction_id` = a.`transaction_id`
+                LEFT JOIN `mst_ticket_text` c ON c.`tickettext_ticket_id` = b.`transactionticket_ticket_id` AND c.`tickettext_lang` = '".$this->user_lang."'
+                LEFT JOIN core_user d ON d.user_id = a.`transaction_user_id`
+            WHERE
+                1 = 1
+                AND a.`transaction_id` = '".$id."'
+                AND a.`transaction_user_id` = '".$user_id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
     }
 
 }

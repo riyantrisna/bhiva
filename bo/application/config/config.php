@@ -525,6 +525,52 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
+// midtrans
+$config['payment_channels'] = [
+    "credit_card",
+    "gopay",
+    // "mandiri_clickpay",
+    // "cimb_clicks",
+    // "bca_klikbca",
+    // "bca_klikpay",
+    // "bri_epay",
+    // "telkomsel_cash",
+    "echannel",
+    // "bbm_money",
+    // "xl_tunai",
+    // "indosat_dompetku",
+    // "mandiri_ecash",
+    "permata_va",
+    // "bca_va",
+    "bni_va"
+    // "danamon_online",
+    // "other_va",
+    // "kioson",
+    // "Indomaret"
+];
+
+$config['payment_duration'] = 1;
+
+//midtrans sandbox
+$config['is_production'] = FALSE;
+$config['id_merchant'] = 'G473006111';
+$config['client_key'] = 'SB-Mid-client-lJESLlrttQc-t5jK';
+$config['server_key'] = 'SB-Mid-server-fDbx8sqHzgH26ecU6yljyNe2';
+$config['payment_url'] = 'https://app.sandbox.veritrans.co.id/snap/v2/vtweb/';
+$config['snap_js'] = 'https://app.sandbox.midtrans.com/snap/snap.js';
+$config['api_midtrans'] = 'https://api.sandbox.midtrans.com/';
+$config['qrcode_gopay_url'] = 'https://api.sandbox.veritrans.co.id/v2/gopay/';
+
+//midtrans production
+// $config['is_production'] = TRUE;
+// $config['id_merchant'] = 'G473006111';
+// $config['client_key'] = 'Mid-client-x_pA40EC7r7xiWdl';
+// $config['server_key'] = 'Mid-server-c0FUsXus8tVmW-_TZ43CUZhc';
+// $config['payment_url'] = 'https://app.veritrans.co.id/snap/v2/vtweb/';
+// $config['snap_js'] = 'https://app.midtrans.com/snap/snap.js';
+// $config['api_midtrans'] = 'https://api.midtrans.com/';
+// $config['qrcode_gopay_url'] = 'https://api.veritrans.co.id/v2/gopay/';
+
 $config['base_url_image'] = "http://127.0.0.1/bhiva/";
 
 $config['path_language'] = $config['base_url_image'].'files/images/language/';
@@ -551,3 +597,9 @@ $config['path_greeting'] = $config['base_url_image'].'files/images/greeting/';
 $config['path_greeting_upload'] = '../files/images/greeting/';
 $config['path_travelpost'] = $config['base_url_image'].'files/images/travelpost/';
 $config['path_travelpost_upload'] = '../files/images/travelpost/';
+$config['path_ticket_rilis'] = $config['base_url_image'].'files/ticket/';
+$config['path_ticket_rilis_upload'] = '../files/ticket/';
+
+
+$config['max_upload_file'] = (1048576*20); // 20MB
+$config['max_upload_file_lable'] = '20MB'; // 20MB

@@ -3628,4 +3628,400 @@ class Data extends CI_Model {
             return TRUE;
         }
     }
+
+
+     // transaction
+     public function getAllTransaction($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($number)){
+            $str .= " AND LOWER(a.`transaction_code`) LIKE LOWER('%$number%') ";
+        }
+
+        if(!empty($type)){
+            $str .= " AND a.`transaction_type` = '$type' ";
+        }
+
+        if(!empty($status)){
+            $str .= " AND a.`transaction_status` ='$status' ";
+        }
+
+        $query = "
+            SELECT
+                a.`transaction_id` AS `id`,
+                a.`transaction_code` AS `code`,
+                a.`transaction_date` AS `date`,
+                a.`transaction_type` AS `type`,
+                a.`transaction_status` AS `status`,
+                b.transactionticket_status AS status_ticket
+            FROM
+                `trx_transaction` a
+                LEFT JOIN trx_transaction_ticket b ON b.transactionticket_transaction_id = a.transaction_id
+            WHERE 1 = 1
+        ";
+        $query.= $str;
+        $query .= " ORDER BY $order $dir ";
+        if (isset($start) AND $start != '') {
+            $query .= " LIMIT $start, $length";
+        }
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllTransaction($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($number)){
+            $str .= " AND LOWER(a.`transaction_code`) LIKE LOWER('%$number%') ";
+        }
+
+        if(!empty($type)){
+            $str .= " AND a.`transaction_type` = '$type' ";
+        }
+
+        if(!empty($status)){
+            $str .= " AND a.`transaction_status` ='$status' ";
+        }
+
+        $query = "
+                SELECT 
+                    COUNT(DISTINCT a.`transaction_id`) AS total
+                FROM 
+                    `trx_transaction` a
+                    LEFT JOIN trx_transaction_ticket b ON b.transactionticket_transaction_id = a.transaction_id
+                WHERE 1 = 1
+                ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTransactionTypeById($id){
+
+        $query = "
+            SELECT
+                a.`transaction_type` AS type
+            FROM
+                `trx_transaction` a
+            WHERE
+                1 = 1
+                AND a.`transaction_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        $data = $result->row();
+        if(!empty($data)){
+            return $data->type;
+        }else{
+            return '';
+        }
+    }
+
+    public function getDetailTransactionTourpackagesByUserId($id){
+
+        $query = "
+            SELECT
+                a.`transaction_id` AS id,
+                a.`transaction_code` AS code,
+                a.`transaction_date` AS date,
+                a.`transaction_type` AS type,
+                a.`transaction_user_id` AS user_id,
+                a.`transaction_user_real_name` AS user_real_name,
+                a.`transaction_total` AS total,
+                a.`transaction_status` AS status,
+                a.`transaction_midtrans_snap_token` AS midtrans_snap_token,
+                a.`transaction_midtrans_transaction_id` AS midtrans_transaction_id,
+                a.`transaction_midtrans_response` AS midtrans_response,
+                a.`transaction_payment_type` AS payment_type,
+
+                b.`transactiontourpackages_contact_name` AS contact_name,
+                b.`transactiontourpackages_contact_email` AS contact_email,
+                b.`transactiontourpackages_contact_phone` AS contact_phone,
+                b.`transactiontourpackages_tourpackages_id` AS tourpackages_id,
+                CONCAT(c.`tourpackagestext_name`, ' <b>(', b.`transactiontourpackages_total_day`,' ".MultiLang('day')." ', b.`transactiontourpackages_total_night`,' ".MultiLang('night')."',')</b>') AS tourpackages_name,
+                b.`transactiontourpackages_date_tour` AS date_tour,
+                b.`transactiontourpackages_price_foreign_tourists` AS price_foreign_tourists,
+                b.`transactiontourpackages_price_local_tourists` AS price_local_tourists,
+                b.`transactiontourpackages_qty_foreign_tourists` AS qty_foreign_tourists,
+                b.`transactiontourpackages_qty_local_tourists` AS qty_local_tourists,
+                b.`transactiontourpackages_total_foreign_tourists` AS total_foreign_tourists,
+                b.`transactiontourpackages_total_local_tourists` AS total_local_tourists
+                
+            FROM
+                `trx_transaction` a 
+            LEFT JOIN `trx_transaction_tourpackages` b ON b.`transactiontourpackages_transaction_id` = a.`transaction_id`
+            LEFT JOIN `mst_tourpackages_text` c ON c.`tourpackagestext_tourpackages_id` = b.`transactiontourpackages_tourpackages_id` AND c.`tourpackagestext_lang` = '".$this->user_lang."'
+            WHERE
+                1 = 1
+                AND a.`transaction_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTransactionTouristById($id){
+        $query = "
+            SELECT
+                a.`transactiontourtourist_transaction_id` AS `transaction_id`,
+                a.`transactiontourtourist_name` AS `name`,
+                a.`transactiontourtourist_id_number` AS `id_number`,
+                a.`transactiontourtourist_type` AS `type`
+            FROM
+                `trx_transaction_tourist` a
+            WHERE
+                a.`transactiontourtourist_transaction_id` = '".$id."'
+        ";
+        
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getDetailTransactionTicketByUserId($id){
+
+        $query = "
+            SELECT
+                a.`transaction_id` AS id,
+                a.`transaction_code` AS code,
+                a.`transaction_date` AS date,
+                a.`transaction_type` AS type,
+                a.`transaction_user_id` AS user_id,
+                a.`transaction_user_real_name` AS user_real_name,
+                a.`transaction_total` AS total,
+                a.`transaction_status` AS status,
+                a.`transaction_midtrans_snap_token` AS midtrans_snap_token,
+                a.`transaction_midtrans_transaction_id` AS midtrans_transaction_id,
+                a.`transaction_midtrans_response` AS midtrans_response,
+                a.`transaction_payment_type` AS payment_type,
+
+                b.`transactionticket_ticket_id` AS ticket_id,
+                b.`transactionticket_visit_date` AS visit_date,
+                b.`transactionticket_file` AS file,
+                b.`transactionticket_status` AS status_ticket,
+                c.tickettext_name AS ticket_name,
+
+                d.user_real_name AS contact_name,
+                d.user_email AS contact_email,
+                d.user_phone AS contact_phone
+                
+            FROM
+                `trx_transaction` a 
+                LEFT JOIN `trx_transaction_ticket` b ON b.`transactionticket_transaction_id` = a.`transaction_id`
+                LEFT JOIN `mst_ticket_text` c ON c.`tickettext_ticket_id` = b.`transactionticket_ticket_id` AND c.`tickettext_lang` = '".$this->user_lang."'
+                LEFT JOIN core_user d ON d.user_id = a.`transaction_user_id`
+            WHERE
+                1 = 1
+                AND a.`transaction_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getTransactionTicketDetail($transaction_id, $tourists_type){
+        $query = "
+            SELECT
+                a.`transactionticketdet_ticket_id` AS ticket_id,
+                a.`transactionticketdet_ticket_is_type` AS ticket_is_type,
+                a.`transactionticketdet_visitortype_id` AS visitortype_id,
+                a.`transactionticketdet_visitortype_name` AS visitortype_name,
+                a.`transactionticketdet_tourists_type` AS tourists_type,
+                a.`transactionticketdet_qty` AS qty,
+                a.`transactionticketdet_price` AS price,
+                a.`transactionticketdet_sub_total` AS sub_total
+            FROM
+                `trx_transaction_ticket_detail` a
+            WHERE
+                a.`transactionticketdet_transaction_id` = '".$transaction_id."'
+                AND a.`transactionticketdet_tourists_type` = '".$tourists_type."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function updateTransactionTicket($data, $id){
+        $this->default->trans_begin();
+        $this->default->where('transactionticket_transaction_id', $id);
+        $this->default->update('trx_transaction_ticket',$data);
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function getDetailTransactionTicketNumber($id){
+
+        $query = "
+            SELECT
+                `transactionticketnum_transaction_id` AS `transaction_id`,
+                `transactionticketnum_ticket_id` AS `ticket_id`,
+                `transactionticketnum_ticket_number` AS `ticket_number`
+            FROM
+                `trx_transaction_ticket_number`
+            WHERE
+                `transactionticketnum_transaction_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function addTransactionTicketNumber($data){
+        $this->default->trans_begin();
+        $this->default->insert('trx_transaction_ticket_number',$data);
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function deleteTransactionTicketNumber($number){
+        $this->default->trans_begin();
+        
+        $this->default->where('transactionticketnum_ticket_number', $number);
+        $this->default->delete('trx_transaction_ticket_number');
+        
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function checkTransactionTicketNumber($number){
+
+        $query = "
+            SELECT
+                a.`transactionticketnum_ticket_number` AS number
+            FROM
+                `trx_transaction_ticket_number` a
+            WHERE
+                1 = 1
+                AND a.`transactionticketnum_ticket_number` = '".$number."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+
+
+
+    public function addTransaction($data, $visitortype, $user_id, $date){
+        $this->default->trans_begin();
+        $this->default->insert('ref_visitortype',$data);
+        $visitortype_id = $this->default->insert_id();
+
+        if(!empty($visitortype)){
+            foreach ($visitortype as $key => $value) {
+                $data = array(
+                    'visitortypetext_visitortype_id' => $visitortype_id,
+                    'visitortypetext_lang' => $key,
+                    'visitortypetext_name' => $value
+                );
+                $this->default->insert('ref_visitortype_text',$data);
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function updateTransaction($data, $id, $visitortype, $user_id, $date){
+        $this->default->trans_begin();
+        $this->default->where('visitortype_id', $id);
+        $this->default->update('ref_visitortype',$data);
+
+        if(!empty($visitortype)){
+            foreach ($visitortype as $key => $value) {
+                $data = array(
+                    'visitortypetext_name' => $value
+                );
+                $this->default->where('visitortypetext_visitortype_id', $id);
+                $this->default->where('visitortypetext_lang', $key);
+                $this->default->update('ref_visitortype_text',$data);
+            }
+        }
+
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function deleteTransaction($id){
+        $this->default->trans_begin();
+        
+        $this->default->where('visitortypetext_visitortype_id', $id);
+        $this->default->delete('ref_visitortype_text');
+
+        $this->default->where('visitortype_id', $id);
+        $this->default->delete('ref_visitortype');
+        
+        $this->default->trans_complete();
+        if ($this->default->trans_status() === FALSE){
+            $this->default->trans_rollback();
+            return FALSE;
+        }else{
+            $this->default->trans_commit();
+            return TRUE;
+        }
+    }
+
+    public function getDetailTransaction($id){
+
+        $query = "
+            SELECT
+                a.`visitortype_id` AS `id`,
+                c.user_real_name AS insert_user,
+                a.insert_datetime,
+                d.user_real_name AS update_user,
+                a.update_datetime
+            FROM
+                `ref_visitortype` a
+                LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                LEFT JOIN core_user d ON d.user_id = a.update_user_id
+            WHERE
+                a.`visitortype_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTransactionText($id){
+
+        $query = "
+            SELECT
+                `visitortypetext_lang` AS `lang`,
+                `visitortypetext_name` AS `name`
+            FROM
+                `ref_visitortype_text`
+            WHERE
+                `visitortypetext_visitortype_id` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
 }

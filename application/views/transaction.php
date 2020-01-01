@@ -94,6 +94,34 @@
 										<div class="form-group">
 											<?php echo $value->name;?>
 										</div>
+										<?php
+										if($value->status=='2' AND $value->type== '2'){
+											if($value->status=='2' AND $value->status_ticket == '1'){
+												$status = MultiLang('waiting_release_ticket');
+												$status_color_class = 'badge badge-pill badge-warning';
+												$download = '';
+											}elseif($value->status=='2' AND $value->status_ticket == '2'){
+												$status = MultiLang('ticket_has_been_released');
+												$status_color_class = 'badge badge-pill badge-success';
+												$download = !empty($value->file) ? '<a class="btn btn-warning" href="'.$path_ticket_rilis.$value->file.'" target="_blank"><i class="fas fa-file-download"></i> '.MultiLang('download_ticket').'</a>' : '';
+											}else{
+												$status = '';
+												$status_color_class = '';
+												$download = '';
+											}
+										?>
+										<div class="form-group">
+											<label style="font-weight: bold;" for="status"><?php echo MultiLang('ticket_status'); ?></label>
+											<div id="status">
+												<span class="<?php echo $status_color_class; ?>" style="font-size: 14px;">
+													<?php echo $status; ?>
+												</span>
+												<?php echo $download;?>
+											</div>
+										</div>
+										<?php
+										}
+										?>
 										
 									</div>
 									<div class="card-footer">

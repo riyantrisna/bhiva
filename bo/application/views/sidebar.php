@@ -127,7 +127,7 @@
                     </ul>
                 </li>
 
-                <li class="nav-item has-treeview <?php echo ($active_menu_parent == 'transaction' ? 'menu-open' : ''); ?>">
+                <li class="nav-item has-treeview">
                     <a href="<?php echo base_url();?>transaction" class="nav-link <?php echo ($active_menu_parent == 'transaction' ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-receipt"></i>
                         <p>
@@ -136,8 +136,8 @@
                     </a>
                 </li>
 
-                <li class="nav-item has-treeview <?php echo ($active_menu_parent == 'venueschedule' ? 'menu-open' : ''); ?>">
-                    <a href="<?php echo base_url();?>venueschedule" class="nav-link <?php echo ($active_menu_parent == 'transaction' ? 'active' : ''); ?>">
+                <li class="nav-item has-treeview">
+                    <a href="<?php echo base_url();?>venueschedule" class="nav-link <?php echo ($active_menu_parent == 'venueschedule' ? 'active' : ''); ?>">
                         <i class="nav-icon fas fa-calendar-alt"></i>
                         <p>
                             <?php echo MultiLang('venue_schedule'); ?>

@@ -289,6 +289,8 @@ class User extends CI_Controller {
 			//jika memang session sudah terdaftar, maka redirect ke halaman dahsboard
 			redirect(base_url());
 		}else{
+			$data['path_ticket_rilis'] = $this->config->item('path_ticket_rilis');
+			
 
 			$data['lang'] = $this->data->getLang();
 			$data['lang_set'] = $this->data->getLangDetail();
@@ -314,7 +316,7 @@ class User extends CI_Controller {
 	}
 
 	public function filter_transaction(){
-
+		$path_ticket_rilis = $this->config->item('path_ticket_rilis');
 		$filter['type'] = $this->input->post('type', TRUE);
 		$page = $this->input->post('page', TRUE);
 		$limit = $this->input->post('limit', TRUE);
@@ -353,9 +355,33 @@ class User extends CI_Controller {
 								</div>
 								<div class="form-group">
 									'.$value->name.'
-								</div>
-								
-							</div>
+								</div>';
+								if($value->status=='2' AND $value->type=='2'){
+									if($value->status=='2' AND $value->status_ticket == '1'){
+										$status = MultiLang('waiting_release_ticket');
+										$status_color_class = 'badge badge-pill badge-warning';
+										$download = '';
+									}elseif($value->status=='2' AND $value->status_ticket == '2'){
+										$status = MultiLang('ticket_has_been_released');
+										$status_color_class = 'badge badge-pill badge-success';
+										$download = !empty($value->file) ? '<a class="btn btn-warning" href="'.$path_ticket_rilis.$value->file.'" target="_blank"><i class="fas fa-file-download"></i> '.MultiLang('download_ticket').'</a>' : '';
+									}else{
+										$status = '';
+										$status_color_class = '';
+										$download = '';
+									}
+					
+				$html.= '		<div class="form-group">';
+				$html.= '			<label style="font-weight: bold;" for="status">'.MultiLang('ticket_status').'</label>';
+				$html.= '			<div id="status">
+										<span class="'.$status_color_class.'" style="font-size: 14px;">
+											'.$status.'
+										</span>
+										'.$download.'
+									</div>';
+				$html.= '		</div>';
+								}
+				$html.= '	</div>
 							<div class="card-footer">';
 
 								if($value->status=='1'){
@@ -489,16 +515,10 @@ class User extends CI_Controller {
 			$html.=     '<label style="font-weight: bold;" for="price">'.MultiLang('price').'</label>';
 			$html.=		'<div id="price">';
 			if(!empty($detail->qty_local_tourists)){
-			$html.=     MultiLang('local_tourists').' (@ Rp '.(number_format($detail->price_local_tourists, 0, ',', '.')).' x '.$detail->qty_local_tourists.')
-						<div class="mt-auto" style="color: #212529;">
-							Rp '.(number_format(($detail->price_local_tourists * $detail->qty_local_tourists), 0, ',', '.')).'
-						</div>';
+			$html.=     MultiLang('local_tourists').' (@ Rp '.(number_format($detail->price_local_tourists, 0, ',', '.')).' x '.$detail->qty_local_tourists.') = Rp '.(number_format(($detail->price_local_tourists * $detail->qty_local_tourists), 0, ',', '.')).'<br>';
 			}
 			if(!empty($detail->qty_foreign_tourists)){
-			$html.=     MultiLang('foreign_tourists').' (@ Rp '.(number_format($detail->price_foreign_tourists, 0, ',', '.')).' x '.$detail->qty_foreign_tourists.')
-						<div class="mt-auto" style="color: #212529;">
-							Rp '.(number_format(($detail->price_foreign_tourists * $detail->qty_foreign_tourists), 0, ',', '.')).'
-						</div>';
+			$html.=     MultiLang('foreign_tourists').' (@ Rp '.(number_format($detail->price_foreign_tourists, 0, ',', '.')).' x '.$detail->qty_foreign_tourists.') = Rp '.(number_format(($detail->price_foreign_tourists * $detail->qty_foreign_tourists), 0, ',', '.')).'<br>';
 			}
 			$html.= '	</div>';
 			$html.= '</div><hr>';
@@ -567,7 +587,151 @@ class User extends CI_Controller {
 			$data['html'] = $html;
 
 		}elseif($type == 2){
-			$data['html'] = '';
+			$path_ticket_rilis = $this->config->item('path_ticket_rilis');
+			$detail = $this->data->getDetailTransactionTicketByUserId($id, $this->session->userdata('user_id'));
+			$local = $this->data->getTransactionTicketDetail($id, 1);
+			$foreign = $this->data->getTransactionTicketDetail($id, 2);
+		
+			if($detail->status=='1'){
+				$status = MultiLang('waiting_for_payment');
+				$status_color_class = 'badge badge-pill badge-warning';
+			}elseif($detail->status=='2'){
+				$status = MultiLang('payment_successful');
+				$status_color_class = 'badge badge-pill badge-success';
+			}elseif($detail->status=='3'){
+				$status = MultiLang('expired_order');
+				$status_color_class = 'badge badge-pill badge-danger';
+			}elseif($detail->status=='4'){
+				$status = MultiLang('on_hold');
+				$status_color_class = 'badge badge-pill badge-warning';
+			}else{
+				$status = '';
+				$status_color_class = '';
+			}
+
+			$html = '<div class="form-group">';
+			$html.=     '<label style="font-weight: bold;" for="status">'.MultiLang('payment_status').'</label>';
+			$html.=     '<div id="status">
+							<span class="'.$status_color_class.'" style="font-size: 14px;">
+								'.$status.'
+							</span>
+						</div>';
+			$html.= '</div><hr>';
+			if($detail->status=='2'){
+				if($detail->status=='2' AND $detail->status_ticket == '1'){
+					$status = MultiLang('waiting_release_ticket');
+					$status_color_class = 'badge badge-pill badge-warning';
+					$download = '';
+				}elseif($detail->status=='2' AND $detail->status_ticket == '2'){
+					$status = MultiLang('ticket_has_been_released');
+					$status_color_class = 'badge badge-pill badge-success';
+					$download = !empty($detail->file) ? '<a class="btn btn-warning" href="'.$path_ticket_rilis.$detail->file.'" target="_blank"><i class="fas fa-file-download"></i> '.MultiLang('download_ticket').'</a>' : '';
+				}else{
+					$status = '';
+					$status_color_class = '';
+					$download = '';
+				}
+
+				$html.= '<div class="form-group">';
+				$html.=     '<label style="font-weight: bold;" for="status">'.MultiLang('ticket_status').'</label>';
+				$html.=     '<div id="status">
+								<span class="'.$status_color_class.'" style="font-size: 14px;">
+									'.$status.'
+								</span>
+								'.$download.'
+							</div>';
+				$html.= '</div><hr>';
+			}
+
+			if(!empty($detail->midtrans_transaction_id) AND $detail->status=='1' AND $detail->payment_type=='gopay'){
+			$html.= '<div class="form-group">';
+			$html.=     '<label style="font-weight: bold;" for="qrcode_gopay">'.MultiLang('qrcode_gopay').'</label>';
+			$html.=     '<div id="qrcode_gopay">
+							<img src="'.$this->config->item('qrcode_gopay_url').$detail->midtrans_transaction_id.'/qr-code" width="200" height="200">
+						</div>';
+			$html.= '</div><hr>';
+			}
+			$html.= '<div class="form-group">';
+			$html.=     '<label style="font-weight: bold;" for="code">'.MultiLang('code').'</label>';
+			$html.=     '<div id="code">'.$detail->code.'</div>';
+			$html.= '</div><hr>';
+			$html.= '<div class="form-group">';
+			$html.=     '<label style="font-weight: bold;" for="transaction_date">'.MultiLang('transaction_date').'</label>';
+			$html.=     '<div id="transaction_date">'.(!empty($detail->date) ? $this->data->getDatetimeIndo($detail->date) : '').'</div>';
+			$html.= '</div><hr>';
+
+			if($detail->type=='1'){
+				$type = '<i class="fas fa-layer-group nav-icon"></i>&nbsp;&nbsp;'.MultiLang('tourpackages');
+			}elseif($detail->type=='2'){
+				$type = '<i class="fas fa-ticket-alt nav-icon"></i>&nbsp;&nbsp;'.MultiLang('ticket');
+			}elseif($detail->type=='3'){
+				$type = '<i class="fas fa-place-of-worship nav-icon"></i>&nbsp;&nbsp;'.MultiLang('venue');
+			}else{
+				$type = '';
+			}
+
+			$html.= '<div class="form-group">';
+			$html.=     '<label style="font-weight: bold;" for="type">'.MultiLang('type').'</label>';
+			$html.=     '<div id="type">'.$type.'</div>';
+			$html.= '</div><hr>';
+			$html.= '<div class="form-group">';
+			$html.=     '<label style="font-weight: bold;" for="tourpackages">'.MultiLang('ticket').'</label>';
+			$html.=     '<div id="tourpackages">'.$detail->ticket_name.'</div>';
+			$html.= '</div><hr>';
+			$html.= '<div class="form-group">';
+			$html.=     '<label style="font-weight: bold;" for="visit_date">'.MultiLang('visit_date').'</label>';
+			$html.=     '<div id="visit_date">'.(!empty($detail->visit_date) ? $this->data->getDateIndo($detail->visit_date) : '').'</div>';
+			$html.= '</div><hr>';
+			$html.= '<div class="form-group">';
+			$html.=     '<label style="font-weight: bold;" for="price">'.MultiLang('price').'</label>';
+			$html.=		'<div id="price">';
+					if(!empty($local)){
+						foreach($local AS $key => $value){
+							$visitortype_name = (!empty($value->visitortype_name) ? '('.$value->visitortype_name.')' : '');
+					
+			$html.=	'		'.MultiLang('local_tourists').' '.$visitortype_name.' (@ Rp '.number_format($value->price, 0, ',', '.').' x '. $value->qty.') = Rp  '.number_format(($value->price * $value->qty), 0, ',', '.').'<br>';
+					
+						}
+					} 
+					
+					
+					if(!empty($foreign)){
+						foreach($foreign AS $key => $value){
+							$visitortype_name = (!empty($value->visitortype_name) ? '('.$value->visitortype_name.')' : '');
+					
+			$html.=	'		'.MultiLang('foreign_tourists').' '.$visitortype_name.' (@ Rp '.number_format($value->price, 0, ',', '.').' x '. $value->qty.') = Rp  '.number_format(($value->price * $value->qty), 0, ',', '.').'<br>';
+					
+						}
+					} 
+			$html.= '	</div>';
+			$html.= '</div><hr>';
+
+			$html.= '<div class="form-group">';
+			$html.=     '<label style="font-weight: bold;" for="total">'.MultiLang('total').'</label>';
+			$html.=     '<div id="total">Rp '.(number_format($detail->total, 0, ',', '.')).'</div>';
+			$html.= '</div><hr>';
+			
+			$html.= '<div class="form-group">';
+			$html.=     '<label style="font-weight: bold;" for="contact_information">'.MultiLang('contact_information').'</label>';
+			$html.=     '<div id="contact_information">
+							<table>
+								<tr>
+									<td><b>'.MultiLang('name').'</b></td>
+									<td> &nbsp;&nbsp;: '.$detail->contact_name.'</td>
+								</tr>
+								<tr>
+									<td><b>'.MultiLang('email').'</b></td>
+									<td> &nbsp;&nbsp;: '.$detail->contact_email.'</td>
+								</tr>
+								<tr>
+									<td><b>'.MultiLang('phone').'</b></td>
+									<td> &nbsp;&nbsp;: '.$detail->contact_phone.'</td>
+								</tr>
+							</table>
+						</div>';
+			$html.= '</div>';
+
+			$data['html'] = $html;
 		}
         
         echo json_encode($data);
