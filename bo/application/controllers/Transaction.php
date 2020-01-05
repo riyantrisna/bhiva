@@ -671,8 +671,26 @@ class Transaction extends CI_Controller {
 
     public function send_mail(){
 
-        $data['status'] = TRUE;
-        $data['message'] = MultiLang('msg_send_email_success');
+        $ticket_code = $this->input->post('ticket_code', TRUE);
+        $status_email = FALSE;
+
+        if(!empty($ticket_code)){
+            $detail_transaction = $this->data->getDetailTransactionByCode($ticket_code);
+
+            $send_schedule = date('Y-m-d');
+            $data['NAMA_USER'] = $detail_transaction->contact_name;
+            $data['TRANSACTION_ID'] = $detail_transaction->code;
+            $data['LINK'] = $this->config->item('base_url_image').'user/transaction';
+            $status_email = $this->data->addEmailSend('release_ticket', $detail_transaction->contact_email, NULL, $send_schedule, $data);
+        }
+
+        if($status_email){
+            $data['status'] = TRUE;
+            $data['message'] = MultiLang('msg_send_email_success');
+        }else{
+            $data['status'] = FALSE;
+            $data['message'] = MultiLang('msg_send_email_failed');
+        }
         echo json_encode($data);
     }
 

@@ -92,7 +92,7 @@ class Destination extends CI_Controller {
 		$id = $this->uri->segment('3');
 		$data['destination'] = $this->data->getDestinationDetail($id);
 		$data['destination_detail_image'] = $this->data->getDestinationDetailImage($id);
-		$data['destination_detaail_tourpackages'] = $this->data->getDestinationTourpackages($id);
+		$data['destination_detail_tourpackages'] = $this->data->getDestinationTourpackages($id);
 
 		$this->load->view('destination_view', $data);
 

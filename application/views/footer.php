@@ -10,11 +10,58 @@
                 <input class="form-control" id="subscribe" placeholder="<?php echo MultiLang('enter_your_email'); ?>" />
             </div>
             <div class="justify-content-center text-center col-md-2 form-group">
-                <button type="button" class="btn btn-warning"><?php echo MultiLang('subscribe'); ?></button>
+                <button type="button" class="btn btn-warning" onclick="send_subscribe()"><?php echo MultiLang('subscribe'); ?></button>
             </div>
         </div>
     </div>
 </form>
+
+<script>
+function send_subscribe()
+{	
+    $('.msg_email').hide();
+    validation = true;
+
+    if($('#subscribe').val()==''){
+        // $('#msg_email').fadeOut().fadeIn().html('<?php echo MultiLang('email'); ?> <?php echo MultiLang('required');?>');
+        toastr.error('<?php echo MultiLang('email'); ?> <?php echo MultiLang('required');?>', '', {"positionClass": "toast-top-center"});
+        validation = validation && false;
+    }else{
+        email_valid = validateEmail($('#subscribe').val());
+        if(!email_valid){
+            // $('#msg_email').fadeOut().fadeIn().html('<?php echo MultiLang('email'); ?> <?php echo MultiLang('not_valid');?>');
+            toastr.error('<?php echo MultiLang('email'); ?> <?php echo MultiLang('not_valid');?>', '', {"positionClass": "toast-top-center"});
+            validation = validation && false;
+        }
+    }
+
+    if(validation){
+
+        jQuery.ajax({
+            url : "<?php echo site_url('home/send_subscribe/')?>",
+            type: "POST",
+            data: {email: $('#subscribe').val()},
+            dataType: "json",
+            success: async function(data, textStatus, xhr)
+            {
+                if(xhr.status == '200'){
+                    if(data.status){
+                        await toastr.success(data.message, '', {"positionClass": "toast-top-center"});
+                    }else{
+                        await toastr.error(data.message, '', {"positionClass": "toast-top-center"});
+                    }
+                    
+                }else{
+                    toastr.error(xhr.statusText, '', {"positionClass": "toast-top-center"});
+                }
+
+                $('#subscribe').val('')
+            }
+        });
+    }
+    
+}
+</script>
 
 <footer>
     <div class="container pt-5 border-bottom">
@@ -144,7 +191,7 @@
 </footer>
 <footer class="py-4 bg-dark text-white-50" style="flex-shrink: none;">
     <div class="container text-center">
-      <small>Copyright &copy; 2019 BHIVA</small>
+      <small>Copyright &copy; 2020 BHIVA</small>
     </div>
 </footer>
 <!-- ./Footer -->

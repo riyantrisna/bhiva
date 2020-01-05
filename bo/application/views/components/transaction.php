@@ -285,6 +285,7 @@ function upload_file_ticket(){
     fd.append('file_ticket', files); 
     fd.append('ticket_code', ticket_code); 
     fd.append('transaction_id', transaction_id); 
+    $('#result_ticket_file').fadeOut().fadeIn().html(<?php echo MultiLang('process'); ?>).css({color: 'green'});
 
     $.ajax({ 
         url: '<?php echo base_url(); ?>transaction/upload_file_ticket', 

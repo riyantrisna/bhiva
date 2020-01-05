@@ -13,12 +13,27 @@ class Data extends CI_Model {
 
         $query = "
             SELECT
-                a.`user_email` AS email
+                a.`user_email` AS email,
+                a.`user_real_name` AS real_name
             FROM
                 `core_user` a
             WHERE 1 = 1
             AND a.`user_is_admin` = 0
             AND a.`user_email` = '".$id."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getExistEmailSubscribe($id){
+
+        $query = "
+            SELECT
+                a.`subemail_email` AS email
+            FROM
+                `cms_subscribe_email` a
+            WHERE 1 = 1
+            AND a.`subemail_email` = '".$id."'
         ";
         $result = $this->default->query($query);
         return $result->row();
@@ -1862,6 +1877,7 @@ class Data extends CI_Model {
                 b.`transactiontourpackages_contact_phone` AS contact_phone,
                 b.`transactiontourpackages_tourpackages_id` AS tourpackages_id,
                 CONCAT(c.`tourpackagestext_name`, ' <b>(', b.`transactiontourpackages_total_day`,' ".MultiLang('day')." ', b.`transactiontourpackages_total_night`,' ".MultiLang('night')."',')</b>') AS tourpackages_name,
+                b.`transactiontourpackages_total_day` AS total_day,
                 b.`transactiontourpackages_date_tour` AS date_tour,
                 b.`transactiontourpackages_price_foreign_tourists` AS price_foreign_tourists,
                 b.`transactiontourpackages_price_local_tourists` AS price_local_tourists,
@@ -2110,6 +2126,178 @@ class Data extends CI_Model {
                 AND a.`transaction_user_id` = '".$user_id."'
         ";
         $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailTransactionByCode($code){
+
+        $query = "
+            SELECT
+                a.`transaction_id` AS id,
+                a.`transaction_code` AS code,
+                a.`transaction_date` AS date,
+                a.`transaction_type` AS type,
+                a.`transaction_user_id` AS user_id,
+                a.`transaction_user_real_name` AS user_real_name,
+                a.`transaction_total` AS total,
+                a.`transaction_status` AS status,
+                a.`transaction_midtrans_snap_token` AS midtrans_snap_token,
+                a.`transaction_midtrans_transaction_id` AS midtrans_transaction_id,
+                a.`transaction_midtrans_response` AS midtrans_response,
+                a.`transaction_payment_type` AS payment_type,
+
+                b.user_real_name AS contact_name,
+                b.user_email AS contact_email,
+                b.user_phone AS contact_phone
+                
+            FROM
+                `trx_transaction` a
+                LEFT JOIN core_user b ON b.user_id = a.`transaction_user_id`
+            WHERE
+                1 = 1
+                AND a.`transaction_code` = '".$code."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getAllVenue(){
+        $path_venue_upload = $this->config->item('path_venue_upload');
+        $query = "
+            SELECT
+                a.`venue_id` AS id,
+                a.`venue_status` AS status,
+                b.`venuetext_name` AS 'name',
+                b.`venuetext_text` AS 'text',
+                CONCAT('".$path_venue_upload."',c.`venueimg_img`) AS 'img'
+            FROM 
+                `mst_venue` a
+                LEFT JOIN `mst_venue_text` b ON b.`venuetext_venue_id` = a.`venue_id` AND b.`venuetext_lang` = '".$this->user_lang."'
+                LEFT JOIN `mst_venue_img` c ON c.`venueimg_venue_id` = a.`venue_id` AND c.`venueimg_order` = 1
+            WHERE 
+                a.`venue_status` = 1
+            ORDER BY 
+                b.`venuetext_name`
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function getVenueDetail($id){
+        $query = "
+            SELECT
+                a.`venue_id` AS id,
+                a.`venue_status` AS status,
+                b.`venuetext_name` AS 'name',
+                b.`venuetext_text` AS 'text'
+            FROM 
+                `mst_venue` a
+                LEFT JOIN `mst_venue_text` b ON b.`venuetext_venue_id` = a.`venue_id` AND b.`venuetext_lang` = '".$this->user_lang."'
+            WHERE 
+                a.`venue_status` = 1
+                AND a.`venue_id` = '".$id."'
+            ORDER BY 
+                b.`venuetext_name`
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getVenueDetailImage($id){
+        $path_venue_upload = $this->config->item('path_venue_upload');
+        $query = "
+            SELECT
+                CONCAT('".$path_venue_upload."',a.`venueimg_img`) AS 'img'
+            FROM
+                `mst_venue_img` a
+            WHERE
+                a.`venueimg_venue_id` = '".$id."'
+                AND a.`venueimg_img` IS NOT NULL
+            ORDER BY 
+                a.`venueimg_order`
+        ";
+        $result = $this->default->query($query);
+        return $result->result();
+    }
+
+    public function checkVenueSchedule($schedule_date, $venue_id){
+        $query = "
+            SELECT
+                a.`transactionvenue_id` AS id
+            FROM 
+                `trx_transaction_venue` a
+            WHERE 
+                a.`transactionvenue_venue_id` = '".$venue_id."'
+                AND '".$schedule_date."' BETWEEN a.`transactionvenue_date_start` AND a.`transactionvenue_date_end`
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function addEmailSubscribe($data){
+        $query = $this->default->insert('cms_subscribe_email',$data);
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function getSetting($key){
+        $query = "
+            SELECT
+                a.`setting_value` AS value
+            FROM 
+                `core_setting` a
+            WHERE 
+                a.`setting_key` = '".$key."'
+        ";
+        $result = $this->default->query($query);
+        $data = $result->row();
+        if(!empty($data)){
+            return $data->value;
+        }else{
+            return '';
+        }
+    }
+
+    public function getTemplateEmail($key){
+        $query = "
+            SELECT
+                a.`emailtemplate_from` AS from,
+                a.`emailtemplate_from_name` AS from_name,
+                b.`emailtemplate_subject` AS subject,
+                b.`emailtemplate_content` AS content
+            FROM 
+                `cms_email_template` a
+                LEFT JOIN cms_email_template_text b ON b.emailtemplatetext_emailtemplate_id = a.emailtemplate_id AND b.`venuetext_lang` = '".$this->user_lang."'
+            WHERE 
+                a.`emailtemplate_key` = '".$key."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function addEmail($data){
+        $query = $this->default->insert('cms_email_log',$data);
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function getDetailTransactionTestimonyById($id){
+        $query = "
+            SELECT
+                a.`tourpackagestesti_token` AS `token`
+            FROM
+                `mst_tourpackages_testimony` a
+            WHERE
+                a.`tourpackagestesti_transaction_id` = '".$id."'
+        ";
+        
+        $result = $this->db->query($query);
         return $result->row();
     }
 

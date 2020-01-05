@@ -3917,111 +3917,273 @@ class Data extends CI_Model {
     }
 
 
+    // Venueschedule
+    public function getAllVenueschedule($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
 
-
-    public function addTransaction($data, $visitortype, $user_id, $date){
-        $this->default->trans_begin();
-        $this->default->insert('ref_visitortype',$data);
-        $visitortype_id = $this->default->insert_id();
-
-        if(!empty($visitortype)){
-            foreach ($visitortype as $key => $value) {
-                $data = array(
-                    'visitortypetext_visitortype_id' => $visitortype_id,
-                    'visitortypetext_lang' => $key,
-                    'visitortypetext_name' => $value
-                );
-                $this->default->insert('ref_visitortype_text',$data);
-            }
+        if(!empty($venue_id)){
+            $str .= " AND a.`transactionvenue_venue_id` = '$venue_id' ";
         }
 
-        $this->default->trans_complete();
-        if ($this->default->trans_status() === FALSE){
-            $this->default->trans_rollback();
-            return FALSE;
-        }else{
-            $this->default->trans_commit();
-            return TRUE;
+        if(!empty($schedule_date)){
+            $str .= " AND '$schedule_date' BETWEEN a.`transactionvenue_date_start` AND a.`transactionvenue_date_end` ";
         }
-    }
-
-    public function updateTransaction($data, $id, $visitortype, $user_id, $date){
-        $this->default->trans_begin();
-        $this->default->where('visitortype_id', $id);
-        $this->default->update('ref_visitortype',$data);
-
-        if(!empty($visitortype)){
-            foreach ($visitortype as $key => $value) {
-                $data = array(
-                    'visitortypetext_name' => $value
-                );
-                $this->default->where('visitortypetext_visitortype_id', $id);
-                $this->default->where('visitortypetext_lang', $key);
-                $this->default->update('ref_visitortype_text',$data);
-            }
-        }
-
-        $this->default->trans_complete();
-        if ($this->default->trans_status() === FALSE){
-            $this->default->trans_rollback();
-            return FALSE;
-        }else{
-            $this->default->trans_commit();
-            return TRUE;
-        }
-    }
-
-    public function deleteTransaction($id){
-        $this->default->trans_begin();
-        
-        $this->default->where('visitortypetext_visitortype_id', $id);
-        $this->default->delete('ref_visitortype_text');
-
-        $this->default->where('visitortype_id', $id);
-        $this->default->delete('ref_visitortype');
-        
-        $this->default->trans_complete();
-        if ($this->default->trans_status() === FALSE){
-            $this->default->trans_rollback();
-            return FALSE;
-        }else{
-            $this->default->trans_commit();
-            return TRUE;
-        }
-    }
-
-    public function getDetailTransaction($id){
 
         $query = "
-            SELECT
-                a.`visitortype_id` AS `id`,
-                c.user_real_name AS insert_user,
-                a.insert_datetime,
-                d.user_real_name AS update_user,
-                a.update_datetime
+            SELECT 
+                a.`transactionvenue_id` AS `id`,
+                a.`transactionvenue_venue_id` AS `venue_id`,
+                b.venuetext_name AS venue_name,
+                a.`transactionvenue_date_start` AS date_start,
+                a.`transactionvenue_date_end` AS date_end
             FROM
-                `ref_visitortype` a
-                LEFT JOIN core_user c ON c.user_id = a.insert_user_id
-                LEFT JOIN core_user d ON d.user_id = a.update_user_id
-            WHERE
-                a.`visitortype_id` = '".$id."'
+                `trx_transaction_venue` a
+                LEFT JOIN mst_venue_text b ON b.venuetext_venue_id = a.transactionvenue_venue_id AND b.venuetext_lang = '".$this->user_lang."'
+            WHERE 1 = 1
+        ";
+        $query.= $str;
+        $query .= " ORDER BY $order $dir ";
+        if (isset($start) AND $start != '') {
+            $query .= " LIMIT $start, $length";
+        }
+        $result = $this->db->query($query);
+        return $result->result();
+    }
+
+    public function getTotalAllVenueschedule($filter){
+        if (is_array($filter))
+        extract($filter);
+        $str = '';
+
+        if(!empty($venue_id)){
+            $str .= " AND a.`transactionvenue_venue_id` = '$venue_id' ";
+        }
+
+        if(!empty($schedule_date)){
+            $str .= " AND '$schedule_date' BETWEEN a.`transactionvenue_date_start` AND a.`transactionvenue_date_end` ";
+        }
+
+        $query = "
+                SELECT 
+                    COUNT(DISTINCT a.`transactionvenue_id`) AS total
+                FROM
+                    `trx_transaction_venue` a
+                    LEFT JOIN mst_venue_text b ON b.venuetext_venue_id = a.transactionvenue_venue_id AND b.venuetext_lang = '".$this->user_lang."'
+                WHERE 1 = 1
+                ";
+        $query.= $str;
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getDetailVenueschedule($id){
+
+        $query = "
+                SELECT 
+                    a.`transactionvenue_id` AS `id`,
+                    a.`transactionvenue_venue_id` AS `venue_id`,
+                    b.venuetext_name AS venue_name,
+                    a.`transactionvenue_date_start` AS date_start,
+                    a.`transactionvenue_date_end` AS date_end,
+                    c.user_real_name AS insert_user,
+                    a.insert_datetime,
+                    d.user_real_name AS update_user,
+                    a.update_datetime
+                FROM
+                    `trx_transaction_venue` a
+                    LEFT JOIN mst_venue_text b ON b.venuetext_venue_id = a.transactionvenue_venue_id AND b.venuetext_lang = '".$this->user_lang."'
+                    LEFT JOIN core_user c ON c.user_id = a.insert_user_id
+                    LEFT JOIN core_user d ON d.user_id = a.update_user_id
+                WHERE 1 = 1
+                AND a.`transactionvenue_id` = '".$id."'
         ";
         $result = $this->default->query($query);
         return $result->row();
     }
 
-    public function getDetailTransactionText($id){
+    public function addVenueschedule($data){
+        $query = $this->default->insert('trx_transaction_venue',$data);
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function updateVenueschedule($data, $id){
+        $this->default->where('transactionvenue_id', $id);
+        $query = $this->default->update('trx_transaction_venue',$data);
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function deleteVenueschedule($id){
+        $this->default->where('transactionvenue_id', $id);
+        $query = $this->default->delete('trx_transaction_venue');
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function getListVenue(){
 
         $query = "
             SELECT
-                `visitortypetext_lang` AS `lang`,
-                `visitortypetext_name` AS `name`
+                a.`venuetext_venue_id` AS `id`,
+                a.venuetext_name AS name
             FROM
-                `ref_visitortype_text`
-            WHERE
-                `visitortypetext_visitortype_id` = '".$id."'
+                mst_venue_text a 
+            WHERE 1 = 1
+            AND a.venuetext_lang = '".$this->user_lang."'
         ";
-        $result = $this->default->query($query);
+        $result = $this->db->query($query);
         return $result->result();
     }
+
+    public function checkVenueSchedule($start, $end, $venue_id, $id_edit=''){
+
+        if(!empty($id_edit)){
+            $str = " AND a.`transactionvenue_id` NOT IN ($id_edit) ";
+        }else{
+            $str = "";
+        }
+        $query = "
+            SELECT
+                a.`transactionvenue_id` AS id
+            FROM 
+                `trx_transaction_venue` a
+            WHERE 
+                a.`transactionvenue_venue_id` = '".$venue_id."'
+                AND 
+                (
+                    '".$start."' BETWEEN a.`transactionvenue_date_start` AND a.`transactionvenue_date_end`
+                    OR '".$end."' BETWEEN a.`transactionvenue_date_start` AND a.`transactionvenue_date_end`
+                )
+                ".$str."
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function getSetting($key){
+        $query = "
+            SELECT
+                a.`setting_value` AS value
+            FROM 
+                `core_setting` a
+            WHERE 
+                a.`setting_key` = '".$key."'
+        ";
+        $result = $this->default->query($query);
+        $data = $result->row();
+        if(!empty($data)){
+            return $data->value;
+        }else{
+            return '';
+        }
+    }
+
+    public function getTemplateEmail($key){
+        $query = "
+            SELECT
+                a.`emailtemplate_from` AS from,
+                a.`emailtemplate_from_name` AS from_name,
+                b.`emailtemplate_subject` AS subject,
+                b.`emailtemplate_content` AS content
+            FROM 
+                `cms_email_template` a
+                LEFT JOIN cms_email_template_text b ON b.emailtemplatetext_emailtemplate_id = a.emailtemplate_id AND b.`venuetext_lang` = '".$this->user_lang."'
+            WHERE 
+                a.`emailtemplate_key` = '".$key."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+
+    public function addEmail($data){
+        $query = $this->default->insert('cms_email_log',$data);
+        if ($this->default->affected_rows() > 0){
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+
+    public function addEmailSend($key_template, $to, $cc, $send_schedule, $data){
+				
+		$template_email = $this->getTemplateEmail($key_template);
+
+		if(!empty($template_email)){
+			$subject = $template_email->subject;
+			$content = $template_email->content;
+			
+			if(!empty($data)){
+				foreach ($data as $key_post => $val_post) {
+					$subject = str_replace('[' . strtoupper($key_post) . ']', $val_post, $subject);
+				}
+
+				$data['title'] = $subject;
+				foreach ($data as $key_post => $val_post) {
+					$content = str_replace('[' . strtoupper($key_post) . ']', $val_post, $content);
+				}
+			}
+
+			$data = array(
+				'emaillog_to' => $to,
+				'emaillog_cc' => $cc,
+				'emaillog_subject' => $subject,
+				'emaillog_from' => $template_email->from_name,
+				'emaillog_content' => $content,
+				'emaillog_send_schedule' => $send_schedule,
+				'emaillog_status' => 0,
+				'insert_user_id' => $this->session->userdata('user_id'),
+				'insert_datetime' => date('Y-m-d H:i:s')
+			);
+			$results = $this->addEmailSend($data);
+		}else{
+			$results = FALSE;
+		}
+
+		return $results;
+    }
+    
+    public function getDetailTransactionByCode($code){
+
+        $query = "
+            SELECT
+                a.`transaction_id` AS id,
+                a.`transaction_code` AS code,
+                a.`transaction_date` AS date,
+                a.`transaction_type` AS type,
+                a.`transaction_user_id` AS user_id,
+                a.`transaction_user_real_name` AS user_real_name,
+                a.`transaction_total` AS total,
+                a.`transaction_status` AS status,
+                a.`transaction_midtrans_snap_token` AS midtrans_snap_token,
+                a.`transaction_midtrans_transaction_id` AS midtrans_transaction_id,
+                a.`transaction_midtrans_response` AS midtrans_response,
+                a.`transaction_payment_type` AS payment_type,
+
+                b.user_real_name AS contact_name,
+                b.user_email AS contact_email,
+                b.user_phone AS contact_phone
+                
+            FROM
+                `trx_transaction` a
+                LEFT JOIN core_user b ON b.user_id = a.`transaction_user_id`
+            WHERE
+                1 = 1
+                AND a.`transaction_code` = '".$code."'
+        ";
+        $result = $this->default->query($query);
+        return $result->row();
+    }
+    
 }

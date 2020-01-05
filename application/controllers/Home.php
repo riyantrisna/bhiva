@@ -125,6 +125,13 @@ class Home extends CI_Controller {
 			);
 			$results = $this->data->addUser($data);
 
+
+			$send_schedule = date('Y-m-d');
+			$data['NAMA_USER'] = $name;
+			$data['USER_EMAIL'] = $email;
+			$data['PASSWORD'] = $password;
+			$status_email = $this->data->addEmailSend('registration_user', $email, NULL, $send_schedule, $data);
+
 			// send email
 		
 			if ($results) {
@@ -289,6 +296,44 @@ class Home extends CI_Controller {
 		);
 		$update_transaction = $this->data->updateTransactionByCode($data_update, $notif->order_id);
 
+		if(!empty($notif->order_id) AND $status==2){
+
+			$detail_transaction = $this->data->getDetailTransactionByCode($notif->order_id);
+
+			$send_schedule = date('Y-m-d');
+			$data['NAMA_USER'] = $detail_transaction->contact_name;
+			$data['TRANSACTION_ID'] = $detail_transaction->code;
+			$data['TOTAL_PAYMENT'] = $detail_transaction->total;
+			$data['LINK'] = $this->config->item('base_url').'user/transaction';
+			$status_email = $this->data->addEmailSend('payment_successful', $detail_transaction->contact_email, NULL, $send_schedule, $data);
+
+			$email_admin_ticket = $this->data->getSetting('admin_email_ticket');
+			$email_admin_tourpackages = $this->data->getSetting('admin_email_tourpackages');
+
+			if(!empty($email_admin_ticket) AND empty($email_admin_tourpackages)){
+				$to_admin = $email_admin_ticket;
+				$status_email = $this->data->addEmailSend('payment_successful', $to_admin, NULL, $send_schedule, $data);
+			}else if(empty($email_admin_ticket) AND !empty($email_admin_tourpackages)){
+				$to_admin = $email_admin_tourpackages;
+				$status_email = $this->data->addEmailSend('payment_successful', $to_admin, NULL, $send_schedule, $data);
+			}else if(!empty($email_admin_ticket) AND !empty($email_admin_tourpackages)){
+				$to_admin = $email_admin_ticket.','.$email_admin_tourpackages;
+				$status_email = $this->data->addEmailSend('payment_successful', $to_admin, NULL, $send_schedule, $data);
+			}
+
+			
+			if($detail_transaction->type == '1'){
+				$detail_transaction_tourpackages = $this->data->getDetailTransactionTourpackagesByUserId($detail_transaction->id, $detail_transaction->user_id);
+				$detail_transaction_testimony = $this->data->getDetailTransactionTestimonyById($detail_transaction->id);
+
+				$send_schedule = date('Y-m-d', strtotime($detail_transaction_tourpackages->date_tour.' + '.$detail_transaction_tourpackages->total_day.' days'));
+				
+				$data['LINK'] = $this->config->item('base_url').'user/testimony/'.$detail_transaction_testimony->token;
+				$status_email = $this->data->addEmailSend('testimony_tourpackages', $detail_transaction->contact_email, NULL, $send_schedule, $data);
+			}
+
+		}
+
 		if($update_transaction){
 			echo 'ok';
 		}else{
@@ -329,7 +374,11 @@ class Home extends CI_Controller {
 
 			if($result){
 				// kirim email
-
+				$send_schedule = date('Y-m-d');
+				$data['NAMA_USER'] = $check_email->real_name;
+				$data['USER_EMAIL'] = $email;
+				$data['PASSWORD'] = $new_pass;
+				$status_email = $this->data->addEmailSend('forget_password', $email, NULL, $send_schedule, $data);
 
 				$data['status'] = TRUE;
 				$data['message'] = MultiLang('msg_reset_password_success');
@@ -343,6 +392,74 @@ class Home extends CI_Controller {
 		}
 		
 		echo json_encode($data);
+	}
+
+	public function send_subscribe(){
+		$email = $this->input->post('email', TRUE);
+
+		$check_email = $this->data->getExistEmailSubscribe($email);
+
+		if(empty($check_email)){
+
+			$data_update = array(
+				'subemail_date' => date('Y-m-d'),
+				'subemail_email' => $email,
+
+			);
+			$result = $this->data->addEmailSubscribe($data_update, $email);
+
+			if($result){
+				// kirim email
+				$data['status'] = TRUE;
+				$data['message'] = MultiLang('subscription_email_saved_successfully');
+			}else{
+				$data['status'] = FALSE;
+				$data['message'] = MultiLang('subscription_email_failed_to_save');
+			}
+		}else{
+			$data['status'] = FALSE;
+			$data['message'] = MultiLang('email').' '.MultiLang('existed');
+		}
+		
+		echo json_encode($data);
+	}
+
+	public function addEmailSend($key_template, $to, $cc, $send_schedule, $data){
+				
+		$template_email = $this->data->getTemplateEmail($key_template);
+
+		if(!empty($template_email)){
+			$subject = $template_email->subject;
+			$content = $template_email->content;
+			
+			if(!empty($data)){
+				foreach ($data as $key_post => $val_post) {
+					$subject = str_replace('[' . strtoupper($key_post) . ']', $val_post, $subject);
+				}
+
+				$data['title'] = $subject;
+				foreach ($data as $key_post => $val_post) {
+					$content = str_replace('[' . strtoupper($key_post) . ']', $val_post, $content);
+				}
+			}
+
+			$data = array(
+				'emaillog_to' => $to,
+				'emaillog_cc' => $cc,
+				'emaillog_subject' => $subject,
+				'emaillog_from' => $template_email->from_name,
+				'emaillog_content' => $content,
+				'emaillog_send_schedule' => $send_schedule,
+				'emaillog_status' => 0,
+				'insert_user_id' => $this->session->userdata('user_id'),
+				'insert_datetime' => date('Y-m-d H:i:s')
+			);
+			$results = $this->data->addEmailSend($data);
+		}else{
+			$results = FALSE;
+		}
+
+		return $results;
 	}
 	
 }

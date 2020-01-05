@@ -8,8 +8,8 @@
 			<div class="overlay"></div>
 			<ol class="carousel-indicators">
 			<?php
-			if(!empty($destination_detail_image) AND count($destination_detail_image) > 1){
-				foreach ($destination_detail_image as $key => $value) {
+			if(!empty($venue_detail_image) AND count($venue_detail_image) > 1){
+				foreach ($venue_detail_image as $key => $value) {
 			?>
 				<li data-target="#carouselExampleIndicators" data-slide-to="<?php echo $key;?>" <?php echo (($key==0) ? 'class="active"' : ''); ?>></li>
 			<?php
@@ -19,14 +19,14 @@
 			</ol>
 			<div class="carousel-inner">
 			<?php
-			if(!empty($destination_detail_image)){					
-				foreach ($destination_detail_image as $key => $value) {
+			if(!empty($venue_detail_image)){					
+				foreach ($venue_detail_image as $key => $value) {
 			?>
 				<div class="carousel-item <?php echo (($key==0) ? 'active' : ''); ?> slides">
 					<div class="slide" style="background-image: url('<?php echo base_url().$value->img;?>')"></div>
 					<div class="hero">
 						<hgroup>
-							<h1><?php echo $destination->name;?></h1>
+							<h1><?php echo $venue_detail->name;?></h1>
 						</hgroup>
 					</div>
 				</div>
@@ -36,7 +36,7 @@
 			?>
 			</div>
 			<?php
-			if(!empty($destination_detail_image) AND count($destination_detail_image) > 1){
+			if(!empty($venue_detail_image) AND count($venue_detail_image) > 1){
 			?>
 			<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev" style="z-index: 3 !important;">
 				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -50,56 +50,26 @@
 			}
 			?>
 		</div>
-		<div class="container mt-5">
-			<div class="row">
-				<div class="col-md-8 col-sm-12">
+		<div class="container">
+			<p class="justify-content-center">
+				<?php echo $venue_detail->text;?>
+			</p>
 
-					<p class="justify-content-center">
-						<?php echo $destination->text;?>
-					</p>
-					
-					<b><?php echo MultiLang('share_on'); ?></b>
-					<div class="ssk-group">
-						<a href="javascript:void(0)" onclick="window.open('https://facebook.com/sharer/sharer.php?u=<?php echo base_url();?>destination/view/<?php echo $destination->id.'/'.(str_replace(' ','-',$destination->name));?>','_blank','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no, scrollbars=yes, resizable=yes, width=800, height=600');" class="ssk ssk-facebook"></a>
-						<a href="javascript:void(0)" onclick="window.open('https://twitter.com/share?url=<?php echo base_url();?>destination/view/<?php echo $destination->id.'/'.(str_replace(' ','-',$destination->name));?>','_blank','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no, scrollbars=yes, resizable=yes, width=800, height=600');" class="ssk ssk-twitter"></a>
-						<a href="javascript:void(0)" onclick="window.open('https://pinterest.com/pin/create/button/?url=<?php echo base_url();?>destination/view/<?php echo $destination->id.'/'.(str_replace(' ','-',$destination->name));?>&description=<?php echo (str_replace(' ','-',$destination->name));?>','_blank','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no, scrollbars=yes, resizable=yes, width=800, height=600');" class="ssk ssk-pinterest"></a>
-					</div>
+			<div class="row mb-5 mt-5">
+				<div class="form-group col-md-3 col-sm-12">
+					<label for="schedule_date" style="font-weight: bold;"><?php echo MultiLang('check_schedule');?></label>
+					<input type="text" id="schedule_date" name="schedule_date" class="form-control dates" value="<?php echo date('Y-m-d');?>">
 				</div>
-				<div class="col-md-1 col-sm-12">&nbsp;<br><br></div>
-				<div class="col-md-3 col-sm-12">
-					<div class="">
-						<h5><i class="fas fa-layer-group"></i> <?php echo MultiLang('tour_packages_related'); ?></h5>
-					</div>
-					<?php
-						if(!empty($destination_detail_tourpackages)){
-							foreach ($destination_detail_tourpackages as $key => $value) {
-						?>
-						
-							<div class="col-md-12 col-sm-12 mt-4">
-								<a class="d-block h-100 text-decoration-none" href="<?php echo base_url();?>tourpackages/view/<?php echo $value->id.'/'.(preg_replace("/\W|_/","-",$value->name));?>">
-									<div class=" img-hover-zoom img-hover-zoom--brightness">
-										<img class="img-fluid" src="<?php echo base_url().$value->img;?>" alt="">
-										<span class="centered-text-img"><?php echo $value->name;?></span>
-									</div>
-								</a>
-							</div>
-						
-						<?php
-							}
-						}else{
-						?>
-							<div class="col-md-12 col-sm-12 mt-4">
-								<div style="width: 100%; text-align: center; white-space: nowrap;">
-									<i class="text-black-50">-- <?php echo MultiLang('there_are_no_tour_packages'); ?> --</i>
-								</div>
-							</div>
-						<?php
-						}
-						?>
+				<div class="form-group col-md-3 col-sm-12">
+					<label>&nbsp;</label>
+					<button type="button" id="btnSearch" class="btn btn-warning" style="width: 100%; font-weight: bold;" onclick="check_venue();"><?php echo MultiLang('search'); ?></button>
+				</div>
+				<div id="result_schedule" class="form-group col-sm-12">
+
 				</div>
 			</div>
 		</div>
-
+					
 		<hr class="mt-4 mb-5">
 
 		<div class="col-sm-12 mt-5 mb-3">
@@ -153,19 +123,49 @@
 			$this->load->view('footer');
 		?>
 		<style>
-			/* .fade-carousel {
+			.fade-carousel {
 				position: relative;
-				height: 60vh;
+				height: 80vh;
 			}
 			.fade-carousel .carousel-inner .carousel-item {
-				height: 60vh;
+				height: 80vh;
 			}
 			.fade-carousel .slides .slide {
-				height: 60vh;
+				height: 80vh;
 				background-size: cover;
 				background-position: center center;
 				background-repeat: no-repeat;
-			} */
+			}
 		</style>
+		<script>
+			var today = new Date();
+			today.setDate(today.getDate());
+
+			$(".dates").datepicker({
+				format: 'yyyy-mm-dd',
+				autoclose: true,
+				startDate: today
+			});
+
+			function check_venue(){
+				var schedule_date =  $('#schedule_date').val();
+				var venue_id =  <?php echo $venue_detail->id;?>;
+				$.ajax({
+					url : '<?php echo base_url(); ?>venue/check_venue',
+					type: "POST",
+					data: {'schedule_date': schedule_date, 'venue_id': venue_id},
+					dataType: "json",
+					success: async function(data, textStatus, xhr)
+					{
+						if(xhr.status == '200'){
+							$('#result_schedule').fadeOut().fadeIn().html(data.msg);
+						}else{
+							toastr.error(xhr.statusText);
+						}
+
+					}
+				});
+			}
+		</script>
 	</body>
 </html>
